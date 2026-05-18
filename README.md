@@ -19,11 +19,13 @@ Tier0 平台 AI Agent Skills 文档。
 
 ## 安装与初始化
 
+**必须按顺序执行**：先下载 → 再配置地址（如私有化）→ 最后登录。
+
 ```bash
 # 1. 下载 CLI（自动识别平台）
 curl -sL https://github.com/FREEZONEX/Tier0-cli/releases/latest/download/tier0-cli-$(uname -s)-$(uname -m).tar.gz | tar -xz && sudo mv */tier0 /usr/local/bin/
 
-# 2. （私有化部署）设置平台地址
+# 2. （私有化部署必填）先设置平台地址，再登录！
 tier0 config --base-url https://tier0-eks-frontend.tier0.dev
 
 # 3. 登录授权
@@ -35,7 +37,9 @@ tier0 login --setup-code <code>
 tier0 api /openapi/v1/uns/read --body '{"topics":["demo"]}'
 ```
 
-> **优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
+**⚠️ 关键约束**：如果先执行 `tier0 login` 再 `config --base-url`，授权 URL 会指向错误地址。必须先 `config` 再 `login`。
+
+**优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
 
 ### 通过 OpenClaw
 
