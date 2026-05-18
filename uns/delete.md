@@ -43,3 +43,9 @@ tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp","ha
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor"}'
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor","hard_delete":true}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+

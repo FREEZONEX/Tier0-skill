@@ -38,3 +38,9 @@ tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/sensor/temp"}'
 # 如果节点被误删除（软删除），可以立即恢复
 tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/sensor/temp"}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+

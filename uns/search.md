@@ -48,3 +48,9 @@ tier0 api /openapi/v1/uns/search --body '{"keyword":"sensor","page":1,"size":20}
 ```bash
 tier0 api /openapi/v1/uns/search --body '{"path_prefix":"factory","topicType":"thing","size":100}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+

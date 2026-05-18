@@ -35,3 +35,9 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["factory/line1/sensor/temp"]}'
 # 读取多个数据点
 tier0 api /openapi/v1/uns/read --body '{"topics":["factory/line1/sensor/temp","factory/line1/sensor/humidity"]}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+

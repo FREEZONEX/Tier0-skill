@@ -43,3 +43,9 @@ tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"factory/line1/senso
 # 批量写入
 tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"factory/line1/sensor/temp","value":25.5},{"topic":"factory/line1/sensor/humidity","value":60}]}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+

@@ -39,3 +39,9 @@ tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"
 # 按小时聚合
 tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715600000,"function":"avg","interval":"1h"}'
 ```
+
+## Windows PowerShell 简写
+
+PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+
+
