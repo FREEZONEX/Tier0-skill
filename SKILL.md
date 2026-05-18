@@ -46,12 +46,26 @@ sudo mv darwin-arm64/tier0 /usr/local/bin/
 
 Release 包已包含 skills 文档。也可通过 `go install github.com/FREEZONEX/Tier0-cli@latest` 仅安装二进制（不含 skills）。
 
+## 配置（私有化部署必读）
+
+如果使用私有化部署或自定义平台地址，**必须先设置 BaseURL**（写入配置文件，持久生效）：
+
+```bash
+# 设置私有化平台地址
+tier0 config --base-url https://tier0-eks-frontend.tier0.dev
+
+# 查看当前配置
+tier0 config
+```
+
+**优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
+
 ## 认证（Device Flow）
 
 **AI Agent 自动执行，无需用户输入密码：**
 
 ```bash
-# 1. 获取授权 URL
+# 1. 获取授权 URL（自动使用配置文件中的 baseURL）
 tier0 login --no-wait
 
 # 2. 在浏览器中打开返回的 verification_url，完成授权

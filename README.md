@@ -53,12 +53,17 @@ go install github.com/FREEZONEX/Tier0-cli@latest
 ### 通过 tier0 CLI
 
 ```bash
+# 私有化部署：先设置平台地址（持久化到配置文件）
+tier0 config --base-url https://tier0-eks-frontend.tier0.dev
+
 # 认证
 tier0 login
 
 # 调用 API
 tier0 api /openapi/v1/uns/read --body '{"topics":["demo"]}'
 ```
+
+> **优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
 
 ### 通过 OpenClaw
 
