@@ -19,44 +19,51 @@ Tier0 平台 AI Agent Skills 文档。
 
 ## 安装与初始化
 
-**必须按顺序执行**：先下载 → 再配置地址（如私有化）→ 最后登录。
+> **版本要求**：`v0.2.2+` 才支持 `login` 读取配置文件中的 `baseURL`。如果已安装旧版本，请先执行 `tier0 upgrade`。
 
-### macOS / Linux
+### 步骤 1：安装 CLI
+
+**macOS / Linux：**
+```bash
+curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
+```
+
+**Windows (PowerShell)：**
+```powershell
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
+```
+
+### 步骤 2：选择部署环境
+
+**A. SaaS 环境（默认 `https://tier0.dev`）**
+
+无需配置地址，直接跳到步骤 3 登录。
+
+**B. 私有化部署**
+
+必须在登录**之前**配置平台地址：
 
 ```bash
-# 1. 下载并安装 CLI（自动识别平台）
-curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
+tier0 config --base-url https://your-tier0-instance.com
+```
 
-# 2. （私有化部署必填）先设置平台地址，再登录！
-tier0 config --base-url https://tier0-eks-frontend.tier0.dev
+**⚠️ 关键约束**：如果先执行 `tier0 login` 再 `config --base-url`，授权 URL 会指向错误地址。私有化部署必须先 `config` 再 `login`。
 
-# 3. 登录授权
+### 步骤 3：登录授权
+
+```bash
 tier0 login --no-wait
 # → 在浏览器中完成授权后：
 tier0 login --setup-code <code>
+```
 
-# 4. 调用 API
+### 步骤 4：调用 API
+
+```bash
 tier0 api /openapi/v1/uns/read --body '{"topics":["demo"]}'
 ```
 
-### Windows (PowerShell)
-
-```powershell
-# 1. 下载并安装 CLI
-Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
-
-# 2. （私有化部署必填）先设置平台地址，再登录！
-tier0 config --base-url https://tier0-eks-frontend.tier0.dev
-
-# 3. 登录授权
-tier0 login --no-wait
-# → 在浏览器中完成授权后：
-tier0 login --setup-code <code>
-```
-
-**⚠️ 关键约束**：如果先执行 `tier0 login` 再 `config --base-url`，授权 URL 会指向错误地址。必须先 `config` 再 `login`。
-
-**优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
+**配置优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
 
 ### 通过 OpenClaw
 
