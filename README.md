@@ -17,6 +17,37 @@ Tier0 平台 AI Agent Skills 文档。
   - [`restore.md`](uns/restore.md) — 恢复已删除节点
   - [`info.md`](uns/info.md) — 服务信息
 
+## 安装 CLI
+
+### 方式一：下载 Release 包（推荐）
+
+从 [GitHub Releases](https://github.com/FREEZONEX/Tier0-cli/releases) 下载对应平台的预编译包：
+
+```bash
+# Linux x86_64
+curl -LO https://github.com/FREEZONEX/Tier0-cli/releases/latest/download/tier0-cli-Linux-x86_64.tar.gz
+tar -xzf tier0-cli-Linux-x86_64.tar.gz
+sudo mv linux-amd64/tier0 /usr/local/bin/
+
+# macOS Apple Silicon
+curl -LO https://github.com/FREEZONEX/Tier0-cli/releases/latest/download/tier0-cli-macOS-arm64.tar.gz
+tar -xzf tier0-cli-macOS-arm64.tar.gz
+sudo mv darwin-arm64/tier0 /usr/local/bin/
+
+# Windows (PowerShell)
+# 下载 tier0-cli-Windows-x86_64.zip 并解压，将 tier0.exe 添加到 PATH
+```
+
+Release 包已包含 skills 文档，解压后 `skill/` 目录与二进制同级，CLI 会自动识别。
+
+### 方式二：go install（仅二进制，不含 skills）
+
+```bash
+go install github.com/FREEZONEX/Tier0-cli@latest
+```
+
+> 注意：`go install` 仅安装二进制文件，不含 skills 文档。如需 skills，请单独下载或克隆 [Tier0-skill](https://github.com/FREEZONEX/Tier0-skill) 仓库。
+
 ## 使用方式
 
 ### 通过 tier0 CLI
