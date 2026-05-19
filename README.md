@@ -9,6 +9,15 @@ Tier0 平台 AI Agent Skills 文档。
 - 没有安装 CLI → 无法调用任何 API
 - 没有完成 `tier0 login` → 没有 API Key，所有请求会返回 401
 
+**推荐方式 — npm（跨平台）：**
+```bash
+npm install -g @freezonex/tier0-cli
+```
+
+> 首次运行 `tier0` 命令时会自动下载对应平台二进制并缓存到 `~/.tier0/bin/`。
+
+**其他方式：**
+
 **macOS / Linux：**
 ```bash
 curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
@@ -21,7 +30,7 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/mai
 
 安装完成后执行 `tier0 login` 完成授权。
 
-> **版本要求**：`v0.2.6+` 推荐（支持 `--body-file`、`--debug` 和 JSON 自动修复）。
+> **版本要求**：`v0.2.7+` 推荐（支持 npm 安装、`--body-file`、`--debug` 和 JSON 自动修复）。
 
 ---
 
