@@ -2,6 +2,29 @@
 
 Tier0 平台 AI Agent Skills 文档。
 
+## 前置条件（必须先完成）
+
+**使用本 skill 的所有功能之前，必须先安装 `tier0` CLI 并完成登录授权。**
+
+- 没有安装 CLI → 无法调用任何 API
+- 没有完成 `tier0 login` → 没有 API Key，所有请求会返回 401
+
+**macOS / Linux：**
+```bash
+curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
+```
+
+**Windows (PowerShell)：**
+```powershell
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
+```
+
+安装完成后执行 `tier0 login` 完成授权。
+
+> **版本要求**：`v0.2.6+` 推荐（支持 `--body-file`、`--debug` 和 JSON 自动修复）。
+
+---
+
 ## 目录
 
 - [`SKILL.md`](SKILL.md) — 总览入口（认证 + 命令速查）
@@ -17,27 +40,15 @@ Tier0 平台 AI Agent Skills 文档。
   - [`restore.md`](uns/restore.md) — 恢复已删除节点
   - [`info.md`](uns/info.md) — 服务信息
 
-## 安装与初始化
+## 初始化步骤（CLI 安装完成后）
 
-> **版本要求**：`v0.2.2+` 才支持 `login` 读取配置文件中的 `baseURL`。如果已安装旧版本，请先执行 `tier0 upgrade`。
+确认 `tier0` CLI 已安装且 `tier0 version` 能正常输出版本号后，按以下步骤完成初始化：
 
-### 步骤 1：安装 CLI
-
-**macOS / Linux：**
-```bash
-curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
-```
-
-**Windows (PowerShell)：**
-```powershell
-Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
-```
-
-### 步骤 2：选择部署环境
+### 步骤 1：选择部署环境
 
 **A. SaaS 环境（默认 `https://tier0.dev`）**
 
-无需配置地址，直接跳到步骤 3 登录。
+无需配置地址，直接跳到步骤 2 登录。
 
 **B. 私有化部署**
 
@@ -49,7 +60,7 @@ tier0 config --base-url https://your-tier0-instance.com
 
 **⚠️ 关键约束**：如果先执行 `tier0 login` 再 `config --base-url`，授权 URL 会指向错误地址。私有化部署必须先 `config` 再 `login`。
 
-### 步骤 3：登录授权
+### 步骤 2：登录授权
 
 ```bash
 tier0 login --no-wait
@@ -57,7 +68,7 @@ tier0 login --no-wait
 tier0 login --setup-code <code>
 ```
 
-### 步骤 4：调用 API
+### 步骤 3：验证调用
 
 ```bash
 tier0 api /openapi/v1/uns/read --body '{"topics":["demo"]}'
@@ -65,7 +76,9 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["demo"]}'
 
 **配置优先级**：`--base-url` 参数 > 环境变量 `TIER0_BASE_URL` > 配置文件 > 默认地址 `https://tier0.dev`
 
-### 通过 OpenClaw
+---
+
+## 安装 Skill 文档（通过 OpenClaw）
 
 **一键安装：**
 
