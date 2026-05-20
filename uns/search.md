@@ -28,7 +28,7 @@ POST /openapi/v1/uns/search
 | `keyword` | string | 否 | 搜索关键字 |
 | `path_prefix` | string | 否 | 路径前缀过滤 |
 | `topicType` | string | 否 | 节点类型过滤 |
-| `include_metadata` | boolean | 否 | 是否包含元数据 |
+| `include_metadata` | boolean | 否 | 是否返回每个节点的字段定义（fields）、topicType、description。**搜索后需要了解 topic 结构时带上** |
 | `page` | int64 | 否 | 页码 |
 | `size` | int64 | 否 | 每页大小 |
 
@@ -51,6 +51,34 @@ tier0 api /openapi/v1/uns/search --body '{"keyword":"sensor","page":1,"size":20}
 ```bash
 tier0 api /openapi/v1/uns/search --body '{"path_prefix":"factory","topicType":"thing","size":100}'
 ```
+
+**搜索后查看 topic 字段定义（推荐两步工作流）：**
+
+第一步：先搜索定位 topic 路径
+```bash
+tier0 api /openapi/v1/uns/search --body '{"keyword":"Temperature","topicType":"thing"}'
+```
+
+第二步：带 `include_metadata` 查看字段结构，了解有哪些字段、类型、单位
+```bash
+tier0 api /openapi/v1/uns/search --body '{"keyword":"Temperature","topicType":"thing","include_metadata":true}'
+```
+
+返回中每个节点会带上字段信息：
+```json
+{
+  "path": "Plant/Line1/Metric/Temperature",
+  "topicType": "METRIC",
+  "fields": [
+    { "name": "temperature", "type": "float", "unit": "°C" },
+    { "name": "unit",        "type": "string" },
+    { "name": "humidity",    "type": "float",  "unit": "%" }
+  ],
+  "description": "Line 1 temperature sensor"
+}
+```
+
+拿到 `fields` 后即可构造正确的写入请求，或对 `value` 进行字段级解析。
 
 ## Windows PowerShell 简写
 

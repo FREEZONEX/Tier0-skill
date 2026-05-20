@@ -11,9 +11,13 @@ metadata:
 
 # history — 查询历史数据
 
+**CRITICAL — 历史查询涉及时间戳和聚合参数，调用前 MUST 先读完本文档，确认 `start`/`end` 单位和 `function`/`interval` 组合正确，再执行命令。**
+
 ## 说明
 
 查询一个或多个 UNS 数据点在指定时间范围内的历史数据。
+
+**时间戳说明**：`start` / `end` 单位为 **Unix 秒**（不是毫秒）。如用户说"最近1小时"，计算方式：`end = now()`，`start = now() - 3600`。
 
 ## API
 

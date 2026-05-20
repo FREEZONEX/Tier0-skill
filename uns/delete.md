@@ -11,6 +11,8 @@ metadata:
 
 # delete — 删除节点
 
+**CRITICAL — `hard_delete: true` 为永久删除，不可恢复。执行前 MUST 向用户明确说明区别，等待用户确认后再执行。默认不传或传 `false` 为软删除，可通过 `restore` 恢复。**
+
 ## 说明
 
 删除 UNS 命名空间中的指定节点。支持**软删除**（可通过 `restore` 恢复）和**硬删除**（永久删除，不可恢复）。

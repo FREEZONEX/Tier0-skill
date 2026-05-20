@@ -12,7 +12,10 @@ metadata:
 
 # tier0-flow — Node-RED Flow 管理
 
-**CRITICAL — 开始前 MUST 先确认已通过 `tier0 login` 完成授权，并了解 SourceFlow / EventFlow 的区别。**
+**CRITICAL — 开始前 MUST 先确认已通过 `tier0 login` 完成授权。**
+**CRITICAL — 执行 `deploy` 前 MUST 先用 Read 工具读取 [`flow/deploy.md`](deploy.md)，禁止直接盲目调用命令。deploy 会替换 Flow 的全部 Node-RED 节点配置，操作不可撤销。**
+**CRITICAL — 执行 `delete` 前 MUST 先运行 `tier0 flow get --id <id>` 确认目标 Flow 存在，并告知用户删除会停止对应的 Node-RED 容器。**
+**CRITICAL — 不清楚 Flow ID 时，MUST 先运行 `tier0 flow list` 获取列表，再执行后续操作。禁止凭空猜测 ID。**
 
 ## Flow 类型
 

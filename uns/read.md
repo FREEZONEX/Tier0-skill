@@ -28,8 +28,10 @@ POST /openapi/v1/uns/read
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `topics` | string[] | 是 | topic 路径列表，支持通配符 |
-| `include_metadata` | boolean | 否 | 是否同时返回 topicType、fields、description 等元数据 |
+| `include_metadata` | boolean | 否 | 是否同时返回 topicType、fields（字段定义）、description 等元数据。**不确定 topic 有哪些字段时建议带上** |
 | `max_depth` | int64 | 否 | 通配符展开时的最大递归深度 |
+
+> **建议**：第一次读取某个不熟悉的 topic 时，加上 `"include_metadata": true`，可以同时看到该 topic 的字段定义（名称、类型、单位），方便后续写入时构造正确的 `value` 对象。
 
 ## 响应结构
 
@@ -86,6 +88,39 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperatur
   }
 }
 ```
+
+### 读取时同时查看字段定义（推荐首次读取时使用）
+
+不确定 topic 有哪些字段、字段类型和单位时，加 `include_metadata: true`：
+
+```bash
+tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"],"include_metadata":true}'
+```
+
+响应中会额外包含 `metadata` 字段：
+
+```json
+{
+  "success": true,
+  "topic": "Plant/Line1/Metric/Temperature",
+  "result": {
+    "value": { "temperature": 27.5, "unit": "C", "humidity": 58.6 },
+    "quality": "Good",
+    "timeStamp": 1733382000000
+  },
+  "metadata": {
+    "topicType": "METRIC",
+    "description": "Line 1 temperature sensor",
+    "fields": [
+      { "name": "temperature", "type": "float", "unit": "°C" },
+      { "name": "unit",        "type": "string" },
+      { "name": "humidity",    "type": "float",  "unit": "%" }
+    ]
+  }
+}
+```
+
+拿到 `fields` 后，即可按字段定义构造正确的写入 `value` 对象。
 
 ### 批量读取多个 topic
 

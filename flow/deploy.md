@@ -11,7 +11,10 @@ metadata:
 
 # deploy — 部署 Node-RED 画布
 
-将本地的 Node-RED 画布 JSON（`flowsJson`）上传并部署到指定 Flow 的 Node-RED 实例。
+**CRITICAL — 部署会完全替换 Flow 的所有 Node-RED 节点配置，Node-RED 实例会立即重新加载，操作不可撤销。执行前必须确认：**
+1. **已通过 `tier0 flow data --id <id> --out backup.json` 备份当前画布**
+2. **已确认目标 Flow ID 正确（用 `tier0 flow get --id <id>` 核实）**
+3. **flows JSON 文件格式有效**
 
 > **⚠️ 注意**：部署会替换 Flow 当前所有节点配置，Node-RED 实例会重新加载。请确保 JSON 格式正确。
 

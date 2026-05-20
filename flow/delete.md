@@ -11,6 +11,10 @@ metadata:
 
 # delete — 删除 Flow
 
+**CRITICAL — 删除 Flow 会立即停止并销毁对应的 Node-RED 容器，操作不可恢复。执行前 MUST：**
+1. **运行 `tier0 flow get --id <id>` 确认目标 Flow 的名称和类型**
+2. **向用户明确告知"此操作将停止 Node-RED 容器并删除所有配置"，等待用户确认**
+
 > **⚠️ 注意**：删除 Flow 会同时停止对应的 Node-RED 容器，操作不可恢复，请确认后执行。
 
 ## 命令
