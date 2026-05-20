@@ -1,7 +1,10 @@
 ---
 name: tier0-uns-read
+version: 0.3.0
 description: "读取 UNS 数据点的当前值。triggers: Tier0, UNS, 读取, 数据点, 实时值"
 metadata:
+  requires:
+    bins: ["tier0"]
   hermes:
     tags: [uns, read, data]
 ---
@@ -40,4 +43,15 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["factory/line1/sensor/temp","f
 
 PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
 
+```powershell
+# 简写 — 单个数据点
+tier0 api /openapi/v1/uns/read --body '{topics:[factory/line1/sensor/temp]}'
+
+# 简写 — 多个数据点
+tier0 api /openapi/v1/uns/read --body '{topics:[factory/line1/sensor/temp,factory/line1/sensor/humidity]}'
+
+# 文件法
+'{"topics":["factory/line1/sensor/temp"],"include_metadata":true}' | Out-File body.json -Encoding utf8
+tier0 api /openapi/v1/uns/read --body-file body.json
+```
 

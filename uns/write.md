@@ -1,7 +1,10 @@
 ---
 name: tier0-uns-write
+version: 0.3.0
 description: "向 UNS 数据点写入数据。triggers: Tier0, UNS, 写入, 数据点, 发布"
 metadata:
+  requires:
+    bins: ["tier0"]
   hermes:
     tags: [uns, write, data]
 ---
@@ -48,4 +51,16 @@ tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"factory/line1/senso
 
 PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
 
+```powershell
+# 简写 — 单个写入
+tier0 api /openapi/v1/uns/write --body '{writes:[{topic:factory/line1/sensor/temp,value:25.5}]}'
 
+# 文件法（批量写入推荐）
+@'
+{"writes":[
+  {"topic":"factory/line1/sensor/temp","value":25.5},
+  {"topic":"factory/line1/sensor/humidity","value":60}
+]}
+'@ | Out-File body.json -Encoding utf8
+tier0 api /openapi/v1/uns/write --body-file body.json
+```

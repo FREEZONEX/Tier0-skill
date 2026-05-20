@@ -1,7 +1,10 @@
 ---
 name: tier0-uns-search
+version: 0.3.0
 description: "在 UNS 命名空间中搜索节点。triggers: Tier0, UNS, 搜索, 查找"
 metadata:
+  requires:
+    bins: ["tier0"]
   hermes:
     tags: [uns, search, namespace]
 ---
@@ -53,4 +56,10 @@ tier0 api /openapi/v1/uns/search --body '{"path_prefix":"factory","topicType":"t
 
 PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
 
+```powershell
+# 简写 — 关键字搜索
+tier0 api /openapi/v1/uns/search --body '{keyword:temp}'
 
+# 简写 — 路径前缀搜索
+tier0 api /openapi/v1/uns/search --body '{path_prefix:factory/line1}'
+```

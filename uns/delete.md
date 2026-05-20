@@ -1,7 +1,10 @@
 ---
 name: tier0-uns-delete
+version: 0.3.0
 description: "删除 UNS 命名空间中的节点。triggers: Tier0, UNS, 删除, 节点"
 metadata:
+  requires:
+    bins: ["tier0"]
   hermes:
     tags: [uns, delete, namespace]
 ---
@@ -10,7 +13,9 @@ metadata:
 
 ## 说明
 
-删除 UNS 命名空间中的指定节点。支持软删除（可恢复）和硬删除（永久删除）。
+删除 UNS 命名空间中的指定节点。支持**软删除**（可通过 `restore` 恢复）和**硬删除**（永久删除，不可恢复）。
+
+> **⚠️ 注意**：硬删除不可逆，执行前请确认。建议先软删除，确认无误后再硬删除。
 
 ## API
 
@@ -23,29 +28,39 @@ POST /openapi/v1/uns/delete
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `path` | string | 是 | 节点路径 |
-| `hard_delete` | boolean | 否 | 是否永久删除，默认 false（软删除） |
+| `hard_delete` | boolean | 否 | 是否永久删除，默认 `false`（软删除） |
 
 ## 示例
 
 ```bash
-# 软删除节点（可恢复）
+# 软删除（可恢复）
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp"}'
 
-# 永久删除节点
+# 永久删除
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp","hard_delete":true}'
 ```
 
 ## 典型场景
 
-**清理废弃节点：**
+**安全清理废弃节点：**
 ```bash
-# 先软删除，确认无误后再永久删除
+# 1. 先软删除
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor"}'
+# 2. 确认无误后永久删除
 tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor","hard_delete":true}'
+# 如需恢复：
+tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/old-sensor"}'
 ```
 
 ## Windows PowerShell 简写
 
 PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
 
+```powershell
+# 简写 — 软删除
+tier0 api /openapi/v1/uns/delete --body '{path:factory/line1/sensor/temp}'
 
+# 硬删除（用文件法更清晰）
+'{"path":"factory/line1/sensor/temp","hard_delete":true}' | Out-File body.json -Encoding utf8
+tier0 api /openapi/v1/uns/delete --body-file body.json
+```
