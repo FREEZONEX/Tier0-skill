@@ -49,7 +49,7 @@ tier0 flow list --keyword modbus
   "list": [
     {
       "id": 1,
-      "flowId": "abc123",
+      "flowId": "e7bdfaabfcae875c",
       "flowName": "modbus-collector",
       "flowType": "SourceFlow",
       "flowStatus": "running",
@@ -60,6 +60,19 @@ tier0 flow list --keyword modbus
     }
   ]
 }
+```
+
+> **⚠️ `id` vs `flowId` 区别**：
+> - `id`（整数，如 `1`）：平台数据库 ID，**所有后续操作（get/update/delete/data/deploy）都用这个**
+> - `flowId`（字符串，如 `e7bdfaabfcae875c`）：Node-RED 实例内部 ID，**只是响应字段，不能用于查询**
+>
+> 常见错误：用 `flowId` 调用 `flow/get` → 报错 `field "id" is not set`
+
+**拿到 `id` 后，用它进行后续所有操作：**
+```bash
+tier0 flow get --id 1        # 用整数 id，不是 flowId 字符串
+tier0 flow deploy --id 1 -f flows.json
+tier0 flow delete --id 1
 ```
 
 ---
