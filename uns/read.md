@@ -29,6 +29,7 @@ POST /openapi/v1/uns/read
 |------|------|------|------|
 | `topics` | string[] | 是 | topic 路径列表，支持通配符 |
 | `include_metadata` | boolean | 否 | 是否同时返回 topicType、fields、description 等元数据 |
+| `max_depth` | int64 | 否 | 通配符展开时的最大递归深度 |
 
 ## 响应结构
 

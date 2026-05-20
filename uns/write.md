@@ -17,7 +17,7 @@ metadata:
 
 `value` 是业务数据对象，需符合该 topic 已声明的 `fields` 定义（若有）。写入成功仅代表 MQTT Broker 已收到，不代表下游执行完成——如需确认结果请用 `/read` 查对应 State topic。
 
-> **注意**：写入时平台自动将 `quality` 置为 `Good`，调用方不需要（也不应该）传 `quality` 字段。
+> **注意**：写入时通常不需要传 `quality`，平台会根据 Broker ack 结果自动设置。若上游协议有明确的质量信息可按需传入。
 
 ## API
 
@@ -38,7 +38,8 @@ POST /openapi/v1/uns/write
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `topic` | string | 是 | 目标 topic，不支持通配符 |
-| `value` | object | 是 | 写入值，通常是包含多个字段的对象 |
+| `value` | any | 是 | 写入值，通常是包含多个字段的对象 |
+| `quality` | string | 否 | 数据质量（`Good` / `Uncertain` / `Bad`），默认由平台按 Broker ack 结果设置 |
 | `timeStamp` | int64 | 否 | 毫秒时间戳，默认服务端当前时间 |
 
 ## 示例
