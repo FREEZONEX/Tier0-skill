@@ -1,0 +1,3 @@
+# Third-party Node-RED node packages (source code) — not tracked in this repo;
+# install via npm in the Node-RED container instead.
+flow/references/protocal/

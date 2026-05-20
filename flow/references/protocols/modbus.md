@@ -21,7 +21,7 @@ metadata:
 
 - 用户要查询已采集数据的历史值 → 走 `uns/references/history.md`
 - 用户要读当前 UNS 数据点的值 → 走 `uns/references/read.md`
-- 用户要修改 Flow 元数据（改名、描述）→ 走 `references/update.md`
+- 用户要修改 Flow 元数据（改名、描述）→ 走 `flow/references/update.md`
 
 ## 不可违反规则
 

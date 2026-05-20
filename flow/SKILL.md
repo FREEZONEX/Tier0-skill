@@ -56,18 +56,18 @@ metadata:
 | 导出 Node-RED 画布 | `references/data.md` | — | 获取 flowsJson 到本地文件（deploy 前必备） |
 | 部署 Node-RED 画布 | **必读** `references/deploy.md` | ⚠️ 高风险 需 `--yes` | 替换全部节点配置，需先备份 |
 
-### 协议节点配置（SourceFlow 画布内容）
+### 协议节点配置（SourceFlow / EventFlow 画布内容）
 
 > 以下文档用于生成或修改 Node-RED 画布（flowsJson），配合模板文件使用。
 > **工作流**：先读协议文档了解参数 → 填写模板占位符 → `flow deploy --yes` 部署。
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
-| Modbus TCP/RTU 采集 → UNS | **必读** `references/protocol-modbus.md` | 节点参数、function 映射、模板使用 |
-| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocol-postgresql.md` | 配置节点（含密码说明）、参数化 SQL、安全建议 |
-| 查看/使用 flowsJson 模板 | `references/templates/README.md` | 模板占位符说明、替换规则 |
-| *(OPC-UA 待补充)* | `references/protocol-opcua.md` | — |
-| *(OPC-DA 待补充)* | `references/protocol-opcda.md` | — |
+| Modbus TCP/RTU 采集 → UNS | **必读** `references/protocols/modbus.md` | 节点参数、function 映射、模板使用 |
+| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocols/postgresql.md` | 配置节点（含密码说明）、参数化 SQL、安全建议 |
+| 查看/使用全部 flowsJson 模板 | `references/protocols/README.md` | 协议模板索引、占位符说明、替换规则 |
+| *(OPC-UA 待补充)* | `references/protocols/opcua.md` | — |
+| *(OPC-DA 待补充)* | `references/protocols/opcda.md` | — |
 
 ## 常用操作速查
 

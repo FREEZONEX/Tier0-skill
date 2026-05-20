@@ -24,7 +24,7 @@
 
 1. **`password` 是明文**：`node-red-contrib-postgresql` 的配置节点不使用 Node-RED Credentials API，`password` 字段以明文存储在 flowsJson 里。  
    → 部署前确认密码不会被不受信任的人通过 `flow get` 读取；生产环境建议改用 `env` 类型（`passwordFieldType: "env"`），从环境变量读取。
-2. **deploy 前必须备份**：执行 `flow deploy` 前先 `flow get` 保存现有配置（见 [flow deploy 文档](deploy.md)）。
+2. **deploy 前必须备份**：执行 `flow deploy` 前先 `flow get` 保存现有配置（见 [flow deploy 文档](../deploy.md)）。
 3. **deploy 和 delete 需要 `--yes`**：高风险操作需要显式确认。
 
 ---
