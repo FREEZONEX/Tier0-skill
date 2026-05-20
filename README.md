@@ -56,14 +56,23 @@ tier0 api /openapi/v1/uns/read --body '{topics:[demo]}'
 ## 目录
 
 - [`SKILL.md`](SKILL.md) — 总览入口（认证 + 命令速查）
-- [`uns/`](uns/) — UNS（Unified Namespace）数据面 API 技能
-  - [`browse.md`](uns/browse.md) — 浏览命名空间树
-  - [`read.md`](uns/read.md) — 读取数据点
-  - [`write.md`](uns/write.md) — 写入数据点
-  - [`history.md`](uns/history.md) — 查询历史数据
-  - [`search.md`](uns/search.md) — 搜索命名空间
-  - [`create.md`](uns/create.md) — 创建节点
-  - [`update.md`](uns/update.md) — 更新节点
-  - [`delete.md`](uns/delete.md) — 删除节点
-  - [`restore.md`](uns/restore.md) — 恢复已删除节点
-  - [`info.md`](uns/info.md) — 服务信息
+- [`uns/`](uns/) — UNS（Unified Namespace）数据面
+  - [`SKILL.md`](uns/SKILL.md) — UNS 路由、规则、任务选路
+  - [`references/browse.md`](uns/references/browse.md) — 浏览命名空间树
+  - [`references/read.md`](uns/references/read.md) — 读取数据点
+  - [`references/write.md`](uns/references/write.md) — 写入数据点
+  - [`references/history.md`](uns/references/history.md) — 查询历史数据
+  - [`references/search.md`](uns/references/search.md) — 搜索命名空间
+  - [`references/create.md`](uns/references/create.md) — 创建节点
+  - [`references/update.md`](uns/references/update.md) — 更新节点
+  - [`references/delete.md`](uns/references/delete.md) — 删除节点
+  - [`references/restore.md`](uns/references/restore.md) — 恢复已删除节点
+  - [`references/info.md`](uns/references/info.md) — 服务信息
+- [`flow/`](flow/) — Flow（Node-RED）管理
+  - [`SKILL.md`](flow/SKILL.md) — Flow 路由、规则、任务选路
+  - [`references/list.md`](flow/references/list.md) — 列出 / 查看 Flow
+  - [`references/create.md`](flow/references/create.md) — 创建 Flow
+  - [`references/update.md`](flow/references/update.md) — 更新 Flow 元数据
+  - [`references/delete.md`](flow/references/delete.md) — 删除 Flow
+  - [`references/data.md`](flow/references/data.md) — 导出 Node-RED 画布
+  - [`references/deploy.md`](flow/references/deploy.md) — 部署 Node-RED 画布

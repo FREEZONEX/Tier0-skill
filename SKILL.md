@@ -125,31 +125,31 @@ Workspace
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
-| 浏览命名空间树 | `uns/browse.md` | 获取文件夹下的子节点列表、层级结构 |
-| 读取数据点当前值 | `uns/read.md` | 实时 VQT 值查询，支持通配符 |
-| 写入数据点 | `uns/write.md` | 发布数据，value 必须是对象 |
-| 查询历史/时序数据 | **必读** `uns/history.md` | 历史记录、聚合查询（时间戳参数复杂，必读后执行） |
-| 搜索节点 | `uns/search.md` | 按关键字/前缀搜索 |
-| 创建节点 | `uns/create.md` | 新建 folder 或 thing 节点 |
-| 更新节点 | `uns/update.md` | 修改元数据或字段定义 |
-| 删除节点 | `uns/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
-| 恢复已删除节点 | `uns/restore.md` | 撤销软删除 |
-| 服务信息/健康检查 | `uns/info.md` | 网关连通性验证 |
+| 浏览命名空间树 | `uns/references/browse.md` | 获取文件夹下的子节点列表、层级结构 |
+| 读取数据点当前值 | `uns/references/read.md` | 实时 VQT 值查询，支持通配符 |
+| 写入数据点 | `uns/references/write.md` | 发布数据，value 必须是对象 |
+| 查询历史/时序数据 | **必读** `uns/references/history.md` | 历史记录、聚合查询（时间戳参数复杂，必读后执行） |
+| 搜索节点 | `uns/references/search.md` | 按关键字/前缀搜索 |
+| 创建节点 | `uns/references/create.md` | 新建 folder 或 thing 节点 |
+| 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
+| 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
+| 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
+| 服务信息/健康检查 | `uns/references/info.md` | 网关连通性验证 |
 
 ### Flow — Node-RED 管理
 
-**CRITICAL — 执行 `deploy` 前 MUST 先读 `flow/deploy.md`，禁止直接盲目调用。**
+**CRITICAL — 执行 `deploy` 前 MUST 先读 `flow/references/deploy.md`，禁止直接盲目调用。**
 **CRITICAL — 执行 `delete` 前 MUST 先用 `tier0 flow get --id <id>` 确认 Flow 存在。**
 **CRITICAL — 用户按名称询问 Flow 相关数据时，MUST 同时查询 UNS（browse/read）和 Flow（list/get），因为两者通常同名关联。**
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
-| 列出 / 查看 Flow | `flow/list.md` | 列表、类型过滤、详情 |
-| 创建 Flow | `flow/create.md` | 新建 SourceFlow 或 EventFlow |
-| 更新 Flow 元数据 | `flow/update.md` | 重命名、描述、收藏 |
-| 删除 Flow | `flow/delete.md` | 单个或批量删除（⚠️ 会停止 Node-RED 容器） |
-| 导出 Node-RED 画布 | `flow/data.md` | 获取 flowsJson 到文件 |
-| 部署 Node-RED 画布 | **必读** `flow/deploy.md` | 上传并激活 flowsJson（会替换所有节点配置） |
+| 列出 / 查看 Flow | `flow/references/list.md` | 列表、类型过滤、详情 |
+| 创建 Flow | `flow/references/create.md` | 新建 SourceFlow 或 EventFlow |
+| 更新 Flow 元数据 | `flow/references/update.md` | 重命名、描述、收藏 |
+| 删除 Flow | `flow/references/delete.md` | 单个或批量删除（⚠️ 会停止 Node-RED 容器） |
+| 导出 Node-RED 画布 | `flow/references/data.md` | 获取 flowsJson 到文件 |
+| 部署 Node-RED 画布 | **必读** `flow/references/deploy.md` | 上传并激活 flowsJson（会替换所有节点配置） |
 
 ## 任务选路心智模型
 
@@ -157,15 +157,15 @@ Workspace
 
 | 用户意图 | 正确命令 | 不要误走 |
 |---------|---------|---------|
-| 探索有哪些设备/数据点 | `uns/browse.md` — `browse` 逐层展开 | 不要用 `search` 遍历（search 是关键词搜索，不是结构浏览） |
-| 知道名字，找具体 topic | `uns/search.md` — `search` 按关键词 | 不要用 `browse` 逐层遍历（低效且可能遗漏） |
-| 查某个数据点的当前值 | `uns/read.md` — `read` 需完整 topic 路径 | 不要用 `history`（history 是时序，不是当前值） |
-| 查某段时间的历史趋势 | **必读** `uns/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
-| 写入/更新数据点 | `uns/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
-| 查看/管理节点元数据、字段定义 | `uns/update.md` | 不要用 `write`（write 是写 VQT 数据） |
-| 查看 Flow 列表或详情 | `flow/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
-| 导出 Node-RED 画布备份 | `flow/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
-| 部署 Node-RED 画布 | **必读** `flow/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
+| 探索有哪些设备/数据点 | `uns/references/browse.md` — `browse` 逐层展开 | 不要用 `search` 遍历（search 是关键词搜索，不是结构浏览） |
+| 知道名字，找具体 topic | `uns/references/search.md` — `search` 按关键词 | 不要用 `browse` 逐层遍历（低效且可能遗漏） |
+| 查某个数据点的当前值 | `uns/references/read.md` — `read` 需完整 topic 路径 | 不要用 `history`（history 是时序，不是当前值） |
+| 查某段时间的历史趋势 | **必读** `uns/references/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
+| 写入/更新数据点 | `uns/references/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
+| 查看/管理节点元数据、字段定义 | `uns/references/update.md` | 不要用 `write`（write 是写 VQT 数据） |
+| 查看 Flow 列表或详情 | `flow/references/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
+| 导出 Node-RED 画布备份 | `flow/references/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
+| 部署 Node-RED 画布 | **必读** `flow/references/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
 | 删除 Flow | 先 `flow get --id <id>` 确认存在，再 `delete --yes` | 不要批量删除（先单个确认） |
 | 查数据同时了解采集来源 | **同时查** UNS browse/read **和** `flow list --keyword <name>` | 不要只查其中一侧（Flow 与 UNS topic 通常同名关联） |
 
