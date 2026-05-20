@@ -87,9 +87,46 @@ writes.push({
 });
 ```
 
+### PostgreSQL（`postgresql-uns-archive.json`）
+
+| 占位符 | 类型 | 说明 | 示例 |
+|--------|------|------|------|
+| `{{PG_NAME}}` | string | 配置节点显示名（一般写 `user@host/db`） | `writer@192.168.1.50/iot` |
+| `{{PG_HOST}}` | string | PostgreSQL 主机名或 IP | `192.168.1.50` |
+| `{{PG_PORT}}` | number | PostgreSQL 端口（数字，不加引号） | `5432` |
+| `{{PG_DATABASE}}` | string | 目标数据库名 | `iot` |
+| `{{PG_USER}}` | string | 登录用户名 | `tier0_writer` |
+| `{{PG_PASSWORD}}` | string | 登录密码（**明文**；生产环境改用 `env` 类型） | `s3cr3t` |
+| `{{MQTT_HOST}}` | string | Tier0 MQTT Broker 地址 | `127.0.0.1` |
+| `{{MQTT_PORT}}` | number | MQTT 端口 | `1883` |
+| `{{UNS_TOPIC}}` | string | 订阅的 UNS 话题（支持 `#` 通配符） | `factory/line1/#` |
+| `{{PG_QUERY}}` | string | `postgresql` 节点上的 SQL；留空则由 `function` 节点动态设置 `msg.query` | `""` 或见示例 |
+| `{{FUNCTION_BODY}}` | string | `function` 节点的 JavaScript 逻辑（设置 `msg.query` 和 `msg.params`） | 见示例 |
+
+> **密码安全提示**：`node-red-contrib-postgresql` 的密码以明文存储在 flowsJson 中。  
+> 生产环境请将 `password` 字段留空，将 `passwordFieldType` 改为 `"env"`，密码改为环境变量名（如 `PG_WRITER_PASSWORD`）。
+
+#### function 节点示例（`{{FUNCTION_BODY}}`）
+
+```javascript
+// msg.payload 是 UNS 消息：{ value, quality, timeStamp }
+// msg.topic 是 UNS 话题路径
+msg.query = `INSERT INTO sensor_data (topic, ts, value, quality)
+             VALUES ($1, to_timestamp($2::bigint / 1000.0), $3, $4)
+             ON CONFLICT DO NOTHING`;
+msg.params = [
+  msg.topic,
+  msg.payload.timeStamp,
+  JSON.stringify(msg.payload.value),
+  msg.payload.quality || 'Unknown'
+];
+return msg;
+```
+
 ## 可用模板
 
-| 文件 | 协议 | 用途 |
-|------|------|------|
-| `modbus-tcp-read.json` | Modbus TCP | 周期性轮询读寄存器/线圈 → function → MQTT/UNS |
-| *(更多协议模板待补充)* | OPC-UA、OPC-DA、S7... | |
+| 文件 | 协议 | Flow 类型 | 用途 |
+|------|------|-----------|------|
+| `modbus-tcp-read.json` | Modbus TCP | SourceFlow | 周期性轮询读寄存器/线圈 → function → MQTT/UNS |
+| `postgresql-uns-archive.json` | PostgreSQL | EventFlow | UNS MQTT 订阅 → function → INSERT 到用户自有库 |
+| *(更多协议模板待补充)* | OPC-UA、OPC-DA、S7... | | |

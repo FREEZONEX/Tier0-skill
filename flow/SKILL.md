@@ -64,6 +64,7 @@ metadata:
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
 | Modbus TCP/RTU 采集 → UNS | **必读** `references/protocol-modbus.md` | 节点参数、function 映射、模板使用 |
+| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocol-postgresql.md` | 配置节点（含密码说明）、参数化 SQL、安全建议 |
 | 查看/使用 flowsJson 模板 | `references/templates/README.md` | 模板占位符说明、替换规则 |
 | *(OPC-UA 待补充)* | `references/protocol-opcua.md` | — |
 | *(OPC-DA 待补充)* | `references/protocol-opcda.md` | — |
