@@ -151,6 +151,24 @@ Workspace
 | 导出 Node-RED 画布 | `flow/data.md` | 获取 flowsJson 到文件 |
 | 部署 Node-RED 画布 | **必读** `flow/deploy.md` | 上传并激活 flowsJson（会替换所有节点配置） |
 
+## 任务选路心智模型
+
+根据用户意图选正确命令，避免走错路径：
+
+| 用户意图 | 正确命令 | 不要误走 |
+|---------|---------|---------|
+| 探索有哪些设备/数据点 | `uns/browse.md` — `browse` 逐层展开 | 不要用 `search` 遍历（search 是关键词搜索，不是结构浏览） |
+| 知道名字，找具体 topic | `uns/search.md` — `search` 按关键词 | 不要用 `browse` 逐层遍历（低效且可能遗漏） |
+| 查某个数据点的当前值 | `uns/read.md` — `read` 需完整 topic 路径 | 不要用 `history`（history 是时序，不是当前值） |
+| 查某段时间的历史趋势 | **必读** `uns/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
+| 写入/更新数据点 | `uns/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
+| 查看/管理节点元数据、字段定义 | `uns/update.md` | 不要用 `write`（write 是写 VQT 数据） |
+| 查看 Flow 列表或详情 | `flow/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
+| 导出 Node-RED 画布备份 | `flow/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
+| 部署 Node-RED 画布 | **必读** `flow/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
+| 删除 Flow | 先 `flow get --id <id>` 确认存在，再 `delete --yes` | 不要批量删除（先单个确认） |
+| 查数据同时了解采集来源 | **同时查** UNS browse/read **和** `flow list --keyword <name>` | 不要只查其中一侧（Flow 与 UNS topic 通常同名关联） |
+
 ## Windows PowerShell 调用注意
 
 PowerShell 处理 JSON 字符串中的双引号时容易出错。**推荐三种方式**：
@@ -219,7 +237,31 @@ tier0 flow deploy --id 1 -f flows.json
 | `HTTP 401` | API Key 失效 | 重新 `tier0 login` |
 | `HTTP 403` | Workspace 权限不足 | 联系管理员 |
 | `HTTP 404` | 资源不存在 | 检查 ID 或路径 |
+| `field "id" is not set` | 误用了 `flowId`（字符串）而非 `id`（整数） | 先 `tier0 flow list` 拿整数 `id`，不要用 `flowId` 字段 |
 | PowerShell JSON 解析失败 | 双引号被转义 | 使用文件法或单引号简写 |
+| **exit code 10** + `"type":"confirmation_required"` | `flow deploy` 或 `flow delete` 缺少 `--yes` | 向用户展示 `risk.action` 和 summary，用户同意后追加 `--yes` 重试 |
+
+### 高风险操作协议（exit 10）
+
+`flow deploy` 和 `flow delete` 是高风险操作。不带 `--yes` 时 CLI 退出码为 **10**，stderr 输出：
+
+```json
+{
+  "ok": false,
+  "error": {
+    "type": "confirmation_required",
+    "message": "Deploy canvas to Flow 1 — ALL existing Node-RED nodes will be REPLACED...",
+    "hint": "add --yes to confirm",
+    "risk": { "level": "high-risk-write", "action": "flow deploy" }
+  }
+}
+```
+
+**Agent 处理规则**：
+1. 检测到 exit code = 10 且 `error.type == "confirmation_required"`
+2. 把 `error.risk.action` + `error.message` 展示给用户，明确告知高风险
+3. 用户同意 → 原命令末尾追加 `--yes` 后重试
+4. 用户拒绝 → 终止，不得擅自加 `--yes`
 
 ## 更新提示
 

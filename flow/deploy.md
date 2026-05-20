@@ -21,9 +21,9 @@ metadata:
 ## 命令
 
 ```bash
-tier0 flow deploy --id <id> -f <file>
+tier0 flow deploy --id <id> -f <file> --yes
 # 或内联 JSON（不推荐，过长时 shell 会出错）
-tier0 flow deploy --id <id> --flows-json '<json>'
+tier0 flow deploy --id <id> --flows-json '<json>' --yes
 ```
 
 | Flag | 说明 |
@@ -31,42 +31,43 @@ tier0 flow deploy --id <id> --flows-json '<json>'
 | `--id` | ✅ Flow ID |
 | `--flows-file`, `-f` | ✅ Node-RED 画布 JSON 文件路径（推荐） |
 | `--flows-json` | Node-RED 画布 JSON 字符串（简单场景） |
+| `--yes`, `-y` | ✅ **必填** — 确认高风险操作门禁（不带此参数 CLI 退出码 10） |
 | `--json` | JSON 输出（含部署后的 Node-RED FlowId） |
 | `--debug` | 打印 HTTP 请求/响应 |
+
+> **exit 10 门禁**：不带 `--yes` 时 CLI 退出码为 10，stderr 输出 `{"type":"confirmation_required",...}`。
+> Agent 必须将 `error.message`（含备份建议）展示给用户，等用户同意后追加 `--yes` 重试。
 
 ## 示例
 
 ```bash
-# 从文件部署（推荐）
-tier0 flow deploy --id 1 -f flows.json
+# 从文件部署（需 --yes）
+tier0 flow deploy --id 1 -f flows.json --yes
 
 # JSON 输出（确认部署结果）
-tier0 flow deploy --id 1 -f flows.json --json
+tier0 flow deploy --id 1 -f flows.json --yes --json
 # → {"flowId": "abc123"}
-
-# 简写 ID
-tier0 flow deploy 1 -f flows.json
 ```
 
 ## 典型场景
 
-**备份 → 修改 → 部署：**
+**备份 → 修改 → 部署（完整工作流）：**
 ```bash
-# 1. 导出备份
+# 1. 导出备份（必须执行）
 tier0 flow data --id 1 --out flows_backup.json
 
 # 2. 基于备份创建新版本并修改
 cp flows_backup.json flows_v2.json
-# ... 编辑 flows_v2.json ...
+# ... 编辑 flows_v2.json（在 Node-RED UI 中修改后重新导出） ...
 
-# 3. 部署
-tier0 flow deploy --id 1 -f flows_v2.json
+# 3. 部署（用户确认后加 --yes）
+tier0 flow deploy --id 1 -f flows_v2.json --yes
 ```
 
 **批量部署同一画布到多个 Flow：**
 ```bash
 for id in 1 2 3; do
-  tier0 flow deploy --id $id -f shared-template.json
+  tier0 flow deploy --id $id -f shared-template.json --yes
 done
 ```
 
@@ -74,10 +75,10 @@ done
 
 ```powershell
 # 文件法（唯一推荐方式）
-tier0 flow deploy --id 1 -f flows.json
+tier0 flow deploy --id 1 -f flows.json --yes
 
 # 批量部署
 foreach ($id in 1, 2, 3) {
-    tier0 flow deploy --id $id -f shared-template.json
+    tier0 flow deploy --id $id -f shared-template.json --yes
 }
 ```
