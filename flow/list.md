@@ -96,6 +96,22 @@ tier0 flow get --id 1 --json
 tier0 flow get 1
 ```
 
+## Flow ↔ UNS 关联查询
+
+Flow 的 `flowName` 与 UNS topic 路径**通常同名**。拿到 Flow 列表后，如果用户想了解该 Flow 处理的数据，应同时查询对应的 UNS topic：
+
+```bash
+# 1. 找到 Flow
+tier0 flow list --keyword modbus-collector --json
+
+# 2. 同名查 UNS topic（browse 找路径，再 read 取值）
+tier0 api /openapi/v1/uns/browse --body '{"path":"/"}'
+# 按 Flow 名称定位到对应路径，如 Plant/Line1/...
+tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"]}'
+```
+
+> ⚠️ 目前 API 尚无显式关联字段，`topicmeta` 接口后续版本将提供 Flow ↔ topic 映射，届时可直接获取关联关系。
+
 ## Windows PowerShell
 
 ```powershell

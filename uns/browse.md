@@ -47,6 +47,20 @@ tier0 api /openapi/v1/uns/browse --body '{"path":"/","max_depth":3,"include_meta
 tier0 api /openapi/v1/uns/browse --body '{"path":"factory/line1","max_depth":1}'
 ```
 
+## UNS ↔ Flow 关联查询
+
+UNS topic 路径与 Flow 名称**通常同名**。浏览到某个路径后，如果用户想了解数据来源（谁在采集/处理），应同时查询对应的 Flow：
+
+```bash
+# 1. browse 发现 topic 路径
+tier0 api /openapi/v1/uns/browse --body '{"path":"Plant/Line1","max_depth":2}'
+
+# 2. 同名查 Flow（SourceFlow 负责采集，EventFlow 负责处理）
+tier0 flow list --keyword Line1
+```
+
+> ⚠️ 目前 API 尚无显式关联字段，`topicmeta` 接口后续版本将提供 Flow ↔ topic 映射。
+
 ## Windows PowerShell 简写
 
 PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：

@@ -80,6 +80,10 @@ TIER0_LANG=zh tier0 flow list
 | SourceFlow | Node-RED 实例，连接工业协议采集设备数据并发布 MQTT |
 | EventFlow | Node-RED 实例，订阅 MQTT 消息对业务数据进行二次处理 |
 
+> **Flow ↔ UNS Topic 关联**：Flow 名称（`flowName`）与 UNS topic 路径**通常同名**——SourceFlow 负责采集并写入对应 topic，EventFlow 负责订阅并处理该 topic 的数据。
+> 当用户提到某个设备/数据点名称时，它**同时对应一个 UNS topic 和一个（或多个）Flow**，应同时查询两侧。
+> ⚠️ **目前 API 尚未提供显式关联字段**，`topicmeta` 接口后续版本将加入关联信息，届时更新此文档。
+
 ## 资源关系
 
 ```
@@ -96,9 +100,13 @@ Workspace
 │   │   └── Line2/
 │   │       └── ...
 └── Flow
-    ├── SourceFlow                       ← Node-RED 实例（协议采集 → MQTT/UNS）
-    └── EventFlow                        ← Node-RED 实例（业务数据二次处理）
+    ├── SourceFlow "Line1-Collector"     ← 同名关联: 采集 → 写入 Plant/Line1/...
+    └── EventFlow  "Line1-Processor"     ← 同名关联: 订阅 Plant/Line1/... → 处理
 ```
+
+**Flow ↔ UNS 名称对应规则**（当前版本约定，`topicmeta` 关联 API 尚在开发中）：
+- Flow `flowName` 与 UNS 路径**人为保持同名**，如 `Line1-Collector` 对应路径 `Plant/Line1/...`
+- **遇到名称查询时，必须同时查 `tier0 flow list --keyword <name>` 和 `tier0 api /openapi/v1/uns/browse`**
 
 **关键规则**：
 - `browse` / `search` 操作的对象是**路径段（文件夹）**
@@ -113,6 +121,7 @@ Workspace
 ### UNS — 统一命名空间
 
 > **路径辨别规则**：用户给出的路径若不到叶子节点（如 `Plant/Line1`），是文件夹，用 browse；完整到数据点（如 `Plant/Line1/Metric/Temperature`）才能 read/write。
+> **关联提示**：用户按名称询问某设备/数据的情况时，UNS topic 和 Flow 通常同名，查完 UNS 后也应查 `tier0 flow list --keyword <name>`，除非用户明确只需要其中一侧。
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
@@ -131,6 +140,7 @@ Workspace
 
 **CRITICAL — 执行 `deploy` 前 MUST 先读 `flow/deploy.md`，禁止直接盲目调用。**
 **CRITICAL — 执行 `delete` 前 MUST 先用 `tier0 flow get --id <id>` 确认 Flow 存在。**
+**CRITICAL — 用户按名称询问 Flow 相关数据时，MUST 同时查询 UNS（browse/read）和 Flow（list/get），因为两者通常同名关联。**
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
