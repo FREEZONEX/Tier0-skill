@@ -137,11 +137,15 @@ tier0 api /openapi/v1/uns/browse --body '{path:/}' --debug
 # 浏览命名空间
 tier0 api /openapi/v1/uns/browse --body '{"path":"/"}'
 
-# 读取数据点
-tier0 api /openapi/v1/uns/read --body '{"topics":["factory/line1/sensor/temp"]}'
+# 读取数据点（value 是对象，包含多个字段）
+tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"]}'
+# 响应: {"value":{"temperature":27.5,"unit":"C","humidity":58.6},"quality":"Good","timeStamp":1733382000000}
 
-# 写入数据点
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"factory/line1/sensor/temp","value":25.5}]}'
+# 通配符读取（所有产线温度）
+tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/+/Metric/Temperature"]}'
+
+# 写入数据点（value 是对象）
+tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Line1/Metric/Temperature","value":{"temperature":27.5,"unit":"C","humidity":58.6}}]}'
 
 # 查询历史数据
 tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715600000}'
