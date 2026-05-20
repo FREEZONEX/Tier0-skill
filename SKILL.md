@@ -1,5 +1,5 @@
 ---
-name: tier0-api
+name: tier0-cli
 description: "Tier0 Cloud 平台 API 统一入口。涵盖 UNS（Unified Namespace）数据面操作：命名空间浏览、节点读写、历史数据查询、节点增删改。triggers: Tier0, Cloud, UNS, 命名空间, 数据读写, 设备数据"
 metadata:
   openclaw:
@@ -8,7 +8,7 @@ metadata:
     tags: [api, cloud, uns, namespace, data]
 ---
 
-# tier0-api — Tier0 Cloud 平台 API 工具
+# tier0-cli — Tier0 CLI
 
 ## 概述
 
