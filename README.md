@@ -67,7 +67,8 @@ tier0 api /openapi/v1/uns/read --body '{topics:[demo]}'
   - [`references/update.md`](uns/references/update.md) — 更新节点
   - [`references/delete.md`](uns/references/delete.md) — 删除节点
   - [`references/restore.md`](uns/references/restore.md) — 恢复已删除节点
-  - [`references/info.md`](uns/references/info.md) — 服务信息
+- [`info/`](info/) — 服务信息
+  - [`info.md`](info/info.md) — 健康检查 / 连通性验证
 - [`flow/`](flow/) — Flow（Node-RED）管理
   - [`SKILL.md`](flow/SKILL.md) — Flow 路由、规则、任务选路
   - [`references/list.md`](flow/references/list.md) — 列出 / 查看 Flow
