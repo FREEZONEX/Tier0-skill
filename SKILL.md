@@ -106,7 +106,7 @@ Workspace
 
 **Flow ↔ UNS 名称对应规则**（当前版本约定，`topicmeta` 关联 API 尚在开发中）：
 - Flow `flowName` 与 UNS 路径**人为保持同名**，如 `Line1-Collector` 对应路径 `Plant/Line1/...`
-- **遇到名称查询时，必须同时查 `tier0 flow list --keyword <name>` 和 `tier0 api /openapi/v1/uns/browse`**
+- **遇到名称查询时，必须同时查 `tier0 flow list --keyword <name>` 和 `tier0 uns browse`**
 
 **关键规则**：
 - `browse` / `search` 操作的对象是**路径段（文件夹）**
@@ -172,24 +172,16 @@ Workspace
 
 ## Windows PowerShell 调用注意
 
-PowerShell 处理 JSON 字符串中的双引号时容易出错。**推荐三种方式**：
+`tier0 uns` 子命令在 PowerShell 下与其他平台行为一致，通配符需加引号：
 
-**方式一：单引号简写（v0.2.6+ 自动修复）**
 ```powershell
-tier0 api /openapi/v1/uns/browse --body '{path:/}'
-# CLI 自动修复为 {"path":"/"} 再发送
-```
-
-**方式二：文件法（最稳妥，适合复杂 JSON）**
-```powershell
-'{"path":"/"}' | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/browse --body-file body.json
-```
-
-**方式三：调试模式**
-```powershell
-tier0 api /openapi/v1/uns/browse --body '{path:/}' --debug
-# 可查看实际发出的 HTTP 请求和响应
+tier0 uns browse
+tier0 uns read "Plant/+/Metric/Temperature" --json
+tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5}'
+# 复杂 JSON（write/create/update）推荐用 --file
+tier0 uns write --file writes.json
+# 调试模式
+tier0 uns browse Plant/Line1 --debug
 ```
 
 ## 常用命令速查
@@ -197,20 +189,21 @@ tier0 api /openapi/v1/uns/browse --body '{path:/}' --debug
 ```bash
 # ── UNS ──────────────────────────────────────
 # 浏览命名空间
-tier0 api /openapi/v1/uns/browse --body '{"path":"/"}'
+tier0 uns browse
+tier0 uns browse Plant/Line1 --depth 2
 
 # 读取数据点（value 是对象，包含多个字段）
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"]}'
+tier0 uns read Plant/Line1/Metric/Temperature
 # 响应: {"value":{"temperature":27.5,"unit":"C","humidity":58.6},"quality":"Good","timeStamp":1733382000000}
 
 # 通配符读取（所有产线温度）
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/+/Metric/Temperature"]}'
+tier0 uns read "Plant/+/Metric/Temperature" --json
 
 # 写入数据点（value 是对象）
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Line1/Metric/Temperature","value":{"temperature":27.5,"unit":"C","humidity":58.6}}]}'
+tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5,"unit":"C","humidity":58.6}'
 
 # 查询历史数据
-tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715600000}'
+tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
 
 # ── Flow ─────────────────────────────────────
 # 列出所有 Flow

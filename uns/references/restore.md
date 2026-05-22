@@ -30,26 +30,15 @@ POST /openapi/v1/uns/restore
 ## 示例
 
 ```bash
-# 恢复软删除的节点
-tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/sensor/temp"}'
+tier0 uns restore --path factory/line1/sensor/temp
 ```
 
 ## 典型场景
 
 **误删除后立即恢复：**
 ```bash
-# 确认节点路径后恢复
-tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/sensor/temp"}'
+tier0 uns restore --path factory/line1/sensor/temp
 
 # 恢复后验证节点存在
-tier0 api /openapi/v1/uns/browse --body '{"path":"factory/line1","max_depth":1}'
-```
-
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
-
-```powershell
-# 简写 — 路径恢复
-tier0 api /openapi/v1/uns/restore --body '{path:factory/line1/sensor/temp}'
+tier0 uns browse factory/line1 --depth 1
 ```

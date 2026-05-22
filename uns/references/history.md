@@ -41,35 +41,21 @@ POST /openapi/v1/uns/history
 
 ```bash
 # 查询时间段内原始数据
-tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715600000}'
+tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
 
 # 按小时聚合均值
-tier0 api /openapi/v1/uns/history --body '{"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715600000,"function":"avg","interval":"1h"}'
+tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000 --fn avg --interval 1h
 ```
 
 ## 典型场景
 
 **获取最近 1 小时内分钟级均值：**
 ```bash
-tier0 api /openapi/v1/uns/history --body-file body.json
-# body.json 内容：
-# {"topics":["factory/line1/sensor/temp"],"start":1715000000,"end":1715003600,"function":"avg","interval":"1m"}
+tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715003600 --fn avg --interval 1m
 ```
 
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
-
-```powershell
-# 文件法（时间戳参数推荐）
-@'
-{
-  "topics": ["factory/line1/sensor/temp"],
-  "start": 1715000000,
-  "end": 1715600000,
-  "function": "avg",
-  "interval": "1h"
-}
-'@ | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/history --body-file body.json
+**多个 topic 同时查询：**
+```bash
+tier0 uns history --topic Plant/Line1/Metric/Temperature --topic Plant/Line1/Metric/Humidity \
+  --start 1715000000 --end 1715600000 --fn avg --interval 1h
 ```

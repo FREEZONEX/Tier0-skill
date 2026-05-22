@@ -36,10 +36,10 @@ POST /openapi/v1/uns/delete
 
 ```bash
 # 软删除（可恢复）
-tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp"}'
+tier0 uns delete --path factory/line1/sensor/temp
 
-# 永久删除
-tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp","hard_delete":true}'
+# 永久删除（需 --yes 确认）
+tier0 uns delete --path factory/line1/sensor/temp --hard --yes
 ```
 
 ## 典型场景
@@ -47,22 +47,9 @@ tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/sensor/temp","ha
 **安全清理废弃节点：**
 ```bash
 # 1. 先软删除
-tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor"}'
+tier0 uns delete --path factory/line1/old-sensor
 # 2. 确认无误后永久删除
-tier0 api /openapi/v1/uns/delete --body '{"path":"factory/line1/old-sensor","hard_delete":true}'
-# 如需恢复：
-tier0 api /openapi/v1/uns/restore --body '{"path":"factory/line1/old-sensor"}'
-```
-
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
-
-```powershell
-# 简写 — 软删除
-tier0 api /openapi/v1/uns/delete --body '{path:factory/line1/sensor/temp}'
-
-# 硬删除（用文件法更清晰）
-'{"path":"factory/line1/sensor/temp","hard_delete":true}' | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/delete --body-file body.json
+tier0 uns delete --path factory/line1/old-sensor --hard --yes
+# 如需恢复软删除：
+tier0 uns restore --path factory/line1/old-sensor
 ```

@@ -47,25 +47,25 @@ POST /openapi/v1/uns/write
 ### 写入多字段对象（典型 OT 场景）
 
 ```bash
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Line1/Metric/Temperature","value":{"temperature":27.5,"unit":"C","humidity":58.6}}]}'
+tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5,"unit":"C","humidity":58.6}'
 ```
 
 ### 写入业务状态对象（IT 场景）
 
 ```bash
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Warehouse/State/OrderStatus","value":{"pending":42,"processing":15}}]}'
+tier0 uns write --topic Plant/Warehouse/State/OrderStatus --value '{"pending":42,"processing":15}'
 ```
 
 ### 触发动作指令
 
 ```bash
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Line1/Action/EmergencyStop","value":{"command":"stop","reason":"温度超阈值","triggered_by":"agent"}}]}'
+tier0 uns write --topic Plant/Line1/Action/EmergencyStop --value '{"command":"stop","reason":"温度超阈值","triggered_by":"agent"}'
 ```
 
 ### 批量写入（含 QoS 和 retain）
 
 ```bash
-tier0 api /openapi/v1/uns/write --body-file writes.json
+tier0 uns write --file writes.json
 ```
 
 `writes.json` 内容：
@@ -116,24 +116,16 @@ tier0 api /openapi/v1/uns/write --body-file writes.json
 写入成功 ≠ 下游执行完成，如需验证请用 read 查 State topic：
 
 ```bash
-# 写入动作后，读取状态确认
-tier0 api /openapi/v1/uns/write --body '{"writes":[{"topic":"Plant/Line1/Action/EmergencyStop","value":{"command":"stop"}}]}'
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/State/MachineStatus"]}'
+tier0 uns write --topic Plant/Line1/Action/EmergencyStop --value '{"command":"stop"}'
+tier0 uns read Plant/Line1/State/MachineStatus
 ```
 
-## Windows PowerShell 简写
+## Windows PowerShell 注意
+
+value 含嵌套 JSON 时用文件法更稳妥：
 
 ```powershell
-# 多字段对象 — 用文件法（最稳妥）
-@'
-{
-  "writes": [
-    {
-      "topic": "Plant/Line1/Metric/Temperature",
-      "value": { "temperature": 27.5, "unit": "C", "humidity": 58.6 }
-    }
-  ]
-}
-'@ | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/write --body-file body.json
+tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5,"unit":"C"}'
+# 或批量写入
+tier0 uns write --file writes.json
 ```

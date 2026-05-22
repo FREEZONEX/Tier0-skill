@@ -46,17 +46,17 @@ POST /openapi/v1/uns/update
 
 ```bash
 # 更新节点描述
-tier0 api /openapi/v1/uns/update --body '{"path":"factory/line1/sensor/temp","description":"生产线1温度传感器","updateMask":["description"]}'
+tier0 uns update --path factory/line1/sensor/temp --desc "生产线1温度传感器"
 
-# 更新节点字段
-tier0 api /openapi/v1/uns/update --body '{"path":"factory/line1/sensor/temp","fields":[{"name":"value","type":"float","unit":"°C"}],"updateMask":["fields"]}'
+# 同时更新显示名称和描述
+tier0 uns update --path factory/line1/sensor/temp --display-name "温度传感器" --desc "生产线1温度监控"
 ```
 
 ## 典型场景
 
-**同时更新描述和显示名称：**
+**复杂更新（含字段定义）：**
 ```bash
-tier0 api /openapi/v1/uns/update --body-file update.json
+tier0 uns update --file update.json
 ```
 
 `update.json` 内容：
@@ -69,14 +69,10 @@ tier0 api /openapi/v1/uns/update --body-file update.json
 }
 ```
 
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+## Windows PowerShell
 
 ```powershell
-# 文件法（含 updateMask 时推荐）
-@'
-{"path":"factory/line1/sensor/temp","description":"温度传感器","updateMask":["description"]}
-'@ | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/update --body-file body.json
+tier0 uns update --path factory/line1/sensor/temp --desc "温度传感器"
+# 或复杂更新用文件法
+tier0 uns update --file update.json
 ```

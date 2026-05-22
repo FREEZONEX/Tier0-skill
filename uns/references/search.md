@@ -36,32 +36,32 @@ POST /openapi/v1/uns/search
 
 ```bash
 # 按关键字搜索
-tier0 api /openapi/v1/uns/search --body '{"keyword":"temp"}'
+tier0 uns search --keyword temp
 
 # 按路径前缀搜索
-tier0 api /openapi/v1/uns/search --body '{"path_prefix":"factory/line1"}'
+tier0 uns search --prefix factory/line1
 
 # 分页搜索
-tier0 api /openapi/v1/uns/search --body '{"keyword":"sensor","page":1,"size":20}'
+tier0 uns search --keyword sensor --page 1 --size 20
 ```
 
 ## 典型场景
 
 **查找特定类型的所有节点：**
 ```bash
-tier0 api /openapi/v1/uns/search --body '{"path_prefix":"factory","topicType":"thing","size":100}'
+tier0 uns search --prefix factory --type thing --size 100
 ```
 
 **搜索后查看 topic 字段定义（推荐两步工作流）：**
 
 第一步：先搜索定位 topic 路径
 ```bash
-tier0 api /openapi/v1/uns/search --body '{"keyword":"Temperature","topicType":"thing"}'
+tier0 uns search --keyword Temperature --type thing
 ```
 
-第二步：带 `include_metadata` 查看字段结构，了解有哪些字段、类型、单位
+第二步：加 `--meta` 查看字段结构，了解有哪些字段、类型、单位
 ```bash
-tier0 api /openapi/v1/uns/search --body '{"keyword":"Temperature","topicType":"thing","include_metadata":true}'
+tier0 uns search --keyword Temperature --type thing --meta
 ```
 
 返回中每个节点会带上字段信息：
@@ -80,14 +80,9 @@ tier0 api /openapi/v1/uns/search --body '{"keyword":"Temperature","topicType":"t
 
 拿到 `fields` 后即可构造正确的写入请求，或对 `value` 进行字段级解析。
 
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+## Windows PowerShell
 
 ```powershell
-# 简写 — 关键字搜索
-tier0 api /openapi/v1/uns/search --body '{keyword:temp}'
-
-# 简写 — 路径前缀搜索
-tier0 api /openapi/v1/uns/search --body '{path_prefix:factory/line1}'
+tier0 uns search --keyword temp
+tier0 uns search --prefix factory/line1
 ```

@@ -72,7 +72,7 @@ POST /openapi/v1/uns/read
 ### 读取单个 topic（多字段对象）
 
 ```bash
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"]}'
+tier0 uns read Plant/Line1/Metric/Temperature
 ```
 
 响应中 `value` 是完整的业务对象：
@@ -91,10 +91,10 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperatur
 
 ### 读取时同时查看字段定义（推荐首次读取时使用）
 
-不确定 topic 有哪些字段、字段类型和单位时，加 `include_metadata: true`：
+不确定 topic 有哪些字段、字段类型和单位时，加 `--meta`：
 
 ```bash
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature"],"include_metadata":true}'
+tier0 uns read Plant/Line1/Metric/Temperature --meta
 ```
 
 响应中会额外包含 `metadata` 字段：
@@ -125,17 +125,17 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperatur
 ### 批量读取多个 topic
 
 ```bash
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/Metric/Temperature","Plant/Line1/State/MachineStatus"]}'
+tier0 uns read Plant/Line1/Metric/Temperature Plant/Line1/State/MachineStatus
 ```
 
 ### 通配符读取（同层所有产线的温度）
 
 ```bash
 # + 匹配一层：所有产线温度
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/+/Metric/Temperature"]}'
+tier0 uns read "Plant/+/Metric/Temperature" --json
 
 # # 匹配剩余所有层：Line1 下所有数据
-tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/#"]}'
+tier0 uns read "Plant/Line1/#" --json
 ```
 
 ### 处理异常 quality
@@ -166,16 +166,11 @@ tier0 api /openapi/v1/uns/read --body '{"topics":["Plant/Line1/#"]}'
 }
 ```
 
-## Windows PowerShell 简写
+## Windows PowerShell 注意
+
+通配符 `+` / `#` 在 PowerShell 中需加引号：
 
 ```powershell
-# 简写 — 单个 topic
-tier0 api /openapi/v1/uns/read --body '{topics:[Plant/Line1/Metric/Temperature]}'
-
-# 简写 — 多个 topic
-tier0 api /openapi/v1/uns/read --body '{topics:[Plant/Line1/Metric/Temperature,Plant/Line1/State/MachineStatus]}'
-
-# 通配符（用文件法，避免 + 被 shell 解释）
-'{"topics":["Plant/+/Metric/Temperature"]}' | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/read --body-file body.json
+tier0 uns read Plant/Line1/Metric/Temperature
+tier0 uns read "Plant/+/Metric/Temperature" --json
 ```

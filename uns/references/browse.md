@@ -32,19 +32,20 @@ POST /openapi/v1/uns/browse
 ## 示例
 
 ```bash
-tier0 api /openapi/v1/uns/browse --body '{"path":"/","max_depth":2}'
+tier0 uns browse --depth 2
+tier0 uns browse factory/line1 --depth 1
 ```
 
 ## 典型场景
 
 **查看命名空间全貌：**
 ```bash
-tier0 api /openapi/v1/uns/browse --body '{"path":"/","max_depth":3,"include_metadata":true}'
+tier0 uns browse --depth 3 --meta
 ```
 
 **查看指定路径下的节点：**
 ```bash
-tier0 api /openapi/v1/uns/browse --body '{"path":"factory/line1","max_depth":1}'
+tier0 uns browse factory/line1 --depth 1
 ```
 
 ## UNS ↔ Flow 关联查询
@@ -53,27 +54,11 @@ UNS topic 路径与 Flow 名称**通常同名**。浏览到某个路径后，如
 
 ```bash
 # 1. browse 发现 topic 路径
-tier0 api /openapi/v1/uns/browse --body '{"path":"Plant/Line1","max_depth":2}'
+tier0 uns browse Plant/Line1 --depth 2
 
 # 2. 同名查 Flow（SourceFlow 负责采集，EventFlow 负责处理）
 tier0 flow list --keyword Line1
 ```
 
 > ⚠️ 目前 API 尚无显式关联字段，`topicmeta` 接口后续版本将提供 Flow ↔ topic 映射。
-
-## Windows PowerShell 简写
-
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
-
-```powershell
-# 简写 — 根路径浏览
-tier0 api /openapi/v1/uns/browse --body '{path:/}'
-
-# 简写 — 指定路径
-tier0 api /openapi/v1/uns/browse --body '{path:factory/line1,max_depth:2}'
-
-# 文件法（复杂参数推荐）
-'{"path":"/","max_depth":3,"include_metadata":true}' | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/browse --body-file body.json
-```
 

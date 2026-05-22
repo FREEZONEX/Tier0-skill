@@ -53,17 +53,17 @@ POST /openapi/v1/uns/create
 
 ```bash
 # 创建文件夹节点
-tier0 api /openapi/v1/uns/create --body '{"namespace":[{"name":"sensor","type":"folder"}]}'
+tier0 uns create --body '{"namespace":[{"name":"sensor","type":"folder"}]}'
 
 # 创建带字段的数据点节点
-tier0 api /openapi/v1/uns/create --body '{"namespace":[{"name":"temp","type":"thing","fields":[{"name":"value","type":"float","unit":"°C"}]}]}'
+tier0 uns create --body '{"namespace":[{"name":"temp","type":"thing","fields":[{"name":"value","type":"float","unit":"°C"}]}]}'
 ```
 
 ## 典型场景
 
 **批量创建层级结构：**
 ```bash
-tier0 api /openapi/v1/uns/create --body-file structure.json
+tier0 uns create --file structure.json
 ```
 
 `structure.json` 内容：
@@ -88,14 +88,10 @@ tier0 api /openapi/v1/uns/create --body-file structure.json
 }
 ```
 
-## Windows PowerShell 简写
+## Windows PowerShell
 
-PowerShell 中双引号处理较复杂，v0.2.6+ 支持简写（自动修复引号）：
+复杂结构统一用文件法：
 
 ```powershell
-# 复杂结构统一用文件法
-@'
-{"namespace":[{"name":"sensor","type":"folder"}]}
-'@ | Out-File body.json -Encoding utf8
-tier0 api /openapi/v1/uns/create --body-file body.json
+tier0 uns create --file structure.json
 ```
