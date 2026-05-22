@@ -134,7 +134,7 @@ Workspace
 | 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
 | 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
 | 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
-| 服务信息/健康检查 | `uns/references/info.md` | 网关连通性验证 |
+| 服务信息/健康检查 | `info/info.md` | 网关连通性验证 |
 
 ### Flow — Node-RED 管理
 

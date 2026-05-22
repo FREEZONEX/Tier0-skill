@@ -53,7 +53,7 @@ metadata:
 | 更新节点元数据 | `references/update.md` | — | 修改字段定义或描述 |
 | 删除节点 | `references/delete.md` | ⚠️ 硬删除不可逆 | 软删除可恢复，硬删除永久清除 |
 | 恢复已删除节点 | `references/restore.md` | — | 撤销软删除 |
-| 服务信息/健康检查 | `references/info.md` | — | 网关连通性验证 |
+| 服务信息/健康检查 | `../info/info.md` | — | 网关连通性验证 |
 
 ## 任务选路
 

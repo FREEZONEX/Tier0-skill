@@ -1,19 +1,19 @@
 ---
-name: tier0-uns-info
+name: tier0-info
 version: 0.3.0
-description: "获取 UNS 网关服务信息。triggers: Tier0, UNS, 服务信息, 状态, 健康检查"
+description: "获取 Tier0 网关服务信息。triggers: Tier0, 服务信息, 状态, 健康检查"
 metadata:
   requires:
     bins: ["tier0"]
   hermes:
-    tags: [uns, info, status]
+    tags: [info, status, health]
 ---
 
 # info — 服务信息
 
 ## 说明
 
-获取 UNS 网关服务的运行信息和状态，可用于连通性验证和健康检查。
+获取 Tier0 网关服务的运行信息和状态，可用于连通性验证和健康检查。
 
 ## API
 
