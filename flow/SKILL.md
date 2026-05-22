@@ -49,6 +49,7 @@ metadata:
 
 | 意图 | 加载文件 | 风险 | 说明 |
 |------|---------|------|------|
+| 查询可用节点 / 构造 flowsJson 前 | `references/nodes.md` | — | 内置节点 type 字符串速查，确认节点是否需要额外安装 |
 | 列出 / 查看 Flow | `references/list.md` | — | 列表、类型过滤、查看详情 |
 | 创建 Flow | `references/create.md` | — | 新建 SourceFlow 或 EventFlow |
 | 更新 Flow 元数据 | `references/update.md` | — | 重命名、描述、收藏 |
@@ -63,11 +64,12 @@ metadata:
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
+| 定时轮询第三方 REST API → UNS | **必读** `references/protocols/http.md` | inject + http request + function 节点，内置无需安装 |
 | Modbus TCP/RTU 采集 → UNS | **必读** `references/protocols/modbus.md` | 节点参数、function 映射、模板使用 |
 | UNS 数据 → PostgreSQL 归档 | **必读** `references/protocols/postgresql.md` | 配置节点（含密码说明）、参数化 SQL、安全建议 |
 | 查看/使用全部 flowsJson 模板 | `references/protocols/README.md` | 协议模板索引、占位符说明、替换规则 |
+| *(MQTT Bridge 待补充)* | `references/protocols/mqtt-bridge.md` | 外部 MQTT ↔ Tier0 UNS 桥接 |
 | *(OPC-UA 待补充)* | `references/protocols/opcua.md` | — |
-| *(OPC-DA 待补充)* | `references/protocols/opcda.md` | — |
 
 ## 常用操作速查
 

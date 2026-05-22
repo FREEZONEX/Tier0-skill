@@ -71,6 +71,7 @@ tier0 api /openapi/v1/uns/read --body '{topics:[demo]}'
   - [`info.md`](info/info.md) — 健康检查 / 连通性验证
 - [`flow/`](flow/) — Flow（Node-RED）管理
   - [`SKILL.md`](flow/SKILL.md) — Flow 路由、规则、任务选路
+  - [`references/nodes.md`](flow/references/nodes.md) — 内置节点一览（type 字符串速查）
   - [`references/list.md`](flow/references/list.md) — 列出 / 查看 Flow
   - [`references/create.md`](flow/references/create.md) — 创建 Flow
   - [`references/update.md`](flow/references/update.md) — 更新 Flow 元数据

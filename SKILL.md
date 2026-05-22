@@ -144,6 +144,7 @@ Workspace
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
+| 查询可用节点 / 构造 flowsJson 前 | `flow/references/nodes.md` | 内置节点 type 字符串速查 |
 | 列出 / 查看 Flow | `flow/references/list.md` | 列表、类型过滤、详情 |
 | 创建 Flow | `flow/references/create.md` | 新建 SourceFlow 或 EventFlow |
 | 更新 Flow 元数据 | `flow/references/update.md` | 重命名、描述、收藏 |
