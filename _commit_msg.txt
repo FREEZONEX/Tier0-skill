@@ -1,0 +1,8 @@
+docs: update uns/flow skill docs for v0.4.x CLI
+
+- uns/references: update all commands to use tier0 uns subcommands
+- uns/references/history.md: document relative time formats (-1h/-30m/-7d)
+  and correct API schema (start_time/end_time string + nested aggregation)
+- flow/references/nodes.md: add built-in Node-RED node reference
+- info/info.md: relocate from uns/references to top-level info folder
+- add http protocol doc and template

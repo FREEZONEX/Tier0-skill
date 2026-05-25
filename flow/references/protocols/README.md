@@ -11,17 +11,20 @@ AI Agent 使用路径：
 
 ## 可用协议文档
 
-| 文件 | 协议 | Flow 类型 | 用途 |
-|------|------|-----------|------|
-| [modbus.md](modbus.md) | Modbus TCP / RTU | SourceFlow | 周期轮询 PLC 寄存器/线圈 → UNS |
-| [postgresql.md](postgresql.md) | PostgreSQL / TimescaleDB | EventFlow | UNS 订阅 → INSERT 归档到用户自有库 |
-| *(opcua.md 待补充)* | OPC-UA | SourceFlow | — |
-| *(opcda.md 待补充)* | OPC-DA | SourceFlow | — |
+| 文件 | 协议 | Flow 类型 | 用途 | 需额外安装 |
+|------|------|-----------|------|-----------|
+| [http.md](http.md) | HTTP REST API | SourceFlow | 定时轮询第三方接口 → UNS | ✅ 内置 |
+| [modbus.md](modbus.md) | Modbus TCP / RTU | SourceFlow | 周期轮询 PLC 寄存器/线圈 → UNS | node-red-contrib-modbus |
+| [postgresql.md](postgresql.md) | PostgreSQL / TimescaleDB | EventFlow | UNS 订阅 → INSERT 归档到用户自有库 | node-red-contrib-postgresql |
+| *(mqtt-bridge.md 待补充)* | MQTT Bridge | SourceFlow / EventFlow | 外部 MQTT ↔ Tier0 UNS 桥接 | ✅ 内置 |
+| *(opcua.md 待补充)* | OPC-UA | SourceFlow | — | — |
+| *(opcda.md 待补充)* | OPC-DA | SourceFlow | — | — |
 
 ## 可用模板
 
 | 文件 | 协议 | 对应文档 |
 |------|------|---------|
+| [templates/http-poller.json](templates/http-poller.json) | HTTP REST API 轮询 | http.md |
 | [templates/modbus-tcp-read.json](templates/modbus-tcp-read.json) | Modbus TCP | modbus.md |
 | [templates/postgresql-uns-archive.json](templates/postgresql-uns-archive.json) | PostgreSQL | postgresql.md |
 

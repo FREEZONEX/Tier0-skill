@@ -1,19 +1,19 @@
 # Flow Templates
 
-Node-RED flowsJson 模板，用于快速创建协议采集 SourceFlow。
+Node-RED flowsJson 模板，用于快速生成协议采集 / 数据处理 Flow。
 
 ## 使用方式
 
-1. 读取对应协议的 skill 文档了解参数含义（如 `protocol-modbus.md`）
+1. 根据协议类型先读对应文档（见 [../README.md](../README.md)），了解节点参数含义
 2. 将模板文件复制到本地
 3. 替换所有 `{{PLACEHOLDER}}` 占位符为实际值（见下方占位符说明）
 4. 用 `tier0 flow deploy` 部署
 
 ```bash
-# 示例：部署 Modbus TCP 采集模板
-cp modbus-tcp-read.json my-modbus.json
-# 编辑 my-modbus.json，替换所有占位符
-tier0 flow deploy --id <flow_id> -f my-modbus.json --yes
+# 示例：部署 HTTP 轮询模板
+cp http-poller.json my-http-poller.json
+# 编辑 my-http-poller.json，替换所有占位符
+tier0 flow deploy --id <flow_id> -f my-http-poller.json --yes
 ```
 
 ## 占位符说明
@@ -22,8 +22,45 @@ tier0 flow deploy --id <flow_id> -f my-modbus.json --yes
 
 | 占位符 | 类型 | 说明 | 示例 |
 |--------|------|------|------|
-| `{{FLOW_ID}}` | string | 唯一标识符，同一模板内所有节点共用（用于 id 和引用） | `line1_modbus` |
-| `{{FLOW_NAME}}` | string | Node-RED Tab 显示名称 | `Line1 Modbus采集` |
+| `{{FLOW_ID}}` | string | 唯一标识符，同一模板内所有节点共用（用于 id 和引用） | `line1_http` |
+| `{{FLOW_NAME}}` | string | Node-RED Tab 显示名称 | `Weather API Poller` |
+
+### HTTP REST API 轮询（`http-poller.json`）
+
+| 占位符 | 类型 | 说明 | 示例 |
+|--------|------|------|------|
+| `{{POLL_INTERVAL_S}}` | number（秒） | 轮询间隔（秒），inject 节点 `repeat` 字段 | `30` |
+| `{{API_NAME}}` | string | http request 节点显示名称 | `Weather API` |
+| `{{API_METHOD}}` | enum | HTTP 方法：`GET` / `POST` | `GET` |
+| `{{API_URL}}` | string | 完整的 API URL（支持 query string） | `https://api.example.com/v1/data` |
+| `{{MQTT_HOST}}` | string | Tier0 MQTT Broker 地址 | `127.0.0.1` |
+| `{{MQTT_PORT}}` | number | MQTT 端口 | `1883` |
+| `{{UNS_TOPIC}}` | string | 目标 UNS topic | `Plant/Site/Weather/Current` |
+| `{{FUNCTION_BODY}}` | string | function 节点的映射逻辑（见下方说明） | 见示例 |
+
+#### function 节点示例（`{{FUNCTION_BODY}}`）
+
+模板中 function 节点的完整结构已包含错误检查和 `writes` 数组初始化，
+`{{FUNCTION_BODY}}` 只需要填写**数据映射部分**（往 `writes` 数组 push 数据）：
+
+```javascript
+// msg.payload 是 API 返回的 JSON 对象（http request 已自动解析）
+// 示例：API 返回 { "temperature": 25.3, "humidity": 60 }
+writes.push({
+  topic: "Plant/Site/Weather/Current",
+  value: {
+    temperature: msg.payload.temperature,
+    humidity: msg.payload.humidity
+  }
+});
+```
+
+如需设置 `msg.topic`（用于 mqtt out 节点动态 topic）：
+
+```javascript
+writes.push({ topic: "Plant/Line1/Metric/Temp", value: { t: msg.payload.t } });
+msg.topic = "Plant/Line1/Metric/Temp";
+```
 
 ### Modbus TCP（`modbus-tcp-read.json`）
 
