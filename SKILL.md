@@ -32,7 +32,7 @@ Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/mai
 
 **npm（跨平台，推荐）：**
 ```bash
-npm install -g @freezonex/tier0-cli
+npx @tier0/cli@latest install
 ```
 
 ### 第 2 步 安装 Skills

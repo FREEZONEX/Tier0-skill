@@ -11,10 +11,13 @@ Tier0 平台 AI Agent Skills 文档。
 以下命令必须全部执行：
 
 ```bash
-# 1. 安装 CLI（macOS / Linux）
+# 1. 安装 CLI（推荐，跨平台）
+npx @tier0/cli@latest install
+
+# 1. 安装 CLI（macOS / Linux，备选）
 curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
 
-# 1. 安装 CLI（Windows PowerShell）
+# 1. 安装 CLI（Windows PowerShell，备选）
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
 
 # 2. 安装 Skills（必需）
