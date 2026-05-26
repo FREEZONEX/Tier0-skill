@@ -18,26 +18,26 @@ metadata:
 
 ## 安装与初始化
 
-### 第 1 步 安装 CLI
+### 第 1 步 安装 CLI + Skills（一键）
 
-**macOS / Linux：**
-```bash
-curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
-```
-
-**Windows (PowerShell)：**
-```powershell
-Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
-```
-
-**npm（跨平台，推荐）：**
+**推荐（跨平台，需要 Node.js >= 16）：**
 ```bash
 npx @tier0/cli@latest install
 ```
 
-### 第 2 步 安装 Skills
+> 一条命令同时安装 `tier0` CLI 二进制和 Cursor / Claude Agent Skills。
 
+**备选 — macOS / Linux：**
 ```bash
+curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
+# 然后单独安装 Skills：
+npx skills add FREEZONEX/Tier0-skill
+```
+
+**备选 — Windows (PowerShell)：**
+```powershell
+Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
+# 然后单独安装 Skills：
 npx skills add FREEZONEX/Tier0-skill
 ```
 

@@ -8,19 +8,24 @@ Tier0 平台 AI Agent Skills 文档。
 
 ## 第 1 步 安装
 
-以下命令必须全部执行：
+**一键安装 CLI + Skills（推荐，需要 Node.js >= 16）：**
 
 ```bash
-# 1. 安装 CLI（推荐，跨平台）
 npx @tier0/cli@latest install
+```
 
-# 1. 安装 CLI（macOS / Linux，备选）
+一条命令同时完成 CLI 二进制和 Cursor / Claude Agent Skills 的安装。
+
+**备选方式（无 Node.js 环境）：**
+
+```bash
+# macOS / Linux
 curl -sL https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.sh | bash
 
-# 1. 安装 CLI（Windows PowerShell，备选）
+# Windows PowerShell
 Invoke-RestMethod -Uri https://raw.githubusercontent.com/FREEZONEX/Tier0-cli/main/install.ps1 | Invoke-Expression
 
-# 2. 安装 Skills（必需）
+# 以上备选方式需额外安装 Skills：
 npx skills add FREEZONEX/Tier0-skill
 ```
 
