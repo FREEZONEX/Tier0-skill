@@ -4,7 +4,7 @@ Tier0 平台 AI Agent Skills 文档。
 
 以下步骤面向 AI Agent，部分步骤需要用户在浏览器中配合完成。
 
-> **版本要求**：`v0.2.7+`
+> **版本要求**：`v0.4.6+`
 
 ## 第 1 步 安装
 
@@ -14,7 +14,9 @@ Tier0 平台 AI Agent Skills 文档。
 npx @tier0/cli@latest install
 ```
 
-一条命令同时完成 CLI 二进制和 Cursor / Claude Agent Skills 的安装。
+一条命令同时完成：
+- `tier0` CLI 二进制安装到 `~/.tier0/bin/`
+- Cursor / Claude Agent Skills 自动安装（`FREEZONEX/Tier0-skill`）
 
 **备选方式（无 Node.js 环境）：**
 
@@ -59,11 +61,18 @@ tier0 api /openapi/v1/uns/read --body '{topics:[demo]}'
 
 更多命令和能力指南，可参考 [`SKILL.md`](SKILL.md)。
 
+## 卸载
+
+```bash
+npx @tier0/cli@latest uninstall            # 卸载 CLI + Skills，保留 config
+npx @tier0/cli@latest uninstall --purge    # 彻底清除（含登录凭证）
+```
+
 ---
 
 ## 目录
 
-- [`SKILL.md`](SKILL.md) — 总览入口（认证 + 命令速查）
+- [`SKILL.md`](SKILL.md) — 总览入口（安装、认证、命令速查）
 - [`uns/`](uns/) — UNS（Unified Namespace）数据面
   - [`SKILL.md`](uns/SKILL.md) — UNS 路由、规则、任务选路
   - [`references/browse.md`](uns/references/browse.md) — 浏览命名空间树
