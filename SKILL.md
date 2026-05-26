@@ -57,11 +57,24 @@ tier0 config --api-key sk-per-xxxxxx
 ```
 
 **方式 B — Device Flow（需要用户浏览器配合）：**
+
+Agent **不需要等用户回复**，按以下两步连续执行即可：
+
 ```bash
-tier0 login --no-wait
-# → 向用户展示 verification_url，用户浏览器授权后：
-tier0 login --setup-code <code>
+# 第 1 步：获取授权 URL（立即返回，解析 setup_code）
+tier0 login --no-wait --json
+# 输出: {"status":"authorization_required","verification_url":"...","setup_code":"abc123","expires_in":600}
 ```
+
+把 `verification_url` 展示给用户，同时**立即**执行第 2 步（无需等待用户回复）：
+
+```bash
+# 第 2 步：开始轮询（每 5 秒检测一次，最多等待 10 分钟）
+tier0 login --setup-code <code>
+# 用户浏览器授权后自动保存 API Key，轮询结束
+```
+
+> **说明**：轮询会阻塞直到用户完成浏览器授权，agent 无需在两步之间询问用户"是否完成"。
 
 ### 语言切换
 
