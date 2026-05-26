@@ -152,7 +152,13 @@ Workspace
 | 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
 | 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
 | 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
+
+### Auth / Info — 认证与服务信息
+
+| 意图 | 加载文件 | 说明 |
+|------|---------|------|
 | 服务信息/健康检查 | `info/info.md` | 网关连通性验证 |
+| API Key 身份/权限诊断 | `auth/whoami.md` | 查看当前 API Key 的用户、Workspace、角色和权限 |
 
 ### Flow — Node-RED 管理
 
@@ -162,7 +168,7 @@ Workspace
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
-| 查询可用节点 / 构造 flowsJson 前 | `flow/references/nodes.md` | 内置节点 type 字符串速查 |
+| 查询可用节点 / 构造 flowsJson 前 | `flow/references/nodes.md` | 节点查询接口和常用 type 字符串速查 |
 | 列出 / 查看 Flow | `flow/references/list.md` | 列表、类型过滤、详情 |
 | 创建 Flow | `flow/references/create.md` | 新建 SourceFlow 或 EventFlow |
 | 更新 Flow 元数据 | `flow/references/update.md` | 重命名、描述、收藏 |

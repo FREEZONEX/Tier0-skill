@@ -86,9 +86,11 @@ npx @tier0/cli@latest uninstall --purge    # 彻底清除（含登录凭证）
   - [`references/restore.md`](uns/references/restore.md) — 恢复已删除节点
 - [`info/`](info/) — 服务信息
   - [`info.md`](info/info.md) — 健康检查 / 连通性验证
+- [`auth/`](auth/) — 认证与权限诊断
+  - [`whoami.md`](auth/whoami.md) — 当前 API Key 的用户、Workspace、角色和权限
 - [`flow/`](flow/) — Flow（Node-RED）管理
   - [`SKILL.md`](flow/SKILL.md) — Flow 路由、规则、任务选路
-  - [`references/nodes.md`](flow/references/nodes.md) — 内置节点一览（type 字符串速查）
+  - [`references/nodes.md`](flow/references/nodes.md) — 可用节点查询接口和常用 type 字符串速查
   - [`references/list.md`](flow/references/list.md) — 列出 / 查看 Flow
   - [`references/create.md`](flow/references/create.md) — 创建 Flow
   - [`references/update.md`](flow/references/update.md) — 更新 Flow 元数据

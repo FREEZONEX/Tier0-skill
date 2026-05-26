@@ -1,7 +1,7 @@
 ---
 name: tier0-flow-nodes
-version: 0.3.0
-description: "Tier0 Flow（Node-RED）内置节点一览。触发场景: 构造 flowsJson、查询可用节点、了解节点 type 字符串"
+version: 0.3.1
+description: "Tier0 Flow（Node-RED）可用节点查询接口和常用节点速查。触发场景: 构造 flowsJson、查询可用节点、确认节点 type 字符串"
 metadata:
   requires:
     bins: ["tier0"]
@@ -9,11 +9,69 @@ metadata:
     tags: [flow, nodered, nodes, flowsjson]
 ---
 
-# Node-RED 内置节点
+# Node-RED 可用节点
 
-Tier0 Flow 环境基于标准 Node-RED，以下节点开箱即用，**构造 flowsJson 时无需额外安装**。
+构造 flowsJson 前，优先查询当前 Workspace 对应 Flow 类型的实际可用节点；下面的静态表只作为常用内置节点兜底参考。
 
-> **关键**：flowsJson 中每个节点对象的 `"type"` 字段必须与下表"type 字符串"完全一致，否则 Node-RED 无法识别。
+> **关键**：flowsJson 中每个节点对象的 `"type"` 字段必须与 `/flow/nodes` 返回的 `types` 或下表中的 "type 字符串" 完全一致，否则 Node-RED 无法识别。
+
+---
+
+## 优先: 查询实际可用节点
+
+### API
+
+```
+POST /openapi/v1/flow/nodes
+```
+
+### 请求参数
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `flowType` | string | 是 | `SourceFlow` 或 `EventFlow`；后端也兼容 `source` / `event` |
+
+### 示例
+
+```bash
+# SourceFlow 可用节点
+tier0 api /openapi/v1/flow/nodes --body '{"flowType":"SourceFlow"}'
+
+# EventFlow 可用节点
+tier0 api /openapi/v1/flow/nodes --body '{"flowType":"EventFlow"}'
+```
+
+### 响应结构
+
+```json
+{
+  "code": 200,
+  "msg": "ok",
+  "data": {
+    "nodes": [
+      {
+        "id": "node-red",
+        "name": "Node-RED nodes",
+        "types": ["inject", "debug", "function"],
+        "enabled": true,
+        "module": "node-red",
+        "version": "x.y.z"
+      }
+    ]
+  }
+}
+```
+
+使用规则：
+
+1. 只把 `data.nodes[].types[]` 里的字符串当作 flowsJson 的节点 `type` 值。
+2. `enabled=false` 的节点集不要用于新画布。
+3. 同一个节点类型在 `SourceFlow` 和 `EventFlow` 中可能不同，按目标 Flow 类型分别查询。
+4. 查询接口返回的结果优先级高于本文件静态表。
+
+### 权限
+
+`flow/nodes` 需要 `flow:read` 或 `full_access` 权限。如果返回 401/403，读取 `../../auth/whoami.md` 排查 API Key、Workspace 绑定和权限。
 
 ---
 
@@ -109,9 +167,9 @@ Tier0 Flow 环境基于标准 Node-RED，以下节点开箱即用，**构造 flo
 
 ---
 
-## 需额外安装的节点（非内置）
+## 需额外安装或环境相关的节点
 
-以下节点**不内置**，需在 Node-RED Palette Manager 或镜像中预装后才可在 flowsJson 中使用：
+以下节点通常不是 Node-RED 标准内置节点，需在 Node-RED Palette Manager 或镜像中预装后才可在 flowsJson 中使用。是否已安装以 `/openapi/v1/flow/nodes` 返回为准：
 
 | 节点包 | type 字符串前缀 | 协议文档 |
 |--------|---------------|---------|

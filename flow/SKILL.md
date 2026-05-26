@@ -49,7 +49,7 @@ metadata:
 
 | 意图 | 加载文件 | 风险 | 说明 |
 |------|---------|------|------|
-| 查询可用节点 / 构造 flowsJson 前 | `references/nodes.md` | — | 内置节点 type 字符串速查，确认节点是否需要额外安装 |
+| 查询可用节点 / 构造 flowsJson 前 | `references/nodes.md` | — | 节点查询接口和常用 type 字符串速查，确认节点是否需要额外安装 |
 | 列出 / 查看 Flow | `references/list.md` | — | 列表、类型过滤、查看详情 |
 | 创建 Flow | `references/create.md` | — | 新建 SourceFlow 或 EventFlow |
 | 更新 Flow 元数据 | `references/update.md` | — | 重命名、描述、收藏 |
