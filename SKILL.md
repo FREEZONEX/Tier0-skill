@@ -51,7 +51,12 @@ tier0 config --base-url https://your-tier0-instance.com
 
 ### 第 4 步 登录授权
 
-Agent 运行以下命令，提取授权链接发给用户：
+**方式 A — Agent 已持有 API Key（推荐）：**
+```bash
+tier0 config --api-key sk-per-xxxxxx
+```
+
+**方式 B — Device Flow（需要用户浏览器配合）：**
 ```bash
 tier0 login --no-wait
 # → 向用户展示 verification_url，用户浏览器授权后：
@@ -227,8 +232,8 @@ tier0 flow deploy --id 1 -f flows.json
 
 | 现象 | 原因 | 解决 |
 |------|------|------|
-| `API Key not found` | 未登录 | `tier0 login` |
-| `HTTP 401` | API Key 失效 | 重新 `tier0 login` |
+| `API Key not found` | 未登录 | `tier0 config --api-key <key>` 或 `tier0 login` |
+| `HTTP 401` | API Key 失效 | 重新设置：`tier0 config --api-key <key>` |
 | `HTTP 403` | Workspace 权限不足 | 联系管理员 |
 | `HTTP 404` | 资源不存在 | 检查 ID 或路径 |
 | `field "id" is not set` | 误用了 `flowId`（字符串）而非 `id`（整数） | 先 `tier0 flow list` 拿整数 `id`，不要用 `flowId` 字段 |
