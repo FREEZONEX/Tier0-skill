@@ -32,11 +32,12 @@ metadata:
 
 1. **先 browse 定位，再 read** — 不知道完整 topic 路径时，先 `browse` 找路径，再 `read` 取值；不要猜测 topic 路径
 2. **read/write 操作只能用完整路径（叶子节点）** — 中间路径段（如 `Plant/Line1`）是文件夹，不能 read/write，只能 browse
-3. **write 的 value 是对象，不是标量** — 写入格式为 `{"value":{"field1":val1,...}}`，不要直接写数字或字符串
-4. **history 参数复杂，必读文档** — 时间戳单位（秒/毫秒）、聚合参数极易出错，读 `references/history.md` 后再执行
-5. **delete 分软删除和硬删除** — 硬删除（`hard_delete: true`）不可逆，除非用户明确要求，默认用软删除
-6. **不要用 search 替代 browse** — search 是关键词检索，browse 是结构浏览；探索树形结构用 browse，找已知名称用 search
-7. **create 必读 `references/create.md`** — 单节点用 `--topic`；多个节点或复杂树用 `--file`。**路径不会自动插入 `Metric`/`Action`/`State`**，数据点路径必须已含类型目录（如 `.../Metric/ProductionCount`）。**`--topic-type` 不是字段类型**（`int`/`float` 写在 `--fields`）
+3. **write 前先查 schema** — 不确定 topic 字段时，先 `browse --topic <path>` 查 `fields`（metric）或 `description`（action/state）；action/state 节点无 fields 约束，依赖 description 里的示例 payload 推断结构
+4. **write 的 value 是对象，不是标量** — 写入格式为 `{"value":{"field1":val1,...}}`，不要直接写数字或字符串
+5. **history 参数复杂，必读文档** — 时间戳单位（秒/毫秒）、聚合参数极易出错，读 `references/history.md` 后再执行
+6. **delete 分软删除和硬删除** — 硬删除（`hard_delete: true`）不可逆，除非用户明确要求，默认用软删除
+7. **不要用 search 替代 browse** — search 是关键词检索，browse 是结构浏览；探索树形结构用 browse，找已知名称用 search
+8. **create 必读 `references/create.md`** — 单节点用 `--topic`；多个节点或复杂树用 `--file`。**路径不会自动插入 `Metric`/`Action`/`State`**，数据点路径必须已含类型目录（如 `.../Metric/ProductionCount`）。**`--topic-type` 不是字段类型**（`int`/`float` 写在 `--fields`）
 
 ## Topic 类型定义
 

@@ -42,6 +42,22 @@ POST /openapi/v1/uns/write
 | `quality` | string | 否 | 数据质量（`Good` / `Uncertain` / `Bad`），默认由平台按 Broker ack 结果设置 |
 | `timeStamp` | int64 | 否 | 毫秒时间戳，默认服务端当前时间 |
 
+## 写入前：确认 Schema
+
+**不知道 topic 的字段定义时，必须先查再写，不要猜测字段名。**
+
+```bash
+# 查看 topic 元数据（fields 定义 + description 示例）
+tier0 uns browse --topic Plant/Line1/Metric/Temperature
+```
+
+返回的节点信息中：
+- `fields` — metric 节点的字段类型约束（如 `[{"name":"value","type":"float","unit":"°C"}]`）
+- `description` — 创建者写入的说明，**应包含示例 payload**，action/state 节点尤其依赖此处说明
+- `topicType` — 确认是 metric / action / state，决定 value 的结构风格
+
+拿到 schema 或示例后再构造 `value`，避免因字段名错误或类型不匹配导致写入被拒。
+
 ## 示例
 
 ### 写入多字段对象（典型 OT 场景）

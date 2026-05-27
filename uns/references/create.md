@@ -93,6 +93,7 @@ UNS 每个 topic（数据点）节点的路径结构固定为：
 - **中间 folder 的元数据**（displayName 等）只能通过 `--file` + `children` 表达；`--display-name` 只作用于叶子
 - **已存在的同名 folder** 会复用，不报错
 - **`--topic-type` 已废弃**：topicType 从路径自动推导；旧参数仍被接受但会打印警告
+- **`description` 应包含写入示例**（强烈建议）：action/state 节点没有 `fields` 约束，写入时 agent 只能从 description 推断 payload 结构；建议格式：`"说明。示例: {\"field\":value}"`；metric 节点有 fields 定义，description 可补充单位/业务含义
 
 ## 推荐场景
 
@@ -129,7 +130,8 @@ UNS 每个 topic（数据点）节点的路径结构固定为：
             {
               "name": "Start",
               "type": "topic",
-              "topicType": "action"
+              "topicType": "action",
+              "description": "启动工单指令。示例: {\"order_id\":\"WO-001\",\"product\":\"SKU-A\",\"qty\":100}"
             }
           ]
         }
