@@ -156,13 +156,22 @@ tier0 uns read "Plant/Line1/#" --json
 
 ### 读取失败（topic 不存在）
 
-外层 `code` 仍为 200，单项 `success` 为 `false`：
+外层 `code` 仍为 200，`data.success=false` 表示至少有一个 topic 读取失败，单项 `success=false` 时才会带 `error`：
 
 ```json
 {
-  "success": false,
-  "topic": "Plant/NotExist",
-  "error": { "code": 404, "message": "Topic not found" }
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": false,
+    "results": [
+      {
+        "success": false,
+        "topic": "Plant/NotExist",
+        "error": { "code": 404, "message": "Topic not found" }
+      }
+    ]
+  }
 }
 ```
 

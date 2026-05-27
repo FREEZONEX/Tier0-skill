@@ -52,6 +52,20 @@ tier0 uns update --path factory/line1/sensor/temp --desc "生产线1温度传感
 tier0 uns update --path factory/line1/sensor/temp --display-name "温度传感器" --desc "生产线1温度监控"
 ```
 
+## 响应结构
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true
+  }
+}
+```
+
+如果 `data.success=false`，表示更新未完成，应按返回的错误信息处理后重试。
+
 ## 典型场景
 
 **复杂更新（含字段定义）：**

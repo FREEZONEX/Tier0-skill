@@ -59,6 +59,42 @@ tier0 uns create --body '{"namespace":[{"name":"sensor","type":"folder"}]}'
 tier0 uns create --body '{"namespace":[{"name":"temp","type":"thing","fields":[{"name":"value","type":"float","unit":"°C"}]}]}'
 ```
 
+## 响应结构
+
+创建是批量接口。HTTP 和外层 `code` 可能仍为成功，必须看 `data.success` 和每个 `results[].success`：
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true,
+    "results": [
+      { "success": true, "topic": "Plant/Line1/Metric/Temperature" }
+    ]
+  }
+}
+```
+
+部分失败时，`data.success=false`，失败项才带 `error`：
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": false,
+    "results": [
+      {
+        "success": false,
+        "topic": "Plant/Line1/Metric/Temperature",
+        "error": { "code": 400, "message": "invalid topicType" }
+      }
+    ]
+  }
+}
+```
+
 ## 典型场景
 
 **批量创建层级结构：**

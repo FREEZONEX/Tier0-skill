@@ -29,7 +29,7 @@ POST /openapi/v1/uns/delete
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | 是 | 节点路径 |
+| `topics` | string[] | 是 | 要删除的节点路径列表 |
 | `hard_delete` | boolean | 否 | 是否永久删除，默认 `false`（软删除） |
 
 ## 示例
@@ -41,6 +41,20 @@ tier0 uns delete --path factory/line1/sensor/temp
 # 永久删除（需 --yes 确认）
 tier0 uns delete --path factory/line1/sensor/temp --hard --yes
 ```
+
+## 响应结构
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true
+  }
+}
+```
+
+如果 `data.success=false`，表示删除未完成，应按返回的错误信息处理后重试。
 
 ## 典型场景
 

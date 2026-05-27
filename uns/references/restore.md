@@ -33,6 +33,20 @@ POST /openapi/v1/uns/restore
 tier0 uns restore --path factory/line1/sensor/temp
 ```
 
+## 响应结构
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true
+  }
+}
+```
+
+如果 `data.success=false`，表示恢复未完成，应按返回的错误信息处理后重试。
+
 ## 典型场景
 
 **误删除后立即恢复：**

@@ -105,9 +105,18 @@ tier0 uns write --file writes.json
 
 ```json
 {
-  "success": false,
-  "topic": "Plant/Warehouse/Metric/StockLevel",
-  "error": { "code": 400, "message": "Schema validation failed: sku_A must be integer" }
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": false,
+    "results": [
+      {
+        "success": false,
+        "topic": "Plant/Warehouse/Metric/StockLevel",
+        "error": { "code": 400, "message": "Schema validation failed: sku_A must be integer" }
+      }
+    ]
+  }
 }
 ```
 
