@@ -1,6 +1,6 @@
 ---
 name: tier0-uns-create
-version: 0.3.0
+version: 0.4.0
 description: "在 UNS 命名空间中创建节点。triggers: Tier0, UNS, 创建, 节点, 命名空间"
 metadata:
   requires:
@@ -13,7 +13,7 @@ metadata:
 
 ## 说明
 
-在 UNS 命名空间中创建一个新的节点（文件夹或数据点）。
+在 UNS 命名空间中创建节点（文件夹或数据点）。支持单条路径创建和多级 `children` 树。
 
 ## API
 
@@ -21,7 +21,25 @@ metadata:
 POST /openapi/v1/uns/create
 ```
 
-## 请求参数
+## CLI
+
+```bash
+tier0 uns create [flags]
+```
+
+| 参数 | 说明 |
+|------|------|
+| `--topic` / `-t` | 点位路径或叶子名；中间段会自动建为 `folder` |
+| `--parent` | 父路径前缀，与 `--topic` 拼接（如 `--parent Plant --topic Line1` → `Plant/Line1`） |
+| `--type` | 节点类型：`folder` / `FOLDER` / `file`；或 `METRIC` / `ACTION` / `STATE`（会映射为 `file` + `topicType`） |
+| `--topic-type` | 文件节点的 topic 类型（`metric` / `action` / `state`），`--type METRIC` 时可省略 |
+| `--display-name` / `-d` | 显示名称 |
+| `--description` | 描述 |
+| `--alias` | 别名 |
+| `--fields` | Schema 字段 JSON 数组 |
+| `--file` / `-f` | 从 JSON 文件读取（支持 `{"namespace":[...]}` 或裸数组 `[...]`） |
+
+## 请求体（API / --file）
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
@@ -31,42 +49,48 @@ POST /openapi/v1/uns/create
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `name` | string | 是 | 节点名称 |
-| `type` | string | 是 | 节点类型（`folder` / `thing`） |
+| `name` | string | 是 | **单段**节点名（不能含 `/`） |
+| `type` | string | 是 | `folder` / `file`（或 `path` / `topic`）；不要用 `thing` |
 | `alias` | string | 否 | 别名 |
 | `description` | string | 否 | 描述 |
 | `displayName` | string | 否 | 显示名称 |
 | `extendProperties` | object | 否 | 扩展属性 |
-| `fields` | SchemaField[] | 否 | 字段定义列表 |
-| `topicType` | string | 否 | 主题类型 |
-| `children` | NamespaceNode[] | 否 | 子节点列表 |
+| `fields` | SchemaField[] | 否 | 字段定义（`file` 节点） |
+| `topicType` | string | 否 | `metric` / `action` / `state`（`file` 节点必填或由路径推导） |
+| `children` | NamespaceNode[] | 否 | 子节点（多级结构） |
 
 ### SchemaField
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `name` | string | 是 | 字段名称 |
-| `type` | string | 是 | 字段类型（`float` / `int` / `string` / `bool`） |
+| `type` | string | 是 | `float` / `int` / `string` / `bool`（或 `DOUBLE` 等） |
 | `unit` | string | 否 | 单位 |
 
 ## 示例
 
-```bash
-# 创建文件夹节点
-tier0 uns create --body '{"namespace":[{"name":"sensor","type":"folder"}]}'
+### 单路径创建（自动补全中间 folder）
 
-# 创建带字段的数据点节点
-tier0 uns create --body '{"namespace":[{"name":"temp","type":"thing","fields":[{"name":"value","type":"float","unit":"°C"}]}]}'
+```bash
+# 创建 Metric 数据点：自动创建 Plant、Line1、Metric 文件夹，再创建 Temperature
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type METRIC \
+  --fields '[{"name":"value","type":"float","unit":"°C"}]'
+
+# 只建一层 folder
+tier0 uns create --topic Plant/Line1 --type FOLDER --display-name "Line 1"
+
+# 在已有 Plant 下创建
+tier0 uns create --parent Plant --topic Line1/Metric/Temp --type METRIC
 ```
 
-## 典型场景
+### 从文件批量创建多级结构
 
-**批量创建层级结构：**
 ```bash
 tier0 uns create --file structure.json
 ```
 
-`structure.json` 内容：
+`structure.json`（两种格式均可）：
+
 ```json
 {
   "namespace": [
@@ -78,8 +102,18 @@ tier0 uns create --file structure.json
           "name": "line1",
           "type": "folder",
           "children": [
-            {"name": "temp", "type": "thing", "fields": [{"name": "value", "type": "float", "unit": "°C"}]},
-            {"name": "humidity", "type": "thing", "fields": [{"name": "value", "type": "float", "unit": "%RH"}]}
+            {
+              "name": "temp",
+              "type": "file",
+              "topicType": "metric",
+              "fields": [{"name": "value", "type": "float", "unit": "°C"}]
+            },
+            {
+              "name": "humidity",
+              "type": "file",
+              "topicType": "metric",
+              "fields": [{"name": "value", "type": "float", "unit": "%RH"}]
+            }
           ]
         }
       ]
@@ -88,9 +122,20 @@ tier0 uns create --file structure.json
 }
 ```
 
-## Windows PowerShell
+### 直接调 API（高级）
 
-复杂结构统一用文件法：
+```bash
+tier0 api POST /openapi/v1/uns/create --body-file structure.json
+```
+
+## 规则
+
+1. **`name` 不能含 `/`** — 多级用 `children` 或 CLI `--topic` 路径自动展开。
+2. **`--type METRIC`** 会映射为 `type=file` + `topicType=metric`。
+3. **已存在的同名 folder** 会被复用，不会报错（后端 `createOrReusePath`）。
+4. 复杂结构优先用 `--file`；PowerShell 下避免内联大段 JSON。
+
+## Windows PowerShell
 
 ```powershell
 tier0 uns create --file structure.json

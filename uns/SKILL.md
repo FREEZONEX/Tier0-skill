@@ -1,6 +1,6 @@
 ---
 name: tier0-uns
-version: 0.3.0
+version: 0.4.0
 description: "Tier0 UNS（Unified Namespace）数据面操作。支持命名空间浏览、节点读写、历史数据查询、搜索、创建、更新、删除、恢复。triggers: Tier0, UNS, 命名空间, 数据读写, 历史查询"
 metadata:
   requires:
@@ -36,6 +36,7 @@ metadata:
 4. **history 参数复杂，必读文档** — 时间戳单位（秒/毫秒）、聚合参数极易出错，读 `references/history.md` 后再执行
 5. **delete 分软删除和硬删除** — 硬删除（`hard_delete: true`）不可逆，除非用户明确要求，默认用软删除
 6. **不要用 search 替代 browse** — search 是关键词检索，browse 是结构浏览；探索树形结构用 browse，找已知名称用 search
+7. **create 多级结构** — 先读 `references/create.md`。单节点用 `--topic` 全路径（中间段自动建 `folder`）或 `--parent` + `--topic`；批量/复杂树用 `--file` + `children`。每个 `name` 只能是单段（不能含 `/`）；`--type METRIC` 会映射为 `file` + `topicType=metric`
 
 ## 子技能路由
 
@@ -49,7 +50,7 @@ metadata:
 | 写入数据点 | `references/write.md` | — | 发布数据，value 必须是对象 |
 | 查询历史/时序数据 | **必读** `references/history.md` | — | 时间戳参数复杂，必读后执行 |
 | 搜索节点 | `references/search.md` | — | 按关键字/前缀搜索 |
-| 创建节点 | `references/create.md` | — | 新建 folder 或 thing 节点 |
+| 创建节点 | **必读** `references/create.md` | — | 新建 folder 或 file（数据点）；支持多级路径与 `children` 树 |
 | 更新节点元数据 | `references/update.md` | — | 修改字段定义或描述 |
 | 删除节点 | `references/delete.md` | ⚠️ 硬删除不可逆 | 软删除可恢复，硬删除永久清除 |
 | 恢复已删除节点 | `references/restore.md` | — | 撤销软删除 |
@@ -65,4 +66,6 @@ metadata:
 | 查历史趋势 | **先读 `references/history.md`**，再执行 | 不要循环 `read`（read 只返回最新值） |
 | 写入数据 | `write`，value 是 `{"field":val}` 对象 | 不要写标量（`"value": 27.5` 是错误的） |
 | 修改节点字段定义 | `update` | 不要用 `write`（write 是写 VQT 数据） |
+| 创建多级命名空间 | **先读 `references/create.md`**，`--topic Plant/Line1/Metric/Temp --type METRIC` 或 `--file` | 不要把全路径塞进单个 `name`；不要用已废弃的 `--body` |
+| 在已有路径下创建 | `create --parent Plant --topic Line1 --type FOLDER` | 不要假设 `--topic` 只能建根节点 |
 | 同时了解数据来源（Flow） | UNS 操作后追加 `tier0 flow list --keyword <name>` | 不要只查一侧 |

@@ -1,6 +1,6 @@
 ---
 name: tier0-cli
-version: 0.3.0
+version: 0.3.1
 description: "Tier0 Cloud 平台 CLI 统一入口。涵盖 UNS（Unified Namespace）数据面操作：命名空间浏览、节点读写、历史数据查询、节点增删改；以及 Flow（Node-RED）管理：SourceFlow 协议采集 / EventFlow 业务处理流的创建、部署、画布导入导出。triggers: Tier0, Cloud, UNS, Flow, Node-RED, 命名空间, 数据读写, 设备数据, SourceFlow, EventFlow, 工作流"
 metadata:
   requires:
@@ -92,8 +92,8 @@ TIER0_LANG=zh tier0 flow list
 | Workspace | 租户工作区，所有资源的隔离单位 |
 | UNS (Unified Namespace) | 统一命名空间，**树形路径结构**组织数据点 |
 | Path（路径段） | 路径中的每一段都是**文件夹**，相当于目录层级。只有完整路径才对应一个 topic（数据点） |
-| Topic | 完整路径字符串，如 `Plant/Line1/Metric/Temperature`。**只有叶子节点（thing 类型）才是可读写的数据点**，中间路径段是文件夹 |
-| Node | 命名空间中的节点：`folder`（文件夹）或 `thing`（数据点） |
+| Topic | 完整路径字符串，如 `Plant/Line1/Metric/Temperature`。**只有叶子节点（`file` 类型数据点）才可 read/write**，中间路径段是 `folder` |
+| Node | 命名空间中的节点：`folder`（文件夹）或 `file`（数据点，常配合 `topicType`: metric/action/state） |
 | VQT | 数据点的值结构：`value`（业务对象）+ `quality`（数据质量）+ `timeStamp`（毫秒时间戳） |
 | SourceFlow | Node-RED 实例，连接工业协议采集设备数据并发布 MQTT |
 | EventFlow | Node-RED 实例，订阅 MQTT 消息对业务数据进行二次处理 |
@@ -110,11 +110,11 @@ Workspace
 │   ├── Plant/                          ← folder（文件夹）
 │   │   ├── Line1/                      ← folder
 │   │   │   ├── Metric/                 ← folder
-│   │   │   │   └── Temperature         ← thing（数据点，完整 topic）
+│   │   │   │   └── Temperature         ← file（数据点，完整 topic）
 │   │   │   │       └── VQT { value: {"temperature":27.5,"unit":"C"},
 │   │   │   │                 quality: "Good", timeStamp: 1733382000000 }
 │   │   │   └── State/
-│   │   │       └── MachineStatus       ← thing（数据点）
+│   │   │       └── MachineStatus       ← file（数据点）
 │   │   └── Line2/
 │   │       └── ...
 └── Flow
@@ -148,7 +148,7 @@ Workspace
 | 写入数据点 | `uns/references/write.md` | 发布数据，value 必须是对象 |
 | 查询历史/时序数据 | **必读** `uns/references/history.md` | 历史记录、聚合查询（时间戳参数复杂，必读后执行） |
 | 搜索节点 | `uns/references/search.md` | 按关键字/前缀搜索 |
-| 创建节点 | `uns/references/create.md` | 新建 folder 或 thing 节点 |
+| 创建节点 | **必读** `uns/references/create.md` | 新建 folder 或 file；`--topic` 多级路径、`--parent`、`--file` |
 | 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
 | 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
 | 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
@@ -188,6 +188,7 @@ Workspace
 | 查某段时间的历史趋势 | **必读** `uns/references/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
 | 写入/更新数据点 | `uns/references/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
 | 查看/管理节点元数据、字段定义 | `uns/references/update.md` | 不要用 `write`（write 是写 VQT 数据） |
+| 创建多级 UNS 节点 | **必读** `uns/references/create.md` — `--topic` 全路径或 `--file` | 不要把 `Plant/Line1` 当作单个 `name`；`--type METRIC` 不是节点 type |
 | 查看 Flow 列表或详情 | `flow/references/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
 | 导出 Node-RED 画布备份 | `flow/references/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
 | 部署 Node-RED 画布 | **必读** `flow/references/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
@@ -204,6 +205,7 @@ tier0 uns read "Plant/+/Metric/Temperature" --json
 tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5}'
 # 复杂 JSON（write/create/update）推荐用 --file
 tier0 uns write --file writes.json
+tier0 uns create --file structure.json
 # 调试模式
 tier0 uns browse Plant/Line1 --debug
 ```
@@ -228,6 +230,12 @@ tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":2
 
 # 查询历史数据
 tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
+
+# 创建节点（中间路径段自动建 folder）
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type METRIC \
+  --fields '[{"name":"value","type":"float","unit":"°C"}]'
+tier0 uns create --parent Plant --topic Line1 --type FOLDER
+tier0 uns create --file structure.json
 
 # ── Flow ─────────────────────────────────────
 # 列出所有 Flow
