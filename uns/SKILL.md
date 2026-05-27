@@ -1,6 +1,6 @@
 ---
 name: tier0-uns
-version: 0.4.0
+version: 0.5.0
 description: "Tier0 UNS（Unified Namespace）数据面操作。支持命名空间浏览、节点读写、历史数据查询、搜索、创建、更新、删除、恢复。triggers: Tier0, UNS, 命名空间, 数据读写, 历史查询"
 metadata:
   requires:
@@ -36,7 +36,7 @@ metadata:
 4. **history 参数复杂，必读文档** — 时间戳单位（秒/毫秒）、聚合参数极易出错，读 `references/history.md` 后再执行
 5. **delete 分软删除和硬删除** — 硬删除（`hard_delete: true`）不可逆，除非用户明确要求，默认用软删除
 6. **不要用 search 替代 browse** — search 是关键词检索，browse 是结构浏览；探索树形结构用 browse，找已知名称用 search
-7. **create 多级结构** — 先读 `references/create.md`。`--topic` **只支持单节点**；批量/多节点/复杂树**必须用 `--file`**。`--type METRIC/ACTION/STATE` 时路径倒数第二段必须是对应类型文件夹（如 `.../Metric/Temperature`），不符合直接报错。每个 `name` 只能是单段（不含 `/`）
+7. **create 必读 `references/create.md`** — 单节点用 `--topic`；多个节点或复杂树用 `--file`。**路径不会自动插入 `Metric`/`Action`/`State`**，数据点路径必须已含类型目录（如 `.../Metric/ProductionCount`）。**`--topic-type` 不是字段类型**（`int`/`float` 写在 `--fields`）
 
 ## 子技能路由
 
@@ -50,7 +50,7 @@ metadata:
 | 写入数据点 | `references/write.md` | — | 发布数据，value 必须是对象 |
 | 查询历史/时序数据 | **必读** `references/history.md` | — | 时间戳参数复杂，必读后执行 |
 | 搜索节点 | `references/search.md` | — | 按关键字/前缀搜索 |
-| 创建节点 | **必读** `references/create.md` | — | 单节点用 `--topic`；**多节点必须用 `--file`**；支持多级路径与 `children` 树 |
+| 创建节点 | **必读** `references/create.md` | — | 单节点 `--topic`；批量/树 `--file`；不自动插类型目录 |
 | 更新节点元数据 | `references/update.md` | — | 修改字段定义或描述 |
 | 删除节点 | `references/delete.md` | ⚠️ 硬删除不可逆 | 软删除可恢复，硬删除永久清除 |
 | 恢复已删除节点 | `references/restore.md` | — | 撤销软删除 |
@@ -66,7 +66,8 @@ metadata:
 | 查历史趋势 | **先读 `references/history.md`**，再执行 | 不要循环 `read`（read 只返回最新值） |
 | 写入数据 | `write`，value 是 `{"field":val}` 对象 | 不要写标量（`"value": 27.5` 是错误的） |
 | 修改节点字段定义 | `update` | 不要用 `write`（write 是写 VQT 数据） |
-| 创建单个节点 | **先读 `references/create.md`**，`--topic Plant/Line1/Metric/Temp --type METRIC` | 不要把全路径塞进单个 `name` |
-| **创建多个节点** | **`--file structure.json`**（`--topic` 不支持多节点，传多次无效） | 不要尝试重复传 `--topic` |
-| 在已有路径下创建 | `create --parent Plant --topic Line1 --type FOLDER` | 不要假设 `--topic` 只能建根节点 |
+| 创建单个数据点 | **必读 `references/create.md`**，`--topic .../Metric/<name> --type METRIC` | 不要用 `--topic-type int`；不要省略路径中的 `Metric` |
+| 创建多个并列节点 | **`--file`** 传 JSON 数组 | `--topic` 一次只建一个节点 |
+| 创建整棵工厂/产线树 | **`--file`** + `children` 嵌套 | 不要多次重复调用以为能批量 |
+| 在已有路径下追加节点 | `--parent <已有路径> --topic Metric/<name> --type METRIC` | 不要假设会自动补父路径或 Metric |
 | 同时了解数据来源（Flow） | UNS 操作后追加 `tier0 flow list --keyword <name>` | 不要只查一侧 |

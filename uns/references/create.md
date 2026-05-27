@@ -1,7 +1,7 @@
 ---
 name: tier0-uns-create
-version: 0.4.0
-description: "在 UNS 命名空间中创建节点。triggers: Tier0, UNS, 创建, 节点, 命名空间"
+version: 0.6.0
+description: "在 UNS 命名空间中创建节点。triggers: Tier0, UNS, 创建, 节点, 命名空间, 批量创建"
 metadata:
   requires:
     bins: ["tier0"]
@@ -9,147 +9,119 @@ metadata:
     tags: [uns, create, namespace]
 ---
 
-# create — 创建节点
+# uns create — 创建命名空间节点
 
-## 说明
-
-在 UNS 命名空间中创建节点（文件夹或数据点）。支持单条路径创建和多级 `children` 树。
-
-## API
-
-```
-POST /openapi/v1/uns/create
-```
-
-## CLI
+## 命令
 
 ```bash
-tier0 uns create [flags]
-```
+# 创建一个 topic（数据点）
+tier0 uns create \
+  --topic "Factory1/Assembly/Line1/Station1/Metric/ProductionCount" \
+  --type topic \
+  --display-name "当前产量" \
+  --fields '[{"name":"value","type":"int"}]' \
+  --json
 
-| 参数 | 说明 |
-|------|------|
-| `--topic` / `-t` | 点位路径或叶子名（**仅支持单节点**）；中间段自动建为 `folder`；**多节点请用 `--file`** |
-| `--parent` | 父路径前缀，与 `--topic` 拼接（如 `--parent Plant --topic Line1` → `Plant/Line1`） |
-| `--type` | 节点类型：`folder` / `FOLDER` / `file`；或 `METRIC` / `ACTION` / `STATE`（会映射为 `file` + `topicType`） |
-| `--topic-type` | 文件节点的 topic 类型（`metric` / `action` / `state`），`--type METRIC` 时可省略 |
-| `--display-name` / `-d` | 显示名称 |
-| `--description` | 描述 |
-| `--alias` | 别名 |
-| `--fields` | Schema 字段 JSON 数组 |
-| `--file` / `-f` | 从 JSON 文件读取（支持 `{"namespace":[...]}` 或裸数组 `[...]`）；**批量创建多个节点必须使用此方式** |
+# 父路径已存在，只建子节点
+tier0 uns create \
+  --parent "Factory1/Assembly/Line1/Station1" \
+  --topic "Metric/ProductionCount" \
+  --type topic \
+  --fields '[{"name":"value","type":"int"}]'
 
-## 请求体（API / --file）
+# 创建 path（目录）
+tier0 uns create \
+  --topic "Factory1/Assembly/Line1" \
+  --type path \
+  --display-name "产线1"
 
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `namespace` | NamespaceNode[] | 是 | 节点定义列表 |
-
-### NamespaceNode
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `name` | string | 是 | **单段**节点名（不能含 `/`） |
-| `type` | string | 是 | `folder` / `file`（或 `path` / `topic`）；不要用 `thing` |
-| `alias` | string | 否 | 别名 |
-| `description` | string | 否 | 描述 |
-| `displayName` | string | 否 | 显示名称 |
-| `extendProperties` | object | 否 | 扩展属性 |
-| `fields` | SchemaField[] | 否 | 字段定义（`file` 节点） |
-| `topicType` | string | 否 | `metric` / `action` / `state`（`file` 节点必填或由路径推导） |
-| `children` | NamespaceNode[] | 否 | 子节点（多级结构） |
-
-### SchemaField
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `name` | string | 是 | 字段名称 |
-| `type` | string | 是 | `float` / `int` / `string` / `bool`（或 `DOUBLE` 等） |
-| `unit` | string | 否 | 单位 |
-
-## 示例
-
-### 单路径创建（自动补全中间 folder）
-
-```bash
-# 创建 Metric 数据点：自动创建 Plant、Line1、Metric 文件夹，再创建 Temperature
-tier0 uns create --topic Plant/Line1/Metric/Temperature --type METRIC \
-  --fields '[{"name":"value","type":"float","unit":"°C"}]'
-
-# 只建一层 folder
-tier0 uns create --topic Plant/Line1 --type FOLDER --display-name "Line 1"
-
-# 在已有 Plant/Line1 下创建（倒数第二段必须是 metric/action/state）
-tier0 uns create --parent Plant/Line1 --topic Metric/Temp --type METRIC
-```
-
-### 批量创建多个节点
-
-`--topic` 只支持单节点。批量创建请用 `--file`，结构清晰、不易出错：
-
-```bash
+# 从 JSON 文件批量创建整棵树
 tier0 uns create --file structure.json
 ```
 
-`structure.json`：
+## 返回值
 
-```json
-[
-  {"name": "Line1", "type": "folder"},
-  {"name": "Line2", "type": "folder"},
-  {"name": "Line3", "type": "folder"}
-]
+成功后输出创建的完整路径（`--topic` 模式）或 `Namespace created.`（`--file` 模式）。
+加 `--json` 可获取 API 原始响应。
+
+## 参数
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `--topic` / `-t` | 与 `--type` 同用 | 节点路径或叶子名；与 `--parent` 拼接后成完整路径 |
+| `--parent` | 否 | 已有父路径前缀，用于复用现有路径前缀 |
+| `--type` | 与 `--topic` 同用 | 节点类型；可选值：`path`（目录）、`topic`（数据点） |
+| `--display-name` / `-d` | 否 | 显示名称 |
+| `--description` | 否 | 描述 |
+| `--alias` | 否 | 别名 |
+| `--fields` | 否 | topic 节点的 Schema 字段，JSON 数组，如 `[{"name":"value","type":"int"}]` |
+| `--file` / `-f` | 与 `--topic` 互斥 | JSON 文件：`{"namespace":[...]}` 或裸数组 `[...]` |
+
+## 路径规则
+
+UNS 每个 topic（数据点）节点的路径结构固定为：
+
+```
+<任意层 folder> / Metric|Action|State / <叶子名>
+                     └── 类型目录（倒数第二段）
+                                           └── topic 节点（最后一段）
 ```
 
-或带完整层级：
+- 倒数第二段必须是类型目录之一：`Metric`、`Action`、`State`（大小写不敏感）
+- `topicType` 直接从该段推导，无需手动指定
+- **不会自动插入**类型目录——路径中没写的段不会出现
 
-```json
-{
-  "namespace": [{
-    "name": "Plant", "type": "folder", "children": [{
-      "name": "Line1", "type": "folder", "children": [
-        {"name": "Metric", "type": "folder", "children": [
-          {"name": "Temperature", "type": "file", "topicType": "metric",
-           "fields": [{"name": "value", "type": "float", "unit": "°C"}]},
-          {"name": "Humidity",    "type": "file", "topicType": "metric",
-           "fields": [{"name": "value", "type": "float", "unit": "%RH"}]}
-        ]}
-      ]}
-    ]}
-  ]}
-}
-```
+| 类型目录 | `topicType` | 语义 |
+|---------|-------------|------|
+| `Metric` | `metric` | 采集量、测量值 |
+| `Action` | `action` | 控制指令、执行动作 |
+| `State` | `state` | 状态标志、模式 |
 
-### 从文件批量创建多级结构
+## 行为说明
 
-```bash
-tier0 uns create --file structure.json
-```
+- **`--topic` 展开为树**：`Plant/Line1/Metric/Temp` 中每一段都会建为 folder，只有最后一段是 topic 节点
+- **`--topic` 一次建一个叶子**：不要用它批量建并列节点，并列场景用 `--file`
+- **`--parent` + `--topic` 拼接**：`--parent A/B --topic Metric/Count` 等价于 `--topic A/B/Metric/Count`
+- **中间 folder 的元数据**（displayName 等）只能通过 `--file` + `children` 表达；`--display-name` 只作用于叶子
+- **已存在的同名 folder** 会复用，不报错
+- **`--topic-type` 已废弃**：topicType 从路径自动推导；旧参数仍被接受但会打印警告
 
-`structure.json`（两种格式均可）：
+## 推荐场景
+
+- 用户说"在 Station1 下创建一个产量数据点"→ 使用 `--parent Station1 --topic Metric/ProductionCount --type topic`
+- 用户给出设备层级，需要批量建完整树 → 用 `--file structure.json`（见下方 JSON 示例）
+- 只建目录结构，暂不建数据点 → `--type path`，路径无需包含类型目录
+
+## JSON 文件格式（`--file`）
 
 ```json
 {
   "namespace": [
     {
-      "name": "factory",
-      "type": "folder",
+      "name": "Factory1",
+      "type": "path",
       "children": [
         {
-          "name": "line1",
-          "type": "folder",
+          "name": "Metric",
+          "type": "path",
           "children": [
             {
-              "name": "temp",
-              "type": "file",
+              "name": "ProductionCount",
+              "type": "topic",
               "topicType": "metric",
-              "fields": [{"name": "value", "type": "float", "unit": "°C"}]
-            },
+              "displayName": "当前产量",
+              "fields": [{"name": "value", "type": "int"}]
+            }
+          ]
+        },
+        {
+          "name": "Action",
+          "type": "path",
+          "children": [
             {
-              "name": "humidity",
-              "type": "file",
-              "topicType": "metric",
-              "fields": [{"name": "value", "type": "float", "unit": "%RH"}]
+              "name": "Start",
+              "type": "topic",
+              "topicType": "action"
             }
           ]
         }
@@ -159,24 +131,50 @@ tier0 uns create --file structure.json
 }
 ```
 
-### 直接调 API（高级）
+裸数组也支持：`[{"name":"Line1","type":"path"}, ...]`
+
+### NamespaceNode 字段
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `name` | string | 是 | 单段名称，不含 `/` |
+| `type` | string | 是 | `path`（目录）或 `topic`（数据点） |
+| `topicType` | string | topic 时必填 | `metric` / `action` / `state` |
+| `fields` | SchemaField[] | 否 | 数据点字段定义 |
+| `displayName` | string | 否 | 显示名 |
+| `description` | string | 否 | 描述 |
+| `alias` | string | 否 | 别名 |
+| `children` | NamespaceNode[] | 否 | 子节点 |
+
+### SchemaField
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `name` | string | 字段名 |
+| `type` | string | `int` / `float` / `string` / `bool` 等 |
+| `unit` | string | 单位（可选） |
+
+## 常见错误
+
+| 现象 | 原因 | 处理 |
+|------|------|------|
+| `segment before leaf must be a type folder` | 路径叶子前一段不是 Metric/Action/State | 在叶子名前补类型目录，如 `.../Metric/ProductionCount` |
+| `a topic node needs at least two segments` | 路径只有一段，缺少类型目录 | 至少写 `Metric/Count`，不能只写 `Count` |
+| `--type "" is not valid` | `--type` 漏填或拼错 | 只接受 `path` 或 `topic` |
+| PowerShell 下 JSON 解析失败 | 内联 JSON 转义问题 | 改用 `--fields` 值写入文件，再 `--file` 传入 |
+
+## API
+
+```
+POST /openapi/v1/uns/create
+```
+
+直接调用：
 
 ```bash
 tier0 api POST /openapi/v1/uns/create --body-file structure.json
 ```
 
-## 规则
+## 参考
 
-1. **`name` 不能含 `/`** — 多级用 `children` 或 CLI `--topic` 路径自动展开。
-2. **`--type METRIC/ACTION/STATE` 时，路径倒数第二段必须是对应的类型文件夹**（`metric` / `action` / `state`），否则报错。例：`Plant/Line1/Metric/Temperature` ✓，`Plant/Line1/Temperature` ✗。CLI 不会自动补充，`--file` 模式同理。
-3. **`--type METRIC`** 会映射为 `type=file` + `topicType=metric`。
-3. **已存在的同名 folder** 会被复用，不会报错（后端 `createOrReusePath`）。
-4. 复杂结构优先用 `--file`；PowerShell 下避免内联大段 JSON。
-5. **`--file` 与 `--topic`/`--type`/`--parent` 互斥** — 同时传会报错；需要给中间 folder 加元数据时，也请用 `--file`。
-6. **`--display-name`/`--description`/`--alias` 只作用于叶子节点** — `--topic` 路径中间自动生成的 folder 不会附带这些字段；如需给中间层加元数据，请用 `--file` 提供完整树结构。
-
-## Windows PowerShell
-
-```powershell
-tier0 uns create --file structure.json
-```
+- [uns SKILL.md](../SKILL.md) — UNS 全部命令

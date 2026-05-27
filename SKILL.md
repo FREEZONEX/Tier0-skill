@@ -1,6 +1,6 @@
 ---
 name: tier0-cli
-version: 0.3.1
+version: 0.3.2
 description: "Tier0 Cloud 平台 CLI 统一入口。涵盖 UNS（Unified Namespace）数据面操作：命名空间浏览、节点读写、历史数据查询、节点增删改；以及 Flow（Node-RED）管理：SourceFlow 协议采集 / EventFlow 业务处理流的创建、部署、画布导入导出。triggers: Tier0, Cloud, UNS, Flow, Node-RED, 命名空间, 数据读写, 设备数据, SourceFlow, EventFlow, 工作流"
 metadata:
   requires:
@@ -148,7 +148,7 @@ Workspace
 | 写入数据点 | `uns/references/write.md` | 发布数据，value 必须是对象 |
 | 查询历史/时序数据 | **必读** `uns/references/history.md` | 历史记录、聚合查询（时间戳参数复杂，必读后执行） |
 | 搜索节点 | `uns/references/search.md` | 按关键字/前缀搜索 |
-| 创建节点 | **必读** `uns/references/create.md` | 新建 folder 或 file；`--topic` 多级路径、`--parent`、`--file` |
+| 创建节点 | **必读** `uns/references/create.md` | 单节点 `--topic`；批量/树 `--file`；路径须含 Metric/Action/State |
 | 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
 | 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
 | 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
@@ -188,7 +188,7 @@ Workspace
 | 查某段时间的历史趋势 | **必读** `uns/references/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
 | 写入/更新数据点 | `uns/references/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
 | 查看/管理节点元数据、字段定义 | `uns/references/update.md` | 不要用 `write`（write 是写 VQT 数据） |
-| 创建多级 UNS 节点 | **必读** `uns/references/create.md` — `--topic` 全路径或 `--file` | 不要把 `Plant/Line1` 当作单个 `name`；`--type METRIC` 不是节点 type |
+| 创建 UNS 节点 | **必读** `uns/references/create.md` | 路径须含 `Metric` 等类型目录；不自动插入；`--topic-type` 不是字段类型 |
 | 查看 Flow 列表或详情 | `flow/references/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
 | 导出 Node-RED 画布备份 | `flow/references/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
 | 部署 Node-RED 画布 | **必读** `flow/references/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
@@ -231,10 +231,11 @@ tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":2
 # 查询历史数据
 tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
 
-# 创建节点（中间路径段自动建 folder）
+# 创建节点（路径须含 Metric；字段类型写在 --fields）
 tier0 uns create --topic Plant/Line1/Metric/Temperature --type METRIC \
   --fields '[{"name":"value","type":"float","unit":"°C"}]'
-tier0 uns create --parent Plant --topic Line1 --type FOLDER
+tier0 uns create --parent Plant/Line1 --topic Metric/ProductionCount --type METRIC \
+  --fields '[{"name":"value","type":"int"}]'
 tier0 uns create --file structure.json
 
 # ── Flow ─────────────────────────────────────
