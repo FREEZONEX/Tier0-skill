@@ -38,6 +38,24 @@ metadata:
 6. **不要用 search 替代 browse** — search 是关键词检索，browse 是结构浏览；探索树形结构用 browse，找已知名称用 search
 7. **create 必读 `references/create.md`** — 单节点用 `--topic`；多个节点或复杂树用 `--file`。**路径不会自动插入 `Metric`/`Action`/`State`**，数据点路径必须已含类型目录（如 `.../Metric/ProductionCount`）。**`--topic-type` 不是字段类型**（`int`/`float` 写在 `--fields`）
 
+## Topic 类型定义
+
+UNS 叶子节点（`type=file`）的 `topicType` 有且仅有三种，含义严格区分：
+
+| topicType | 用途 | 存储格式 | 典型示例 |
+|-----------|------|---------|---------|
+| **metric** | **设备实时数据** — 传感器采集、生产过程的时序数据，持续产生、有历史记录 | **单层 JSON**（字段扁平，不支持嵌套） | 产量、温度、压力、库存数量、设备运行状态 |
+| **action** | **对外集成接口（下行请求）** — 由 UNS 发出的命令/请求，触发下游系统执行操作 | **JSONB**（支持任意层级嵌套） | 工单下发、报工指令、出入库操作、设备控制命令 |
+| **state** | **接口结果（上行回执）** — 外部系统返回的操作结果或当前状态快照，不是时序流 | **JSONB**（支持任意层级嵌套） | 工单执行结果、出入库确认、设备连接状态、报警状态 |
+
+> **字段约束**：`metric` 节点的 `--fields` 必须是单层扁平结构（不可嵌套）；`action`/`state` 节点以 JSONB 存储，结构自由，`--fields` 可省略。
+>
+> **路径约定**（强制）：叶子节点路径的倒数第二段必须与 `topicType` 一致，CLI 会校验并报错：
+> - `Plant/Line1/Metric/ProductionCount` ✓
+> - `Plant/WMS/Action/StockOut` ✓
+> - `Plant/MES/State/WorkOrderStatus` ✓
+> - `Plant/Line1/ProductionCount`（缺少类型目录）✗
+
 ## 子技能路由
 
 > **路径辨别规则**：用户给出的路径若不到叶子节点（如 `Plant/Line1`），是文件夹，用 browse；完整到数据点（如 `Plant/Line1/Metric/Temperature`）才能 read/write。

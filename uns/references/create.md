@@ -50,12 +50,20 @@ tier0 uns create --file structure.json
 |------|------|------|
 | `--topic` / `-t` | 与 `--type` 同用 | 节点路径或叶子名；与 `--parent` 拼接后成完整路径 |
 | `--parent` | 否 | 已有父路径前缀，用于复用现有路径前缀 |
-| `--type` | 与 `--topic` 同用 | 节点类型；可选值：`path`（目录）、`topic`（数据点） |
+| `--type` | 与 `--topic` 同用 | 节点类型：`path`（目录）；或 `METRIC` / `ACTION` / `STATE`（数据点，含义见下表） |
 | `--display-name` / `-d` | 否 | 显示名称 |
 | `--description` | 否 | 描述 |
 | `--alias` | 否 | 别名 |
-| `--fields` | 否 | topic 节点的 Schema 字段，JSON 数组，如 `[{"name":"value","type":"int"}]` |
+| `--fields` | 否 | Schema 字段定义，JSON 数组；**METRIC 只支持单层扁平字段**；ACTION/STATE 存 JSONB 无需定义 Schema，可省略 |
 | `--file` / `-f` | 与 `--topic` 互斥 | JSON 文件：`{"namespace":[...]}` 或裸数组 `[...]` |
+
+## 数据点类型（topicType）
+
+| --type | topicType | 含义 | 存储格式 | 典型场景 |
+|--------|-----------|------|---------|---------|
+| `METRIC` | `metric` | **设备实时数据** — 传感器/过程量，持续产生、有时序历史 | **单层 JSON**，字段必须扁平，不可嵌套 | 产量、温度、压力、库存数量 |
+| `ACTION` | `action` | **对外集成接口（下行请求）** — 由 UNS 发出的命令，触发下游系统执行 | **JSONB**，支持任意层级嵌套 | 工单下发、报工指令、出入库操作、设备控制命令 |
+| `STATE` | `state` | **接口结果（上行回执）** — 外部系统返回的操作结果或当前状态快照 | **JSONB**，支持任意层级嵌套 | 工单执行结果、出入库确认、设备连接状态、报警状态 |
 
 ## 路径规则
 
