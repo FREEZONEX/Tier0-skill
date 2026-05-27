@@ -1,6 +1,6 @@
 ---
 name: tier0-uns-create
-version: 0.6.0
+version: 0.4.16
 description: "在 UNS 命名空间中创建节点。triggers: Tier0, UNS, 创建, 节点, 命名空间, 批量创建"
 metadata:
   requires:

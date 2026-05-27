@@ -1,6 +1,6 @@
 ---
 name: tier0-uns
-version: 0.5.0
+version: 0.4.16
 description: "Tier0 UNS（Unified Namespace）数据面操作。支持命名空间浏览、节点读写、历史数据查询、搜索、创建、更新、删除、恢复。triggers: Tier0, UNS, 命名空间, 数据读写, 历史查询"
 metadata:
   requires:

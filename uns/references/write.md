@@ -1,6 +1,6 @@
 ---
 name: tier0-uns-write
-version: 0.3.0
+version: 0.4.16
 description: "向 UNS topic 写入数据（对象值）。triggers: Tier0, UNS, 写入, 数据点, 发布, 上报"
 metadata:
   requires:
