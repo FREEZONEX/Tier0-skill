@@ -49,6 +49,13 @@ tier0 config --base-url https://your-tier0-instance.com
 
 > **关键约束**：先 `config` 再 `login`，否则授权 URL 指向错误地址。
 
+> **⚠️ 变更 base-url 后必须重新登录**：如果用户通过 `tier0 config --base-url` 修改了平台地址（例如从 SaaS 切换到私有化部署，或更换了实例），原有 API Key 对新地址无效，**必须重新执行完整的登录流程**：
+> ```bash
+> tier0 config --base-url https://new-instance.com
+> tier0 login   # 或 tier0 config --api-key <新实例的 API Key>
+> ```
+> 不重新登录直接调用 API 会收到 `authentication` 错误（exit 3）。
+
 ### 第 4 步 登录授权
 
 **方式 A — Agent 已持有 API Key（推荐）：**
@@ -298,7 +305,7 @@ for (const item of body.data?.results ?? []) {
 |------|------|------|
 | `login` 轮询超时、始终 pending | Agent 未把授权链接展示给用户，用户无从打开浏览器授权 | 重新执行 `tier0 login --no-wait --json`，**先把 `verification_url` 给用户点击**，再 `--setup-code` 轮询 |
 | `API Key not found` | 未登录 | `tier0 config --api-key <key>` 或 `tier0 login` |
-| `HTTP 401` | API Key 失效 | 重新设置：`tier0 config --api-key <key>` |
+| `HTTP 401` / exit 3 `authentication` | API Key 失效，或 **base-url 已变更但未重新登录** | 确认 `tier0 config` 中的 base-url 正确后，重新执行 `tier0 login` |
 | `HTTP 403` | Workspace 权限不足 | 联系管理员 |
 | `HTTP 404` | 资源不存在 | 检查 ID 或路径 |
 | `field "id" is not set` | 误用了 `flowId`（字符串）而非 `id`（整数） | 先 `tier0 flow list` 拿整数 `id`，不要用 `flowId` 字段 |
