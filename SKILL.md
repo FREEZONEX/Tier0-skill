@@ -260,7 +260,7 @@ tier0 flow deploy --id 1 -f flows.json
 
 ## UNS 批量接口响应解析规则
 
-> **适用接口**：`uns read` / `uns write` / `uns history`（批量数据面接口）
+> **适用接口**：`uns read` / `uns write` / `uns history` / `uns create`（批量数据面接口）
 
 这类接口即使部分 topic 失败，HTTP 状态码仍为 200，外层 `code` 仍为 200，`msg` 仍为 `"success"`。**必须检查 `data.success` 和 `data.results[i].success` 才能判断业务是否真正成功。**
 

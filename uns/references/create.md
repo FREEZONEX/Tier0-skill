@@ -44,6 +44,44 @@ tier0 uns create --file structure.json
 成功后输出创建的完整路径（`--topic` 模式）或 `Namespace created.`（`--file` 模式）。
 加 `--json` 可获取 API 原始响应。
 
+### 响应结构（`--json` 模式）
+
+create 是批量接口，后端将树结构展开为多条叶子节点逐一处理。**HTTP 200 + 外层 `code:200` 不代表全部成功，必须检查 `data.success`（整体）和 `data.results[i].success`（逐项）**：
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true,
+    "results": [
+      {
+        "success": true,
+        "topic": "Factory1/Metric/ProductionCount",
+        "result": {}
+      }
+    ]
+  }
+}
+```
+
+部分节点失败时（如路径冲突、格式不合法）：
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": false,
+    "results": [
+      { "success": true,  "topic": "Factory1/Metric/ProductionCount", "result": {} },
+      { "success": false, "topic": "Factory1/Metric/BadNode",
+        "error": { "code": 400, "message": "segment before leaf must be a type folder" } }
+    ]
+  }
+}
+```
+
 ## 参数
 
 | 参数 | 必填 | 说明 |
