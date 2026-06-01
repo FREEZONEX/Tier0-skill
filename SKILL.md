@@ -258,6 +258,40 @@ tier0 flow data --id 1 --out flows.json
 tier0 flow deploy --id 1 -f flows.json
 ```
 
+## UNS 批量接口响应解析规则
+
+> **适用接口**：`uns read` / `uns write` / `uns history`（批量数据面接口）
+
+这类接口即使部分 topic 失败，HTTP 状态码仍为 200，外层 `code` 仍为 200，`msg` 仍为 `"success"`。**必须检查 `data.success` 和 `data.results[i].success` 才能判断业务是否真正成功。**
+
+```
+HTTP 200 + code:200 + msg:"success"
+  └─ data.success: false        ← 整体有失败，不能只看外层
+       └─ data.results[i].success: false  ← 具体哪个 topic 失败
+            └─ data.results[i].error.code / message
+```
+
+**解析规则（伪代码）：**
+
+```js
+const apiOk = body.code === 200;
+
+// 批量接口：data.success 存在时用它判断整体业务成功
+const businessOk =
+  typeof body.data?.success === 'boolean'
+    ? body.data.success
+    : apiOk;
+
+// 还要逐项检查，因为可能部分成功、部分失败
+for (const item of body.data?.results ?? []) {
+  if (!item.success) {
+    // item.topic + item.error.code + item.error.message
+  }
+}
+```
+
+**非批量接口（browse / search / flow list / flow get / info / auth whoami）不含 `data.success`**，直接用外层 `code === 200` 判断即可。
+
 ## 错误处理
 
 | 现象 | 原因 | 解决 |

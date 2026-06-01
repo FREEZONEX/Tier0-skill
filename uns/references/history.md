@@ -62,6 +62,45 @@ Request body:
 | ISO 8601 | `2026-01-01T00:00:00Z` | 直接传给 API |
 | 关键字   | `now` | 当前时间 |
 
+## 响应结构
+
+history 是批量接口，即使有 topic 失败 HTTP 仍为 200，**必须检查 `data.success` 和 `data.results[i].success`**：
+
+```json
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true,
+    "results": [
+      {
+        "success": true,
+        "topic": "Plant/Line1/Metric/Temperature",
+        "result": {
+          "total": 2,
+          "page": 1,
+          "size": 100,
+          "records": [
+            { "value": { "temperature": 27.5, "unit": "C" }, "quality": "Good", "timeStamp": 1733382000000 },
+            { "value": { "temperature": 28.1, "unit": "C" }, "quality": "Good", "timeStamp": 1733385600000 }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+部分 topic 失败时（如 topic 不存在），`data.success` 为 `false`，失败项 `results[i].success` 为 `false`：
+
+```json
+{
+  "success": false,
+  "topic": "__not_exist__/Metric/Temp",
+  "error": { "code": 404, "message": "topic not found" }
+}
+```
+
 ## 示例
 
 ```bash

@@ -35,7 +35,7 @@ POST /openapi/v1/uns/read
 
 ## 响应结构
 
-响应遵循批量接口的 bulk 格式，每个 topic 独立成功/失败：
+响应遵循批量接口的 bulk 格式，每个 topic 独立成功/失败。**HTTP 200 + 外层 `code:200` 不代表所有 topic 成功，必须检查 `data.success`（整体）和 `data.results[i].success`（逐项）**：
 
 ```json
 {

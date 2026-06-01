@@ -104,6 +104,8 @@ tier0 uns write --file writes.json
 
 ## 响应结构
 
+**HTTP 200 + 外层 `code:200` 不代表所有写入成功，必须检查 `data.success`（整体）和 `data.results[i].success`（逐项）**。单条失败不影响其他条（部分成功场景）：
+
 ```json
 {
   "code": 200,
@@ -117,7 +119,7 @@ tier0 uns write --file writes.json
 }
 ```
 
-单条失败（schema 校验不通过）不影响其他条：
+单条失败（schema 校验不通过 / topic 不存在）：
 
 ```json
 {
