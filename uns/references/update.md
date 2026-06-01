@@ -15,6 +15,30 @@ metadata:
 
 更新 UNS 命名空间中指定节点的元数据、字段定义等属性。
 
+### fields 更新规则（重要）
+
+`fields` 是**全量替换**（Replace）策略，传入的列表会完整覆盖原有 schema。但不同节点类型有严格限制：
+
+| 操作 | Metric 节点 | State / Action 节点 |
+|------|------------|-------------------|
+| 新增 field | ✅ 允许 | ✅ 允许 |
+| 删除 field（传入列表少于原有） | ❌ **报错** | ✅ 允许 |
+| 修改 field 类型（type） | ❌ **报错** | ❌ **报错** |
+| 修改 field 单位（unit） | ✅ 允许 | ✅ 允许 |
+| 重命名 field（改 name） | ❌ 等价于删旧增新，**报错** | ⚠️ 等价于删旧增新 |
+
+**Metric 节点是 add-only**：只能在原有 fields 基础上追加新字段，必须把原有 fields 完整传入，不能减少，不能改类型，不能改名。
+
+> **操作示例（Metric 新增字段）：**
+> 原有 fields：`[{name:"temperature", type:"float"}]`
+> 正确做法：传入 `[{name:"temperature", type:"float"}, {name:"humidity", type:"float"}]`（包含原有字段 + 新增字段）
+> 错误做法：只传 `[{name:"humidity", type:"float"}]`（缺少原有字段 temperature，会报错 `metric schema 不允许删除字段: temperature`）
+
+**后端错误信息对照：**
+- `metric schema 不允许删除字段: {字段名}` — Metric 节点传入的 fields 少于原有
+- `metric定义不能为空` — Metric 节点传入空 fields
+- `字段类型不能修改: {字段名}` — 修改了同名字段的 type
+
 ## API
 
 ```
