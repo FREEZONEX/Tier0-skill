@@ -58,7 +58,9 @@ tier0 config --api-key sk-per-xxxxxx
 
 **方式 B — Device Flow（需要用户浏览器配合）：**
 
-Agent **不需要等用户回复**，按以下两步连续执行即可：
+> **⚠️ CRITICAL：必须先把授权链接展示给用户，用户在浏览器完成授权后轮询才有意义。跳过此步直接轮询等同于永远超时。**
+
+按以下两步执行：
 
 ```bash
 # 第 1 步：获取授权 URL（立即返回，解析 setup_code）
@@ -66,7 +68,7 @@ tier0 login --no-wait --json
 # 输出: {"status":"authorization_required","verification_url":"...","setup_code":"abc123","expires_in":600}
 ```
 
-把 `verification_url` 展示给用户，同时**立即**执行第 2 步（无需等待用户回复）：
+**必须立即把 `verification_url` 以可点击链接的形式展示给用户**，并明确告知用户需要在浏览器中打开该链接完成授权，然后**立即**执行第 2 步（无需等待用户回复）：
 
 ```bash
 # 第 2 步：开始轮询（每 5 秒检测一次，最多等待 10 分钟）
@@ -74,7 +76,7 @@ tier0 login --setup-code <code>
 # 用户浏览器授权后自动保存 API Key，轮询结束
 ```
 
-> **说明**：轮询会阻塞直到用户完成浏览器授权，agent 无需在两步之间询问用户"是否完成"。
+> **说明**：第 2 步轮询会阻塞直到用户完成浏览器授权。Agent 无需在两步之间询问用户"是否完成"，但**第 1 步的授权链接必须展示**，否则用户无从授权，轮询永远不会成功。
 
 ### 语言切换
 
@@ -260,6 +262,7 @@ tier0 flow deploy --id 1 -f flows.json
 
 | 现象 | 原因 | 解决 |
 |------|------|------|
+| `login` 轮询超时、始终 pending | Agent 未把授权链接展示给用户，用户无从打开浏览器授权 | 重新执行 `tier0 login --no-wait --json`，**先把 `verification_url` 给用户点击**，再 `--setup-code` 轮询 |
 | `API Key not found` | 未登录 | `tier0 config --api-key <key>` 或 `tier0 login` |
 | `HTTP 401` | API Key 失效 | 重新设置：`tier0 config --api-key <key>` |
 | `HTTP 403` | Workspace 权限不足 | 联系管理员 |
