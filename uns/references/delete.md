@@ -29,14 +29,14 @@ POST /openapi/v1/uns/delete
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | 是 | 节点路径 |
+| `topics` | string[] | 是 | 节点路径列表（CLI: `--path`，可重复） |
 | `hard_delete` | boolean | 否 | 是否永久删除，默认 `false`（软删除） |
 
 ## 示例
 
 ```bash
 # 软删除（可恢复）
-tier0 uns delete --path factory/line1/sensor/temp
+tier0 uns delete --path factory/line1/sensor/temp --yes
 
 # 永久删除（需 --yes 确认）
 tier0 uns delete --path factory/line1/sensor/temp --hard --yes
@@ -47,7 +47,7 @@ tier0 uns delete --path factory/line1/sensor/temp --hard --yes
 **安全清理废弃节点：**
 ```bash
 # 1. 先软删除
-tier0 uns delete --path factory/line1/old-sensor
+tier0 uns delete --path factory/line1/old-sensor --yes
 # 2. 确认无误后永久删除
 tier0 uns delete --path factory/line1/old-sensor --hard --yes
 # 如需恢复软删除：

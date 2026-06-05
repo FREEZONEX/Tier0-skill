@@ -39,7 +39,7 @@ POST /openapi/v1/uns/search
 tier0 uns search --keyword temp
 
 # 按路径前缀搜索
-tier0 uns search --prefix factory/line1
+tier0 uns search --path-prefix factory/line1
 
 # 分页搜索
 tier0 uns search --keyword sensor --page 1 --size 20
@@ -49,19 +49,19 @@ tier0 uns search --keyword sensor --page 1 --size 20
 
 **查找特定类型的所有节点：**
 ```bash
-tier0 uns search --prefix factory --type thing --size 100
+tier0 uns search --path-prefix factory --topic-type metric --size 100
 ```
 
 **搜索后查看 topic 字段定义（推荐两步工作流）：**
 
 第一步：先搜索定位 topic 路径
 ```bash
-tier0 uns search --keyword Temperature --type thing
+tier0 uns search --keyword Temperature --topic-type metric
 ```
 
-第二步：加 `--meta` 查看字段结构，了解有哪些字段、类型、单位
+第二步：加 `--include-metadata` 查看字段结构，了解有哪些字段、类型、单位
 ```bash
-tier0 uns search --keyword Temperature --type thing --meta
+tier0 uns search --keyword Temperature --topic-type metric --include-metadata
 ```
 
 返回中每个节点会带上字段信息：
@@ -84,5 +84,5 @@ tier0 uns search --keyword Temperature --type thing --meta
 
 ```powershell
 tier0 uns search --keyword temp
-tier0 uns search --prefix factory/line1
+tier0 uns search --path-prefix factory/line1
 ```

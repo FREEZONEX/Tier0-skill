@@ -80,7 +80,7 @@ npx @tier0/cli@latest uninstall --purge    # 彻底清除（含登录凭证）
   - [`references/write.md`](uns/references/write.md) — 写入数据点
   - [`references/history.md`](uns/references/history.md) — 查询历史数据
   - [`references/search.md`](uns/references/search.md) — 搜索命名空间
-  - [`references/create.md`](uns/references/create.md) — 创建节点（多级 `--topic` / `--parent` / `--file`）
+  - [`references/create.md`](uns/references/create.md) — 创建节点（路径须含 Metric/Action/State；`--file` 批量）
   - [`references/update.md`](uns/references/update.md) — 更新节点
   - [`references/delete.md`](uns/references/delete.md) — 删除节点
   - [`references/restore.md`](uns/references/restore.md) — 恢复已删除节点

@@ -225,7 +225,7 @@ tier0 uns browse Plant/Line1 --debug
 # ── UNS ──────────────────────────────────────
 # 浏览命名空间
 tier0 uns browse
-tier0 uns browse Plant/Line1 --depth 2
+tier0 uns browse Plant/Line1 --max-depth 2
 
 # 读取数据点（value 是对象，包含多个字段）
 tier0 uns read Plant/Line1/Metric/Temperature
@@ -241,9 +241,9 @@ tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":2
 tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
 
 # 创建节点（路径须含 Metric；字段类型写在 --fields）
-tier0 uns create --topic Plant/Line1/Metric/Temperature --type METRIC \
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic \
   --fields '[{"name":"value","type":"float","unit":"°C"}]'
-tier0 uns create --parent Plant/Line1 --topic Metric/ProductionCount --type METRIC \
+tier0 uns create --parent Plant/Line1 --topic Metric/ProductionCount --type topic \
   --fields '[{"name":"value","type":"int"}]'
 tier0 uns create --file structure.json
 

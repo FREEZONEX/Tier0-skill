@@ -70,17 +70,17 @@ POST /openapi/v1/uns/update
 
 ```bash
 # 更新节点描述
-tier0 uns update --path factory/line1/sensor/temp --desc "生产线1温度传感器"
+tier0 uns update --path factory/line1/sensor/temp --description "生产线1温度传感器"
 
 # 同时更新显示名称和描述
-tier0 uns update --path factory/line1/sensor/temp --display-name "温度传感器" --desc "生产线1温度监控"
+tier0 uns update --path factory/line1/sensor/temp --display-name "温度传感器" --description "生产线1温度监控"
 ```
 
 ## 典型场景
 
-**复杂更新（含字段定义）：**
+**复杂更新（含字段定义），使用 API 文件法：**
 ```bash
-tier0 uns update --file update.json
+tier0 api POST /openapi/v1/uns/update --body-file update.json
 ```
 
 `update.json` 内容：
@@ -96,7 +96,5 @@ tier0 uns update --file update.json
 ## Windows PowerShell
 
 ```powershell
-tier0 uns update --path factory/line1/sensor/temp --desc "温度传感器"
-# 或复杂更新用文件法
-tier0 uns update --file update.json
+tier0 uns update --path factory/line1/sensor/temp --description "温度传感器"
 ```

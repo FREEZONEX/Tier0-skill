@@ -91,10 +91,10 @@ tier0 uns read Plant/Line1/Metric/Temperature
 
 ### 读取时同时查看字段定义（推荐首次读取时使用）
 
-不确定 topic 有哪些字段、字段类型和单位时，加 `--meta`：
+不确定 topic 有哪些字段、字段类型和单位时，加 `--include-metadata`：
 
 ```bash
-tier0 uns read Plant/Line1/Metric/Temperature --meta
+tier0 uns read Plant/Line1/Metric/Temperature --include-metadata
 ```
 
 响应中会额外包含 `metadata` 字段：

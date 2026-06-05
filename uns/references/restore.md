@@ -40,5 +40,5 @@ tier0 uns restore --path factory/line1/sensor/temp
 tier0 uns restore --path factory/line1/sensor/temp
 
 # 恢复后验证节点存在
-tier0 uns browse factory/line1 --depth 1
+tier0 uns browse factory/line1 --max-depth 1
 ```

@@ -48,7 +48,7 @@ POST /openapi/v1/uns/write
 
 ```bash
 # 查看 topic 元数据（fields 定义 + description 示例）
-tier0 uns browse --topic Plant/Line1/Metric/Temperature
+tier0 uns browse --path Plant/Line1/Metric/Temperature
 ```
 
 返回的节点信息中：

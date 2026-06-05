@@ -94,7 +94,7 @@ return msg;
 1. tier0 flow list                  — 确认 EventFlow 容器已创建
 2. tier0 flow get --id <id>         — 备份现有 flowsJson
 3. (用模板生成 flowsJson，替换占位符)
-4. tier0 flow deploy --id <id> --yes --flows <file.json>
+4. tier0 flow deploy --id <id> --yes --flows-file <file.json>
 5. 检查 debug 节点输出确认 INSERT 成功
 ```
 

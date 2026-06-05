@@ -32,20 +32,20 @@ POST /openapi/v1/uns/browse
 ## 示例
 
 ```bash
-tier0 uns browse --depth 2
-tier0 uns browse factory/line1 --depth 1
+tier0 uns browse --max-depth 2
+tier0 uns browse factory/line1 --max-depth 1
 ```
 
 ## 典型场景
 
 **查看命名空间全貌：**
 ```bash
-tier0 uns browse --depth 3 --meta
+tier0 uns browse --max-depth 3 --include-metadata
 ```
 
 **查看指定路径下的节点：**
 ```bash
-tier0 uns browse factory/line1 --depth 1
+tier0 uns browse factory/line1 --max-depth 1
 ```
 
 ## UNS ↔ Flow 关联查询
@@ -54,7 +54,7 @@ UNS topic 路径与 Flow 名称**通常同名**。浏览到某个路径后，如
 
 ```bash
 # 1. browse 发现 topic 路径
-tier0 uns browse Plant/Line1 --depth 2
+tier0 uns browse Plant/Line1 --max-depth 2
 
 # 2. 同名查 Flow（SourceFlow 负责采集，EventFlow 负责处理）
 tier0 flow list --keyword Line1
