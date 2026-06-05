@@ -20,7 +20,7 @@ AI Agent 使用路径：
 | [postgresql.md](postgresql.md) | PostgreSQL / TimescaleDB | EventFlow | UNS 订阅 → INSERT 归档到用户自有库 | node-red-contrib-postgresql |
 | [opcua.md](opcua.md) | OPC-UA | SourceFlow | 订阅 OPC-UA Server 变更 → UNS | node-red-contrib-opcua |
 | [mqtt-bridge.md](mqtt-bridge.md) | MQTT Bridge | SourceFlow | 外部 MQTT Broker → Tier0 UNS | ✅ 内置 |
-| *(opcda.md 待补充)* | OPC-DA | SourceFlow | — | — |
+| [opcda.md](opcda.md) | OPC-DA | SourceFlow | 周期读取 OPC-DA Server → UNS（Windows DCOM，仅 Windows 环境） | @tier0/node-red-contrib-opcda-client |
 
 ## 可用模板
 
