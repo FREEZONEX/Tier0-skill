@@ -1,4 +1,4 @@
----
+﻿---
 name: tier0-flow
 version: 0.3.0
 description: "Tier0 Flow（Node-RED）管理：列出、创建、更新、删除 SourceFlow 和 EventFlow，导出和部署 Node-RED 画布 JSON。triggers: Tier0, Flow, Node-RED, SourceFlow, EventFlow, 工作流, 数据采集, 协议, MQTT, 画布, 部署"
@@ -42,8 +42,8 @@ metadata:
 
 | 类型 | 说明 | 典型用途 |
 |------|------|---------|
-| **SourceFlow** | 连接工业协议，采集设备数据，发布到 MQTT / UNS | Modbus、OPC-UA、MQTT 桥接 |
-| **EventFlow** | 订阅 MQTT 消息，对业务数据进行二次处理 | 告警规则、数据转换、触发动作 |
+| **SourceFlow** | 连接工业协议，采集设备数据，发布到 MQTT / UNS | Modbus、OPC-UA、OPC-DA、MQTT 桥接 |
+| **EventFlow** | 订阅 MQTT 消息，对业务数据进行二次处理 | 告警规则、数据转换、触发动作、归档到数据库 |
 
 ## 子技能路由
 
@@ -59,17 +59,17 @@ metadata:
 
 ### 协议节点配置（SourceFlow / EventFlow 画布内容）
 
-> 以下文档用于生成或修改 Node-RED 画布（flowsJson），配合模板文件使用。
-> **工作流**：先读协议文档了解参数 → 填写模板占位符 → `flow deploy --yes` 部署。
+> 以下文档用于生成或修改 Node-RED 画布（flowsJson）。
+> **工作流**：先读协议文档了解节点参数 → 根据具体任务生成实际 Flow JSON（模板只是结构参考，不要照搬）→ `flow deploy --yes` 部署。
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
-| 定时轮询第三方 REST API → UNS | **必读** `references/protocols/http.md` | inject + http request + function 节点，内置无需安装 |
-| Modbus TCP/RTU 采集 → UNS | **必读** `references/protocols/modbus.md` | 节点参数、function 映射、模板使用 |
-| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocols/postgresql.md` | 配置节点（含密码说明）、参数化 SQL、安全建议 |
-| 查看/使用全部 flowsJson 模板 | `references/protocols/README.md` | 协议模板索引、占位符说明、替换规则 |
-| *(MQTT Bridge 待补充)* | `references/protocols/mqtt-bridge.md` | 外部 MQTT ↔ Tier0 UNS 桥接 |
-| *(OPC-UA 待补充)* | `references/protocols/opcua.md` | — |
+| Modbus TCP/RTU 采集 → UNS | **必读** `references/protocols/modbus.md` | 节点参数、function 映射 |
+| OPC-UA Server 订阅 → UNS | **必读** `references/protocols/opcua.md` | subscribe 模式、多标签、DataValue 解析 |
+| OPC-DA Server 轮询 → UNS | **必读** `references/protocols/opcda.md` | DCOM 连接、ItemID、质量过滤（仅 Windows 环境） |
+| 外部 MQTT Broker → UNS | **必读** `references/protocols/mqtt-bridge.md` | mqtt in → function → mqtt out，格式转换 |
+| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocols/postgresql.md` | 配置节点、参数化 SQL、安全建议 |
+| 查看协议模板索引 | `references/protocols/README.md` | 所有协议文档和 JSON 模板一览 |
 
 ## 常用操作速查
 
