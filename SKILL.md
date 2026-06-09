@@ -98,9 +98,8 @@ TIER0_LANG=zh tier0 flow list
 | SourceFlow | Node-RED 实例，连接工业协议采集设备数据并发布 MQTT |
 | EventFlow | Node-RED 实例，订阅 MQTT 消息对业务数据进行二次处理 |
 
-> **Flow ↔ UNS Topic 关联**：Flow 名称（`flowName`）与 UNS topic 路径**通常同名**——SourceFlow 负责采集并写入对应 topic，EventFlow 负责订阅并处理该 topic 的数据。
-> 当用户提到某个设备/数据点名称时，它**同时对应一个 UNS topic 和一个（或多个）Flow**，应同时查询两侧。
-> ⚠️ **目前 API 尚未提供显式关联字段**，`topicmeta` 接口后续版本将加入关联信息，届时更新此文档。
+> **Flow ↔ UNS Topic 关联**：SourceFlow 可以通过 `tier0 uns bind-flow --uns-id <id> --flow-id <id>` 显式绑定到 UNS 节点；旧数据或未绑定数据仍可能只靠名称约定关联。
+> 当用户提到某个设备/数据点名称时，先查 UNS，再用 `tier0 flow list --source --keyword <name>` 定位采集流；需要建立关系时使用 `uns bind-flow`。
 
 ## 资源关系
 
@@ -122,9 +121,10 @@ Workspace
     └── EventFlow  "Line1-Processor"     ← 同名关联: 订阅 Plant/Line1/... → 处理
 ```
 
-**Flow ↔ UNS 名称对应规则**（当前版本约定，`topicmeta` 关联 API 尚在开发中）：
-- Flow `flowName` 与 UNS 路径**人为保持同名**，如 `Line1-Collector` 对应路径 `Plant/Line1/...`
-- **遇到名称查询时，必须同时查 `tier0 flow list --keyword <name>` 和 `tier0 uns browse`**
+**Flow ↔ UNS 关联规则**：
+- 新数据优先使用 `tier0 uns bind-flow --uns-id <id> --flow-id <id>` 显式关联 SourceFlow。
+- 旧数据或未绑定数据可能仍按 Flow `flowName` 与 UNS 路径人为同名维护，如 `Line1-Collector` 对应路径 `Plant/Line1/...`。
+- 遇到名称查询时，仍建议同时查 `tier0 flow list --keyword <name>` 和 `tier0 uns browse`。
 
 **关键规则**：
 - `browse` / `search` 操作的对象是**路径段（文件夹）**
@@ -152,6 +152,8 @@ Workspace
 | 更新节点 | `uns/references/update.md` | 修改元数据或字段定义 |
 | 删除节点 | `uns/references/delete.md` | 软删除或硬删除（⚠️ 不可逆） |
 | 恢复已删除节点 | `uns/references/restore.md` | 撤销软删除 |
+| UNS 附件 | `uns/references/attachments.md` | 上传或查询绑定到 `unsId` 的文件 |
+| 绑定 SourceFlow | `uns/references/bind-flow.md` | 使用 `unsId` 和 Flow 业务主键 ID 显式关联 |
 
 ### Auth / Info — 认证与服务信息
 
@@ -188,6 +190,8 @@ Workspace
 | 查某段时间的历史趋势 | **必读** `uns/references/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
 | 写入/更新数据点 | `uns/references/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |
 | 查看/管理节点元数据、字段定义 | `uns/references/update.md` | 不要用 `write`（write 是写 VQT 数据） |
+| 上传或查询 UNS 附件 | `uns/references/attachments.md` | 不要找独立下载接口，使用返回的 `fileUrl` |
+| 把 UNS 节点绑定到采集流 | `uns/references/bind-flow.md` | 不要传 Node-RED 内部 flowId 字符串 |
 | 查看 Flow 列表或详情 | `flow/references/list.md` — 先 `list` 拿 `id`，再 `get` 看详情 | 不要用 `flowId` 字段当参数（`flowId` 是 Node-RED 内部 ID，不能用于查询） |
 | 导出 Node-RED 画布备份 | `flow/references/data.md` — 导出到文件 | deploy 前 **必须** 先 data 备份，不要跳过 |
 | 部署 Node-RED 画布 | **必读** `flow/references/deploy.md` 后执行，带 `--yes` | 不要在未备份的情况下直接 deploy |
@@ -228,6 +232,13 @@ tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":2
 
 # 查询历史数据
 tier0 uns history factory/line1/sensor/temp --start 1715000000 --end 1715600000
+
+# UNS 附件
+tier0 uns attachments upload --uns-id 10001 --file manual.pdf
+tier0 uns attachments list --uns-id 10001
+
+# 显式绑定 SourceFlow
+tier0 uns bind-flow --uns-id 10001 --flow-id 20001
 
 # ── Flow ─────────────────────────────────────
 # 列出所有 Flow

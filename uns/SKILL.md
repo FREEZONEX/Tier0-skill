@@ -1,7 +1,7 @@
 ---
 name: tier0-uns
 version: 0.3.0
-description: "Tier0 UNS（Unified Namespace）数据面操作。支持命名空间浏览、节点读写、历史数据查询、搜索、创建、更新、删除、恢复。triggers: Tier0, UNS, 命名空间, 数据读写, 历史查询"
+description: "Tier0 UNS（Unified Namespace）数据面操作。支持命名空间浏览、节点读写、历史数据查询、搜索、创建、更新、删除、恢复、附件管理和绑定 SourceFlow。triggers: Tier0, UNS, 命名空间, 数据读写, 历史查询"
 metadata:
   requires:
     bins: ["tier0"]
@@ -21,6 +21,8 @@ metadata:
 - 用户要查询历史/时序数据
 - 用户按名称搜索 topic
 - 用户要创建、更新、删除、恢复 UNS 节点
+- 用户要上传或查询某个 UNS 节点绑定的附件
+- 用户要把 UNS 节点绑定到 SourceFlow
 
 ### 不应该使用
 
@@ -53,6 +55,8 @@ metadata:
 | 更新节点元数据 | `references/update.md` | — | 修改字段定义或描述 |
 | 删除节点 | `references/delete.md` | ⚠️ 硬删除不可逆 | 软删除可恢复，硬删除永久清除 |
 | 恢复已删除节点 | `references/restore.md` | — | 撤销软删除 |
+| UNS 附件 | `references/attachments.md` | — | 上传或查询绑定到 `unsId` 的文件 |
+| 绑定 SourceFlow | `references/bind-flow.md` | — | 使用 `unsId` 和 Flow 业务主键 ID 关联 |
 | 服务信息/健康检查 | `../info/info.md` | — | 网关连通性验证 |
 
 ## 任务选路
@@ -65,4 +69,6 @@ metadata:
 | 查历史趋势 | **先读 `references/history.md`**，再执行 | 不要循环 `read`（read 只返回最新值） |
 | 写入数据 | `write`，value 是 `{"field":val}` 对象 | 不要写标量（`"value": 27.5` 是错误的） |
 | 修改节点字段定义 | `update` | 不要用 `write`（write 是写 VQT 数据） |
+| 给 UNS 节点挂文件 | `attachments upload/list` | 不要用独立下载接口，直接使用返回的 `fileUrl` |
+| 把 UNS 节点绑定到采集流 | `bind-flow` | 不要传 Node-RED flowId 字符串，传 Flow 业务主键 ID |
 | 同时了解数据来源（Flow） | UNS 操作后追加 `tier0 flow list --keyword <name>` | 不要只查一侧 |

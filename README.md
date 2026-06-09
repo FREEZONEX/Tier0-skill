@@ -84,6 +84,8 @@ npx @tier0/cli@latest uninstall --purge    # 彻底清除（含登录凭证）
   - [`references/update.md`](uns/references/update.md) — 更新节点
   - [`references/delete.md`](uns/references/delete.md) — 删除节点
   - [`references/restore.md`](uns/references/restore.md) — 恢复已删除节点
+  - [`references/attachments.md`](uns/references/attachments.md) — UNS 附件上传和查询
+  - [`references/bind-flow.md`](uns/references/bind-flow.md) — 绑定 UNS 节点到 SourceFlow
 - [`info/`](info/) — 服务信息
   - [`info.md`](info/info.md) — 健康检查 / 连通性验证
 - [`auth/`](auth/) — 认证与权限诊断

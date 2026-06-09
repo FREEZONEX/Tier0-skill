@@ -39,6 +39,7 @@ POST /openapi/v1/uns/create
 | `extendProperties` | object | 否 | 扩展属性 |
 | `fields` | SchemaField[] | 否 | 字段定义列表 |
 | `topicType` | string | 否 | 主题类型 |
+| `persistence` | boolean | 否 | 是否持久化保存该 topic 的历史数据 |
 | `children` | NamespaceNode[] | 否 | 子节点列表 |
 
 ### SchemaField
@@ -56,7 +57,10 @@ POST /openapi/v1/uns/create
 tier0 uns create --body '{"namespace":[{"name":"sensor","type":"folder"}]}'
 
 # 创建带字段的数据点节点
-tier0 uns create --body '{"namespace":[{"name":"temp","type":"thing","fields":[{"name":"value","type":"float","unit":"°C"}]}]}'
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type thing --fields '[{"name":"value","type":"float","unit":"°C"}]'
+
+# 创建并启用历史持久化
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type thing --persistence
 ```
 
 ## 响应结构
@@ -115,7 +119,7 @@ tier0 uns create --file structure.json
           "type": "folder",
           "children": [
             {"name": "temp", "type": "thing", "fields": [{"name": "value", "type": "float", "unit": "°C"}]},
-            {"name": "humidity", "type": "thing", "fields": [{"name": "value", "type": "float", "unit": "%RH"}]}
+            {"name": "humidity", "type": "thing", "persistence": true, "fields": [{"name": "value", "type": "float", "unit": "%RH"}]}
           ]
         }
       ]
@@ -130,4 +134,5 @@ tier0 uns create --file structure.json
 
 ```powershell
 tier0 uns create --file structure.json
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type thing --persistence
 ```
