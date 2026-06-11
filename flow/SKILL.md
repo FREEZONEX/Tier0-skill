@@ -35,6 +35,7 @@ metadata:
 4. **deploy 和 delete 需要 `--yes`** — 这两个操作是高风险门禁，CLI 不带 `--yes` 时 exit 10，需先向用户确认
 5. **delete 告知影响** — 删除 Flow 会停止对应的 Node-RED 容器，必须在用户知情的情况下执行
 6. **不要读 deploy.md 就盲目执行** — deploy 参数复杂（整个 flowsJson），没读 `references/deploy.md` 前禁止构造请求
+7. **Tier0 内置 MQTT 必须使用系统颁发凭据** — Tier0 MQTT Broker 拒绝匿名连接；账号密码由后端在 `flow create` 时自动生成，AI 无法查询或自行填写。操作画布时必须从 `flow data` 导出中**原样保留**原有 `mqtt-broker` config 节点（含 `id`、`broker`、`clientid`），不可新建或替换；详见 `references/protocols/mqtt-bridge.md`
 
 ## Flow 类型
 
