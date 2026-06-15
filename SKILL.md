@@ -101,8 +101,8 @@ TIER0_LANG=zh tier0 flow list
 | Workspace | 租户工作区，所有资源的隔离单位 |
 | UNS (Unified Namespace) | 统一命名空间，**树形路径结构**组织数据点 |
 | Path（路径段） | 路径中的每一段都是**文件夹**，相当于目录层级。只有完整路径才对应一个 topic（数据点） |
-| Topic | 完整路径字符串，如 `Plant/Line1/Metric/Temperature`。**只有叶子节点（`file` 类型数据点）才可 read/write**，中间路径段是 `folder` |
-| Node | 命名空间中的节点：`folder`（文件夹）或 `file`（数据点，常配合 `topicType`: metric/action/state） |
+| Topic | 完整路径字符串，如 `Plant/Line1/Metric/Temperature`。**只有叶子节点（OpenAPI `type=TOPIC`）才可 read/write**，中间路径段是 `PATH` |
+| Node | 命名空间中的节点：`PATH`（文件夹）或 `TOPIC`（数据点，常配合 `topicType`: `METRIC`/`ACTION`/`STATE`） |
 | VQT | 数据点的值结构：`value`（业务对象）+ `quality`（数据质量）+ `timeStamp`（毫秒时间戳） |
 | SourceFlow | Node-RED 实例，连接工业协议采集设备数据并发布 MQTT |
 | EventFlow | Node-RED 实例，订阅 MQTT 消息对业务数据进行二次处理 |
@@ -116,14 +116,14 @@ TIER0_LANG=zh tier0 flow list
 ```
 Workspace
 ├── UNS (Unified Namespace)
-│   ├── Plant/                          ← folder（文件夹）
-│   │   ├── Line1/                      ← folder
-│   │   │   ├── Metric/                 ← folder
-│   │   │   │   └── Temperature         ← file（数据点，完整 topic）
+│   ├── Plant/                          ← PATH（文件夹）
+│   │   ├── Line1/                      ← PATH
+│   │   │   ├── Metric/                 ← PATH
+│   │   │   │   └── Temperature         ← TOPIC（数据点，完整 topic）
 │   │   │   │       └── VQT { value: {"temperature":27.5,"unit":"C"},
 │   │   │   │                 quality: "Good", timeStamp: 1733382000000 }
 │   │   │   └── State/
-│   │   │       └── MachineStatus       ← file（数据点）
+│   │   │       └── MachineStatus       ← TOPIC（数据点）
 │   │   └── Line2/
 │   │       └── ...
 └── Flow

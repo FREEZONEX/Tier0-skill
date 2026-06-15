@@ -27,7 +27,7 @@ POST /openapi/v1/uns/search
 |------|------|------|------|
 | `keyword` | string | 否 | 搜索关键字 |
 | `path_prefix` | string | 否 | 路径前缀过滤 |
-| `topicType` | string | 否 | 节点类型过滤 |
+| `topicType` | string | 否 | 节点类型过滤：`METRIC` / `ACTION` / `STATE`（后端兼容小写） |
 | `include_metadata` | boolean | 否 | 是否返回每个节点的字段定义（fields）、topicType、description。**搜索后需要了解 topic 结构时带上** |
 | `page` | int64 | 否 | 页码 |
 | `size` | int64 | 否 | 每页大小 |
@@ -49,19 +49,19 @@ tier0 uns search --keyword sensor --page 1 --size 20
 
 **查找特定类型的所有节点：**
 ```bash
-tier0 uns search --path-prefix factory --topic-type metric --size 100
+tier0 uns search --path-prefix factory --topic-type METRIC --size 100
 ```
 
 **搜索后查看 topic 字段定义（推荐两步工作流）：**
 
 第一步：先搜索定位 topic 路径
 ```bash
-tier0 uns search --keyword Temperature --topic-type metric
+tier0 uns search --keyword Temperature --topic-type METRIC
 ```
 
 第二步：加 `--include-metadata` 查看字段结构，了解有哪些字段、类型、单位
 ```bash
-tier0 uns search --keyword Temperature --topic-type metric --include-metadata
+tier0 uns search --keyword Temperature --topic-type METRIC --include-metadata
 ```
 
 返回中每个节点会带上字段信息：
