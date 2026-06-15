@@ -54,7 +54,7 @@ tier0 uns browse --path Plant/Line1/Metric/Temperature
 返回的节点信息中：
 - `fields` — metric 节点的字段类型约束（如 `[{"name":"value","type":"float","unit":"°C"}]`）
 - `description` — 创建者写入的说明，**应包含示例 payload**，action/state 节点尤其依赖此处说明
-- `topicType` — 确认是 metric / action / state，决定 value 的结构风格
+- `topicType` — 确认是 `METRIC` / `ACTION` / `STATE`，决定 value 的结构风格
 
 拿到 schema 或示例后再构造 `value`，避免因字段名错误或类型不匹配导致写入被拒。
 
