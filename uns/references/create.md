@@ -1,175 +1,98 @@
 ---
 name: tier0-uns-create
-version: 0.4.16
-description: "在 UNS 命名空间中创建节点。triggers: Tier0, UNS, 创建, 节点, 命名空间, 批量创建"
-metadata:
-  requires:
-    bins: ["tier0"]
-  hermes:
-    tags: [uns, create, namespace]
+description: "Create Tier0 UNS namespace folders and topics. Topic leaf paths must include Metric, Action, or State as the segment before the leaf."
 ---
 
-# uns create — 创建命名空间节点
+# uns create
 
-## 命令
+Use `create` to create namespace folders, single topics, or a batch namespace tree.
+
+## Critical Path Rule
+
+For topic nodes, the segment immediately before the leaf must be one of:
+
+- `Metric`
+- `Action`
+- `State`
+
+The backend derives `topicType` from that segment.
+
+Valid:
+
+```text
+Plant/Line1/Metric/Temperature
+Plant/Line1/State/MachineStatus
+Machine/Action/Start
+```
+
+Invalid:
+
+```text
+Plant/Line1/Temperature
+```
+
+The CLI and backend do not automatically insert the type folder.
+
+## Single Folder
 
 ```bash
-# 创建一个 topic（数据点）
+tier0 uns create --topic Plant/Line1 --type path
+```
+
+## Single Topic
+
+```bash
 tier0 uns create \
-  --topic "Factory1/Assembly/Line1/Station1/Metric/ProductionCount" \
+  --topic Plant/Line1/Metric/Temperature \
   --type topic \
-  --display-name "当前产量" \
-  --fields '[{"name":"value","type":"int"}]' \
-  --json
+  --display-name "Temperature" \
+  --description "Line 1 temperature" \
+  --fields '[{"name":"temperature","type":"float"},{"name":"unit","type":"string"}]'
+```
 
-# 父路径已存在，只建子节点
+## Parent Prefix
+
+```bash
 tier0 uns create \
-  --parent "Factory1/Assembly/Line1/Station1" \
-  --topic "Metric/ProductionCount" \
+  --parent Plant/Line1/Metric \
+  --topic Temperature \
   --type topic \
-  --fields '[{"name":"value","type":"int"}]'
-
-# 创建 path（目录）
-tier0 uns create \
-  --topic "Factory1/Assembly/Line1" \
-  --type path \
-  --display-name "产线1"
-
-# 从 JSON 文件批量创建整棵树
-tier0 uns create --file structure.json
+  --fields '[{"name":"temperature","type":"float"}]'
 ```
 
-## 返回值
+## Batch File
 
-成功后输出创建的完整路径（`--topic` 模式）或 `Namespace created.`（`--file` 模式）。
-加 `--json` 可获取 API 原始响应。
+For trees or multiple nodes, use `--file`.
 
-### 响应结构（`--json` 模式）
-
-create 是批量接口，后端将树结构展开为多条叶子节点逐一处理。**HTTP 200 + 外层 `code:200` 不代表全部成功，必须检查 `data.success`（整体）和 `data.results[i].success`（逐项）**：
-
-```json
-{
-  "code": 200,
-  "msg": "success",
-  "data": {
-    "success": true,
-    "results": [
-      {
-        "success": true,
-        "topic": "Factory1/Metric/ProductionCount",
-        "result": {}
-      }
-    ]
-  }
-}
+```bash
+tier0 uns create --file namespace.json --json
 ```
 
-部分节点失败时（如路径冲突、格式不合法）：
-
-```json
-{
-  "code": 200,
-  "msg": "success",
-  "data": {
-    "success": false,
-    "results": [
-      { "success": true,  "topic": "Factory1/Metric/ProductionCount", "result": {} },
-      { "success": false, "topic": "Factory1/Metric/BadNode",
-        "error": { "code": 400, "message": "segment before leaf must be a type folder" } }
-    ]
-  }
-}
-```
-
-## 参数
-
-| 参数 | 必填 | 说明 |
-|------|------|------|
-| `--topic` / `-t` | 与 `--type` 同用 | 节点路径或叶子名；与 `--parent` 拼接后成完整路径 |
-| `--parent` | 否 | 已有父路径前缀，用于复用现有路径前缀 |
-| `--type` | 与 `--topic` 同用 | CLI 参数使用 `path`（目录）或 `topic`（数据点）；CLI 会生成 OpenAPI 枚举 `PATH` / `TOPIC` |
-| `--display-name` / `-d` | 否 | 显示名称 |
-| `--description` | 否 | 描述 |
-| `--alias` | 否 | 别名 |
-| `--fields` | 否 | Schema 字段定义，JSON 数组；**METRIC 只支持单层扁平字段**；ACTION/STATE 存 JSONB 无需定义 Schema，可省略 |
-| `--file` / `-f` | 与 `--topic` 互斥 | JSON 文件：`{"namespace":[...]}` 或裸数组 `[...]` |
-
-## 数据点类型（topicType）
-
-| --type | topicType | 含义 | 存储格式 | 典型场景 |
-|--------|-----------|------|---------|---------|
-| `topic` + `Metric` 类型目录 | `METRIC` | **设备实时数据** — 传感器/过程量，持续产生、有时序历史 | **单层 JSON**，字段必须扁平，不可嵌套 | 产量、温度、压力、库存数量 |
-| `topic` + `Action` 类型目录 | `ACTION` | **对外集成接口（下行请求）** — 由 UNS 发出的命令，触发下游系统执行 | **JSONB**，支持任意层级嵌套 | 工单下发、报工指令、出入库操作、设备控制命令 |
-| `topic` + `State` 类型目录 | `STATE` | **接口结果（上行回执）** — 外部系统返回的操作结果或当前状态快照 | **JSONB**，支持任意层级嵌套 | 工单执行结果、出入库确认、设备连接状态、报警状态 |
-
-## 路径规则
-
-UNS 每个 topic（数据点）节点的路径结构固定为：
-
-```
-<任意层 PATH> / Metric|Action|State / <叶子名>
-                     └── 类型目录（倒数第二段）
-                                           └── topic 节点（最后一段）
-```
-
-- 倒数第二段必须是类型目录之一：`Metric`、`Action`、`State`（大小写不敏感）
-- `topicType` 直接从该段推导，无需手动指定
-- **不会自动插入**类型目录——路径中没写的段不会出现
-
-| 类型目录 | `topicType` | 语义 |
-|---------|-------------|------|
-| `Metric` | `METRIC` | 采集量、测量值 |
-| `Action` | `ACTION` | 控制指令、执行动作 |
-| `State` | `STATE` | 状态标志、模式 |
-
-## 行为说明
-
-- **`--topic` 展开为树**：`Plant/Line1/Metric/Temp` 中每一段都会建为 `PATH`，只有最后一段是 `TOPIC` 节点
-- **`--topic` 一次建一个叶子**：不要用它批量建并列节点，并列场景用 `--file`
-- **`--parent` + `--topic` 拼接**：`--parent A/B --topic Metric/Count` 等价于 `--topic A/B/Metric/Count`
-- **中间 `PATH` 的元数据**（displayName 等）只能通过 `--file` + `children` 表达；`--display-name` 只作用于叶子
-- **已存在的同名 `PATH`** 会复用，不报错
-- **`--topic-type` 已废弃**：topicType 从路径自动推导；旧参数仍被接受但会打印警告
-- **`description` 应包含写入示例**（强烈建议）：action/state 节点没有 `fields` 约束，写入时 agent 只能从 description 推断 payload 结构；建议格式：`"说明。示例: {\"field\":value}"`；metric 节点有 fields 定义，description 可补充单位/业务含义
-
-## 推荐场景
-
-- 用户说"在 Station1 下创建一个产量数据点"→ 使用 `--parent Station1 --topic Metric/ProductionCount --type topic`
-- 用户给出设备层级，需要批量建完整树 → 用 `--file structure.json`（见下方 JSON 示例）
-- 只建目录结构，暂不建数据点 → `--type path`，路径无需包含类型目录
-
-## JSON 文件格式（`--file`）
+Preferred file shape:
 
 ```json
 {
   "namespace": [
     {
-      "name": "Factory1",
+      "path": "Plant",
       "type": "PATH",
       "children": [
         {
-          "name": "Metric",
+          "path": "Line1",
           "type": "PATH",
           "children": [
             {
-              "name": "ProductionCount",
-              "type": "TOPIC",
-              "topicType": "METRIC",
-              "displayName": "当前产量",
-              "fields": [{"name": "value", "type": "int"}]
-            }
-          ]
-        },
-        {
-          "name": "Action",
-          "type": "PATH",
-          "children": [
-            {
-              "name": "Start",
-              "type": "TOPIC",
-              "topicType": "ACTION",
-              "description": "启动工单指令。示例: {\"order_id\":\"WO-001\",\"product\":\"SKU-A\",\"qty\":100}"
+              "path": "Metric",
+              "type": "PATH",
+              "children": [
+                {
+                  "path": "Temperature",
+                  "type": "TOPIC",
+                  "fields": [
+                    { "name": "temperature", "type": "float" }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -179,51 +102,42 @@ UNS 每个 topic（数据点）节点的路径结构固定为：
 }
 ```
 
-裸数组也支持：`[{"name":"Line1","type":"PATH"}, ...]`。后端兼容旧值 `path/topic/folder/file`，但新 OpenAPI 契约建议使用 `PATH/TOPIC`。
+## Batch Response Handling
 
-### NamespaceNode 字段
+`uns create --file` uses a batch API. HTTP 200 and outer `code: 200` do not prove all nodes were created.
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `name` | string | 是 | 单段名称，不含 `/` |
-| `type` | string | 是 | `PATH`（目录）或 `TOPIC`（数据点） |
-| `topicType` | string | TOPIC 时必填 | `METRIC` / `ACTION` / `STATE` |
-| `fields` | SchemaField[] | 否 | 数据点字段定义 |
-| `displayName` | string | 否 | 显示名 |
-| `description` | string | 否 | 描述 |
-| `alias` | string | 否 | 别名 |
-| `enableHistory` | boolean | 否 | 是否持久化历史 |
-| `children` | NamespaceNode[] | 否 | 子节点 |
+Required checks:
 
-### SchemaField
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `name` | string | 字段名 |
-| `type` | string | `int` / `float` / `string` / `bool` 等 |
-| `unit` | string | 单位（可选） |
-
-## 常见错误
-
-| 现象 | 原因 | 处理 |
-|------|------|------|
-| `segment before leaf must be a type folder` | 路径叶子前一段不是 Metric/Action/State | 在叶子名前补类型目录，如 `.../Metric/ProductionCount` |
-| `a topic node needs at least two segments` | 路径只有一段，缺少类型目录 | 至少写 `Metric/Count`，不能只写 `Count` |
-| `--type "" is not valid` | `--type` 漏填或拼错 | 只接受 `path` 或 `topic` |
-| PowerShell 下 JSON 解析失败 | 内联 JSON 转义问题 | 改用 `--fields` 值写入文件，再 `--file` 传入 |
-
-## API
-
-```
-POST /openapi/v1/uns/create
+```js
+if (resp.data?.success === false) {
+  throw new Error("UNS create batch failed");
+}
+for (const result of resp.data?.results ?? []) {
+  if (result.success === false) {
+    throw new Error(result.message || result.path || "UNS create item failed");
+  }
+}
 ```
 
-直接调用：
+## Field Types
 
-```bash
-tier0 api POST /openapi/v1/uns/create --body-file structure.json
+Common field types:
+
+| Type | Use |
+| --- | --- |
+| `float` | Numeric process values |
+| `int` | Counts, codes, discrete numeric states |
+| `string` | Text state, mode, operator input |
+| `bool` | Boolean state |
+
+## Modeling Guidance
+
+If the product requires current readable values for every state or alarm, create those values as topics that the backend caches. Current backend behavior may vary by topic type; verify with `uns read` after creating and writing the topic.
+
+## PowerShell
+
+Prefer `--file` for field arrays:
+
+```powershell
+tier0 uns create --file namespace.json --json
 ```
-
-## 参考
-
-- [uns SKILL.md](../SKILL.md) — UNS 全部命令

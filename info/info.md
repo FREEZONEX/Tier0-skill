@@ -1,46 +1,33 @@
 ---
 name: tier0-info
-version: 0.3.0
-description: "获取 Tier0 网关服务信息。triggers: Tier0, 服务信息, 状态, 健康检查"
-metadata:
-  requires:
-    bins: ["tier0"]
-  hermes:
-    tags: [info, status, health]
+description: "Get Tier0 gateway service information. Triggers: Tier0, service info, status, health check, connectivity."
 ---
 
-# info — 服务信息
+# info - Service Information
 
-## 说明
+Use this file when the user asks to verify Tier0 gateway connectivity or service status.
 
-获取 Tier0 网关服务的运行信息和状态，可用于连通性验证和健康检查。
-
-## API
-
-```
-POST /openapi/v1/info
-```
-
-## 请求参数
-
-无需参数，传空对象即可。
-
-## 示例
+## Command
 
 ```bash
-tier0 api /openapi/v1/info --body '{}'
+tier0 api /openapi/v1/info --body '{}' --json
 ```
 
-## 典型场景
+No business parameters are required.
 
-**验证连接是否正常：**
+## Typical Use
+
 ```bash
-# 调试时确认 API Key 和 BaseURL 配置正确
-tier0 api /openapi/v1/info --body '{}' --debug
+# Verify BaseURL and API key connectivity while debugging
+tier0 api /openapi/v1/info --body '{}' --debug --json
 ```
 
-## Windows PowerShell 简写
+## PowerShell
 
 ```powershell
-tier0 api /openapi/v1/info --body '{}'
+tier0 api /openapi/v1/info --body '{}' --json
 ```
+
+## Interpretation
+
+Use a successful response to confirm that the configured `base-url` is reachable. Authentication and workspace permissions should be diagnosed with `auth/whoami.md`.

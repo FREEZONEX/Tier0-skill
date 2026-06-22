@@ -1,51 +1,35 @@
-#!/bin/bash
-# Tier0 Skills OpenClaw 安装脚本
-# 用法: ./install-openclaw.sh
+#!/usr/bin/env bash
+# Tier0 Skills installer for OpenClaw.
+# Usage: ./install-openclaw.sh
 
-set -e
+set -euo pipefail
 
-SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
-OPENCLAW_SKILLS_DIR="${HOME}/.openclaw/skills"
-TARGET_DIR="${OPENCLAW_SKILLS_DIR}/tier0-api"
+OPENCLAW_DIR="${HOME}/.openclaw"
+SKILLS_DIR="${OPENCLAW_DIR}/skills"
+TIER0_SKILL_DIR="${SKILLS_DIR}/tier0"
 
-echo "☁️  Installing Tier0 Skills for OpenClaw..."
-
-# 检查 OpenClaw 是否已安装
-if ! command -v openclaw &> /dev/null; then
-    echo "❌ OpenClaw not found. Please install it first:"
-    echo "   npm install -g openclaw@latest"
-    exit 1
+if [[ ! -d "${OPENCLAW_DIR}" ]]; then
+  echo "OpenClaw is not installed: ${OPENCLAW_DIR}"
+  exit 1
 fi
 
-# 确保 OpenClaw skills 目录存在
-mkdir -p "${OPENCLAW_SKILLS_DIR}"
+mkdir -p "${SKILLS_DIR}"
 
-# 如果已存在旧版本，先备份
-if [ -d "${TARGET_DIR}" ]; then
-    BACKUP_DIR="${TARGET_DIR}.backup.$(date +%s)"
-    echo "⚠️  Existing tier0-api skill found, backing up to ${BACKUP_DIR}"
-    mv "${TARGET_DIR}" "${BACKUP_DIR}"
+if [[ -d "${TIER0_SKILL_DIR}" ]]; then
+  BACKUP_DIR="${TIER0_SKILL_DIR}.bak.$(date +%Y%m%d%H%M%S)"
+  mv "${TIER0_SKILL_DIR}" "${BACKUP_DIR}"
+  echo "Backed up existing skill to ${BACKUP_DIR}"
 fi
 
-# 复制 skill 文件
-cp -r "${SKILL_DIR}" "${TARGET_DIR}"
+mkdir -p "${TIER0_SKILL_DIR}"
+cp -R . "${TIER0_SKILL_DIR}/"
 
-# 清理不需要的文件
-rm -f "${TARGET_DIR}/install-openclaw.sh"
-rm -f "${TARGET_DIR}/README.md"
+rm -rf "${TIER0_SKILL_DIR}/.git" \
+       "${TIER0_SKILL_DIR}/install-openclaw.sh"
 
-echo "✅ Tier0 Skills installed to ${TARGET_DIR}"
-echo ""
-echo "Installed files:"
-ls -1 "${TARGET_DIR}/uns/" | sed 's/^/   📄 /'
-echo ""
-
-# 验证安装
-if command -v openclaw &> /dev/null; then
-    echo "🔍 Verifying installation..."
-    openclaw skills info tier0-api 2>/dev/null || true
-    echo ""
-    echo "💡 To verify, run: openclaw skills list | grep tier0"
+if [[ -f "${TIER0_SKILL_DIR}/SKILL.md" ]]; then
+  echo "Tier0 skills installed to ${TIER0_SKILL_DIR}"
+else
+  echo "Install failed: SKILL.md not found"
+  exit 1
 fi
-
-echo "🎉 Done!"

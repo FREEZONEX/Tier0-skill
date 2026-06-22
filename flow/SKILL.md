@@ -1,110 +1,86 @@
-﻿---
+---
 name: tier0-flow
-version: 0.3.0
-description: "Tier0 Flow（Node-RED）管理：列出、创建、更新、删除 SourceFlow 和 EventFlow，导出和部署 Node-RED 画布 JSON。triggers: Tier0, Flow, Node-RED, SourceFlow, EventFlow, 工作流, 数据采集, 协议, MQTT, 画布, 部署"
-metadata:
-  requires:
-    bins: ["tier0"]
-  cliHelp: "tier0 flow help"
-  hermes:
-    tags: [flow, nodered, sourceflow, eventflow, deploy]
+description: "Tier0 Flow management for Node-RED: list, create, update, delete, export, and deploy SourceFlow and EventFlow canvas JSON."
 ---
 
-# tier0-flow — Node-RED Flow 管理
+# tier0-flow
 
-## 何时使用本 Skill
+Use this skill for Tier0 Node-RED Flow management.
 
-### 应该使用
+## Use When
 
-- 用户要列出、查看、创建、更新或删除 Flow
-- 用户要查看 Node-RED 画布内容（导出 flowsJson）
-- 用户要部署/更新 Node-RED 画布配置
-- 用户询问 SourceFlow / EventFlow 的状态或类型
+- The user wants to list, inspect, create, update, or delete Flows.
+- The user wants to export Node-RED canvas JSON.
+- The user wants to deploy or replace a Node-RED canvas.
+- The user asks about SourceFlow or EventFlow state.
 
-### 不应该使用
+## Do Not Use When
 
-- 用户想在 Node-RED 里拖拽节点、实时编辑画布 → 应在浏览器 Node-RED UI 中操作，CLI 只负责导入/导出
-- 用户询问 UNS topic 的数据值 → 走 `uns/references/read.md`（Flow 只是采集管道，数据在 UNS）
-- 用户询问设备协议配置（如 Modbus 地址映射）→ 这是 Node-RED 节点内部配置，CLI 无法直接编辑，需导出 flowsJson 后修改
+- The user wants current UNS topic values. Use `uns/references/read.md`.
+- The user wants to directly drag nodes in the Node-RED UI. The CLI imports and exports JSON; UI editing happens in a browser.
+- The user wants protocol mapping details. Read the matching protocol reference first.
 
-## 不可违反规则
+## Non-Negotiable Rules
 
-1. **先 list，再操作** — 不知道 ID 时必须先 `tier0 flow list`，禁止猜测 ID
-2. **`id` ≠ `flowId`** — 所有命令参数用整数 `id`（如 `1`），`flowId` 是 Node-RED 内部字符串（如 `e7bdfaabfcae875c`），不可用于 CLI 参数
-3. **deploy 前必须备份** — 执行 deploy 前必须先 `tier0 flow data --id <id> --out backup.json`，deploy 会覆盖全部节点配置且不可撤销
-4. **deploy 和 delete 需要 `--yes`** — 这两个操作是高风险门禁，CLI 不带 `--yes` 时 exit 10，需先向用户确认
-5. **delete 告知影响** — 删除 Flow 会停止对应的 Node-RED 容器，必须在用户知情的情况下执行
-6. **不要读 deploy.md 就盲目执行** — deploy 参数复杂（整个 flowsJson），没读 `references/deploy.md` 前禁止构造请求
-7. **Tier0 内置 MQTT 必须使用后端初始化的 broker config** — 后端 API 创建 Flow 时会自动生成 MQTT `mqtt-broker` config 节点和凭据；Tier0 MQTT Broker 拒绝匿名连接。AI 不得新建或替换 Tier0 侧 `mqtt-broker`，部署画布时必须从 `flow data` 导出中**原样保留**该 config 节点（至少保留 `id`、`broker`、`clientid`），否则 mqtt out 会匿名连接或丢失加密凭据；详见 `references/protocols/mqtt-bridge.md`
+1. List before acting when the Flow ID is unknown.
+2. CLI commands use integer `id`; Node-RED `flowId` is not a CLI identifier.
+3. Before deploy, export a backup: `tier0 flow data --id <id> --out backup.json`.
+4. `flow deploy` and `flow delete` require `--yes` after user confirmation.
+5. Deleting a Flow stops the related Node-RED container.
+6. Do not construct deploy payloads before reading `references/deploy.md`.
+7. Preserve the backend-created Tier0 `mqtt-broker` config node. Do not create or replace it.
 
-## Flow 类型
+## Flow Types
 
-每个 Workspace 包含两类 Node-RED 容器：
+| Type | Meaning | Typical Use |
+| --- | --- | --- |
+| `SourceFlow` | Collects industrial protocol data and publishes MQTT / UNS | Modbus, OPC-UA, OPC-DA, MQTT bridge |
+| `EventFlow` | Processes business data or subscribes to MQTT | Alarms, transformations, actions, archival |
 
-| 类型 | 说明 | 典型用途 |
-|------|------|---------|
-| **SourceFlow** | 连接工业协议，采集设备数据，发布到 MQTT / UNS | Modbus、OPC-UA、OPC-DA、MQTT 桥接 |
-| **EventFlow** | 订阅 MQTT 消息，对业务数据进行二次处理 | 告警规则、数据转换、触发动作、归档到数据库 |
+## Routing
 
-## 子技能路由
+| Intent | Read | Risk |
+| --- | --- | --- |
+| Query available node types | `references/nodes.md` | Low |
+| List or inspect Flow | `references/list.md` | Low |
+| Create Flow | `references/create.md` | Low |
+| Update Flow metadata | `references/update.md` | Low |
+| Delete Flow | `references/delete.md` | High, requires `--yes` |
+| Export Node-RED canvas | `references/data.md` | Low |
+| Deploy Node-RED canvas | `references/deploy.md` | High, requires backup and `--yes` |
 
-| 意图 | 加载文件 | 风险 | 说明 |
-|------|---------|------|------|
-| 查询可用节点 / 构造 flowsJson 前 | `references/nodes.md` | — | 节点查询接口和常用 type 字符串速查，确认节点是否需要额外安装 |
-| 列出 / 查看 Flow | `references/list.md` | — | 列表、类型过滤、查看详情 |
-| 创建 Flow | `references/create.md` | — | 新建 SourceFlow 或 EventFlow |
-| 更新 Flow 元数据 | `references/update.md` | — | 重命名、描述、收藏 |
-| 删除 Flow | `references/delete.md` | ⚠️ 高风险 需 `--yes` | 停止 Node-RED 容器，不可撤销 |
-| 导出 Node-RED 画布 | `references/data.md` | — | 获取 flowsJson 到本地文件（deploy 前必备） |
-| 部署 Node-RED 画布 | **必读** `references/deploy.md` | ⚠️ 高风险 需 `--yes` | 替换全部节点配置，需先备份 |
+## Protocol References
 
-### 协议节点配置（SourceFlow / EventFlow 画布内容）
+Read the matching file before generating or editing Flow JSON:
 
-> 以下文档用于生成或修改 Node-RED 画布（flowsJson）。
-> **工作流**：先读协议文档了解节点参数 → 根据具体任务生成实际 Flow JSON（模板只是结构参考，不要照搬）→ `flow deploy --yes` 部署。
+| Intent | Read |
+| --- | --- |
+| Modbus TCP/RTU to UNS | `references/protocols/modbus.md` |
+| OPC-UA subscription to UNS | `references/protocols/opcua.md` |
+| OPC-DA polling to UNS | `references/protocols/opcda.md` |
+| External MQTT broker to UNS | `references/protocols/mqtt-bridge.md` |
+| UNS to PostgreSQL archive | `references/protocols/postgresql.md` |
+| Template index | `references/protocols/README.md` |
 
-| 意图 | 加载文件 | 说明 |
-|------|---------|------|
-| Modbus TCP/RTU 采集 → UNS | **必读** `references/protocols/modbus.md` | 节点参数、function 映射 |
-| OPC-UA Server 订阅 → UNS | **必读** `references/protocols/opcua.md` | subscribe 模式、多标签、DataValue 解析 |
-| OPC-DA Server 轮询 → UNS | **必读** `references/protocols/opcda.md` | DCOM 连接、ItemID、质量过滤（仅 Windows 环境） |
-| 外部 MQTT Broker → UNS | **必读** `references/protocols/mqtt-bridge.md` | mqtt in → function → mqtt out，格式转换 |
-| UNS 数据 → PostgreSQL 归档 | **必读** `references/protocols/postgresql.md` | 配置节点、参数化 SQL、安全建议 |
-| 查看协议模板索引 | `references/protocols/README.md` | 所有协议文档和 JSON 模板一览 |
-
-## 常用操作速查
+## Common Commands
 
 ```bash
-# 查看所有 Flow
 tier0 flow list
-
-# 只看 SourceFlow / EventFlow
-tier0 flow list --source
-tier0 flow list --event --json
-
-# 查看 Flow 详情
-tier0 flow get --id 1
-
-# 创建 SourceFlow
-tier0 flow create --name "modbus-collector" --source --desc "Modbus TCP 采集"
-
-# 创建 EventFlow
-tier0 flow create --name "alert-handler" --event --desc "温度告警处理"
-
-# 导出画布 → 修改 → 部署（典型工作流）
+tier0 flow list --source --json
+tier0 flow get --id 1 --json
+tier0 flow create --name "modbus-collector" --source --desc "Modbus TCP collector"
+tier0 flow create --name "alert-handler" --event --desc "Temperature alarm processor"
 tier0 flow data --id 1 --out flows.json
-# ... 编辑 flows.json ...
 tier0 flow deploy --id 1 -f flows.json --yes
 ```
 
-## Node-RED 画布工作流
+## Node-RED Canvas Workflow
 
+```bash
+tier0 flow list
+tier0 flow data --id <id> --out backup.json
+# edit or generate flows.json
+tier0 flow deploy --id <id> -f flows.json --yes
 ```
-tier0 flow list             # 确认 Flow ID
-    ↓
-tier0 flow data --id <id> --out flows.json   # 导出当前画布
-    ↓
-# 编辑 flows.json（用 Node-RED 编辑器或手动修改）
-    ↓
-tier0 flow deploy --id <id> -f flows.json --yes  # 部署新画布
-```
+
+When generating `flows.json`, include the existing backend-created Tier0 `mqtt-broker` config node from the exported data. Node-RED credentials are stored against the node ID; replacing that node can cause anonymous MQTT connections and authentication failure.

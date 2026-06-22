@@ -1,238 +1,140 @@
 ---
 name: tier0-flow-protocol-mqtt-bridge
-version: 0.1.0
-description: "MQTT Bridge 协议配置指南。从外部 MQTT Broker 订阅数据，经格式转换后发布到 Tier0 UNS。"
-metadata:
-  requires:
-    bins: ["tier0"]
-  hermes:
-    tags: [flow, mqtt, bridge, protocol, sourceflow]
+description: "MQTT bridge Flow guide: subscribe to an external MQTT broker, transform payloads, and publish to Tier0 UNS through the backend-created Tier0 MQTT broker config."
 ---
 
-# MQTT Bridge — 外部 MQTT → Tier0 UNS
+# MQTT Bridge - External MQTT to Tier0 UNS
 
-## 何时使用
+Use this guide when external devices or systems already publish MQTT messages and the user wants to ingest them into Tier0 UNS.
 
-- 用户要把外部 MQTT Broker（设备直连、第三方系统、云平台）的数据接入 Tier0 UNS
-- 用户说"MQTT 接入"、"桥接 MQTT"、"外部 MQTT 数据写入 UNS"
-- 设备已经在发 MQTT 消息，只需转换格式
+## Do Not Use When
 
-## 不应该使用
+- The source device should be collected directly through Modbus or OPC-UA. Use the corresponding protocol guide.
+- The user only wants to read current UNS values. Use `uns/references/read.md`.
 
-- 用户要从 Modbus/OPC-UA 设备直接采集 → 走对应协议文档
-- 用户要读取 UNS 当前值 → 走 `uns/references/read.md`
+## Required Rules
 
-## 不可违反规则
+1. Back up before deploy: `tier0 flow data --id <id> --out backup.json`.
+2. Query the target UNS topic fields before writing transformation code.
+3. UNS write payloads must be objects, not bare numbers or strings.
+4. Use a separate config node for the external MQTT broker.
+5. Reuse the backend-created Tier0 `mqtt-broker` config node from `flow data`. Do not replace it.
 
-1. **先备份再部署** — 对现有 Flow 部署前必须先 `tier0 flow data --id <id> --out backup.json`
-2. **value 是对象** — Tier0 UNS 的 `value` 必须是字段名→值的对象，不能是裸数字或裸字符串
-3. **先查 UNS topic 结构** — 写 function 前先 `tier0 uns browse --path <父路径> --include-metadata` 确认 topic 的字段定义
-4. **外部 broker 用独立 config 节点** — 不要和 Tier0 内置 MQTT 共用同一个 mqtt-broker config
-5. **必须复用后端初始化的 Tier0 mqtt-broker config 节点** — 见下方"Tier0 内置 MQTT broker config"说明，禁止自行新建或替换 Tier0 侧 broker 节点
+## Tier0 MQTT Broker Config
 
-## Tier0 内置 MQTT broker config
+Tier0 EMQX requires authentication and rejects anonymous connections. Backend Flow creation initializes a Tier0 `mqtt-broker` config node with `clientid`, `username`, and `password`. Node-RED stores credentials internally by node ID and does not export plaintext passwords reliably.
 
-**Tier0 MQTT Broker（EMQX）启用了认证，拒绝匿名连接。** 后端 API 创建 Flow 时会自动初始化一个 Tier0 `mqtt-broker` config 节点，并生成对应的 `clientid`、`username`、`password`。AI Agent 不能自行生成、查询或替换这组凭据。
+Agent rules:
 
-### 凭据的来源与生命周期
+- Find the existing Tier0 `mqtt-broker` config node in `backup.json`.
+- Preserve its `id`, `broker`, `port`, and `clientid`.
+- Omit credentials or keep the exported credential shape unchanged.
+- Do not write custom `credentials.user` or `credentials.password`.
+- Do not create a new Tier0 broker config node.
 
-| 阶段 | 发生了什么 |
-|------|-----------|
-| `tier0 flow create` / 后端 Flow 创建 API | 后端自动生成 Tier0 `mqtt-broker` config 节点、`clientid`、`username`（格式 `{workspaceId}&{connId}`）和随机 30 位 `password` |
-| 初始部署 | 凭据写入该 `mqtt-broker` config 节点，Node-RED 加密后持久化存储 |
-| `tier0 flow data` 导出 | **Node-RED 不导出密码原文**，`credentials` 字段为空或缺失 |
-| `tier0 flow deploy` | Node-RED 以 **节点 `id`** 为 key 匹配内部存储的凭据 |
+## Architecture
 
-### AI Agent 操作规则
+```text
+[external mqtt-broker config]
+[tier0 mqtt-broker config from backend]
 
-- **必须先 `tier0 flow data --id <id> --out backup.json`，从中找到 `"type": "mqtt-broker"` 且连接 Tier0 EMQX 的 config 节点，记录其 `id` 字段**
-- 生成新 flowsJson 时，**原样保留**该 mqtt-broker config 节点（同 `id`、同 `broker`、同 `clientid`，`credentials` 可省略）
-- **禁止**删除、替换或新建 Tier0 侧的 mqtt-broker config 节点，否则 Node-RED 找不到已存储的凭据，mqtt out 会匿名连接或鉴权失败
-- **禁止**向 Tier0 mqtt-broker 节点写入任何自定义的 `credentials.user` / `credentials.password`；这不会可靠恢复 Node-RED 的加密凭据库
-
-### 如果 Flow 不是通过系统创建的
-
-手动创建的 Node-RED 容器没有后端初始化的 Tier0 broker config 和系统凭据，无法连接 Tier0 MQTT Broker。必须通过 `tier0 flow create` 或后端 Flow 创建 API 先创建 Flow，由系统生成 broker config 后再进行配置。
-
----
-
-## 节点架构
-
-```
-[mqtt-broker: 外部]  ← config 节点，指向外部 MQTT Broker
-[mqtt-broker: Tier0] ← config 节点，指向 Tier0 内置 MQTT（localhost:1883）
-
-[mqtt in] → [function: 格式转换] → [mqtt out]
- 外部topic              ↓ 失败            Tier0 UNS 路径
-                   [debug: 错误]
+[mqtt in] -> [function: transform payload] -> [mqtt out]
+                 |
+              [debug]
 ```
 
-## 节点说明
+## External mqtt-broker Fields
 
-### mqtt-broker（外部连接配置）
+| Field | Meaning |
+| --- | --- |
+| `broker` | External broker host |
+| `port` | `1883` or `8883` |
+| `clientid` | Client ID; may be blank if auto-generated |
+| `usetls` | TLS toggle |
+| `credentials` | Only for the external broker when needed |
 
-| 关键字段 | 说明 | 示例 |
-|---------|------|------|
-| `broker` | 外部 Broker 地址 | `192.168.1.50` |
-| `port` | 端口 | `1883`（标准）/ `8883`（TLS）|
-| `clientid` | 客户端 ID | 留空自动生成 |
-| `usetls` | 是否 TLS | `false` |
-| `credentials.user/password` | 认证信息（如需） | — |
+## mqtt in
 
-### mqtt in（订阅外部 topic）
-
-| 关键字段 | 说明 | 示例 |
-|---------|------|------|
-| `topic` | 订阅的 topic（支持通配符 +/#） | `devices/+/data` |
-| `qos` | 服务质量 | `0`（至多一次）/ `1`（至少一次）|
-| `broker` | 引用外部 mqtt-broker config | — |
-
-**输出 msg 结构（外部设备发来的原始消息）：**
+Subscribe to the external topic:
 
 ```json
 {
-  "topic": "devices/line1/data",
-  "payload": "...",
-  "qos": 0,
-  "retain": false
+  "type": "mqtt in",
+  "topic": "devices/+/data",
+  "qos": "0",
+  "broker": "external-broker-node-id"
 }
 ```
 
-`msg.payload` 的格式取决于外部设备，可能是 JSON 字符串、纯数字或自定义格式。
+## Transform Function
 
-### function（格式转换）
+The function converts external payloads to Tier0 UNS topic and payload.
 
-将外部 MQTT 消息转换为 Tier0 UNS 格式。这是**核心业务逻辑**，按实际情况编写。
+Example for JSON payload:
 
-**常见场景 1：外部 payload 是 JSON，直接提取字段**
-
-```javascript
-var data;
-try {
-    data = (typeof msg.payload === "string") ? JSON.parse(msg.payload) : msg.payload;
-} catch(e) {
-    node.warn("JSON parse error: " + e.message);
-    return null;
-}
-
-// 从外部 topic 解析 UNS 路径（按实际约定修改）
-// 例：外部 topic "devices/line1/temperature" → UNS "Plant/Line1/Metric/Temperature"
-var parts = msg.topic.split("/");
-var deviceId = parts[1];  // "line1"
-
-msg.topic   = "Plant/" + deviceId.charAt(0).toUpperCase() + deviceId.slice(1) + "/Metric/Temperature";
+```js
+const data = typeof msg.payload === "string" ? JSON.parse(msg.payload) : msg.payload;
+msg.topic = "Plant/Line1/Metric/Temperature";
 msg.payload = JSON.stringify({ temperature: data.value });
 return msg;
 ```
 
-**常见场景 2：外部 payload 是裸数字**
+Example for a numeric payload:
 
-```javascript
-var rawValue = parseFloat(msg.payload);
-if (isNaN(rawValue)) return null;
-
-// 固定映射到 UNS topic
-msg.topic   = "Plant/Line1/Metric/Temperature";
-msg.payload = JSON.stringify({ temperature: rawValue });
+```js
+const value = Number(msg.payload);
+msg.topic = "Plant/Line1/Metric/Temperature";
+msg.payload = JSON.stringify({ temperature: value });
 return msg;
 ```
 
-**常见场景 3：一个外部 topic 包含多个字段，拆分为多个 UNS topic**
+Example splitting one payload into multiple UNS topics:
 
-```javascript
-var data = JSON.parse(msg.payload);
-var messages = [];
-
-messages.push({
-    topic:   "Plant/Line1/Metric/Temperature",
-    payload: JSON.stringify({ temperature: data.temp })
-});
-messages.push({
-    topic:   "Plant/Line1/Metric/Humidity",
-    payload: JSON.stringify({ humidity: data.humi })
-});
-
-return messages;  // 返回数组，Node-RED 会分别发送每条消息
+```js
+const data = typeof msg.payload === "string" ? JSON.parse(msg.payload) : msg.payload;
+return [
+  {
+    topic: "Plant/Line1/Metric/Temperature",
+    payload: JSON.stringify({ temperature: data.temperature })
+  },
+  {
+    topic: "Plant/Line1/Metric/Humidity",
+    payload: JSON.stringify({ humidity: data.humidity })
+  }
+];
 ```
 
-### mqtt out（发布到 Tier0 UNS）
+## mqtt out
 
-| 关键字段 | 说明 | 值 |
-|---------|------|-----|
-| `topic` | 留空，由 `msg.topic` 动态设置 | `""` |
-| `qos` | 服务质量 | `0` |
-| `retain` | 是否保留消息 | `false` |
-| `broker` | 引用 Tier0 内置 mqtt-broker config（**复用原有节点 id，不可新建**） | 系统颁发节点 |
-
-> Tier0 内置 mqtt-broker config 节点由后端在创建 Flow 时自动生成，含系统颁发的 clientid/username/password。请从 `tier0 flow data` 导出的 JSON 中找到该节点并原样保留，不要替换。
-
-## 快速部署流程
-
-```bash
-# 1. 确认 UNS topic 字段结构
-tier0 uns browse --path Plant/Line1 --include-metadata
-
-# 2. 确认目标 SourceFlow ID
-tier0 flow list --source
-
-# 3. 备份现有画布
-tier0 flow data --id <id> --out backup.json
-
-# 4. 根据任务生成 Flow JSON（参考下方示例结构）
-
-# 5. 部署（需用户确认）
-tier0 flow deploy --id <id> -f my-mqtt-bridge.json --yes
-```
-
-## 示例 Flow 结构（AI Agent 按此结构生成，不是照搬）
-
-> **重要**：`broker-tier0` 节点只是占位说明，**实际操作时必须用 `tier0 flow data` 导出的现有 mqtt-broker 节点 id 替换**，不能使用此示例 id，也不能填入 credentials。
+Use the preserved Tier0 broker config node:
 
 ```json
-[
-  { "id": "tab-1", "type": "tab", "label": "MQTT Bridge" },
-
-  { "id": "broker-ext", "type": "mqtt-broker", "name": "外部 MQTT",
-    "broker": "192.168.1.50", "port": 1883 },
-
-  {
-    "id": "<从 flow data 导出的原有 mqtt-broker 节点 id，如 a1b2c3d4>",
-    "type": "mqtt-broker",
-    "name": "emqx",
-    "broker": "<系统配置的 EMQX 地址，从 flow data 中原样复制>",
-    "port": "1883",
-    "clientid": "<系统颁发，从 flow data 中原样复制>",
-    "credentials": {}
-  },
-
-  { "id": "mqtt-in-1", "type": "mqtt in", "z": "tab-1",
-    "topic": "devices/+/data", "qos": "0", "broker": "broker-ext",
-    "name": "订阅外部设备数据",
-    "x": 160, "y": 120,
-    "wires": [["fn-transform"]] },
-
-  { "id": "fn-transform", "type": "function", "z": "tab-1",
-    "name": "格式转换",
-    "func": "// 按实际任务编写转换逻辑\nvar data = JSON.parse(msg.payload);\nmsg.topic = \"Plant/Line1/Metric/Temperature\";\nmsg.payload = JSON.stringify({ temperature: data.value });\nreturn msg;",
-    "outputs": 1,
-    "x": 400, "y": 120,
-    "wires": [["mqtt-out-uns"]] },
-
-  { "id": "mqtt-out-uns", "type": "mqtt out", "z": "tab-1",
-    "topic": "", "qos": "0", "retain": false,
-    "broker": "<同上，系统 mqtt-broker 节点 id>",
-    "name": "发布到 UNS",
-    "x": 640, "y": 120,
-    "wires": [] }
-]
+{
+  "type": "mqtt out",
+  "topic": "",
+  "qos": "0",
+  "retain": "false",
+  "broker": "<existing-tier0-mqtt-broker-config-id>"
+}
 ```
 
-## 常见问题
+Leave `topic` blank so `msg.topic` controls the UNS path.
 
-| 现象 | 原因 | 解决 |
-|------|------|------|
-| mqtt in 节点红色 | 无法连接外部 Broker | 检查 IP、端口、认证信息；确认防火墙放行 |
-| UNS 收不到数据 | payload 格式错误 | 在 function 前加 debug 节点确认原始 payload；检查 JSON.parse 是否报错 |
-| value 写入失败 | 字段名不匹配 UNS schema | 先 `uns browse --include-metadata` 查 fields 定义 |
-| 外部消息丢失 | qos=0 且网络抖动 | 外部 Broker 使用 `qos: 1`；注意设备是否支持 qos 1 |
-| 消息重复发布 | 多个 mqtt in 订阅同一 topic | 检查是否有重复的 mqtt in 节点或通配符重叠 |
+## Deployment Flow
+
+```bash
+tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
+tier0 flow list --source --json
+tier0 flow data --id <id> --out backup.json
+# generate flows.json while preserving Tier0 mqtt-broker config
+tier0 flow deploy --id <id> -f flows.json --yes
+```
+
+## Common Issues
+
+| Symptom | Likely Cause | Fix |
+| --- | --- | --- |
+| MQTT out connects anonymously | Tier0 broker config node was replaced | Reuse the exported backend-created config node ID |
+| UNS receives nothing | Payload transform is wrong | Add debug before mqtt out and inspect `msg.topic` / `msg.payload` |
+| Write rejected | Payload does not match UNS schema | Browse metadata and adjust field names |
+| External broker fails | Host, port, TLS, or external credentials are wrong | Verify external broker settings |
