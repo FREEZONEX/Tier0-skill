@@ -84,3 +84,6 @@ tier0 flow deploy --id <id> -f flows.json --yes
 ```
 
 When generating `flows.json`, include the existing backend-created Tier0 `mqtt-broker` config node from the exported data. Node-RED credentials are stored against the node ID; replacing that node can cause anonymous MQTT connections and authentication failure.
+
+`tier0 flow data --out flows.json` writes a deployable Node-RED `flows` array.
+The file can be edited and passed directly to `tier0 flow deploy -f flows.json --yes`.

@@ -20,6 +20,8 @@ tier0 flow data --id 1 --out flows.json
 - Always run this before `flow deploy`.
 - Save a backup before modifying any existing canvas.
 - Preserve config nodes from the exported JSON, especially Tier0 `mqtt-broker`.
+- `--json` prints the full API response.
+- `--out` writes the deployable Node-RED `flows` array so it can be edited and passed directly to `flow deploy -f`.
 
 ## Recommended Workflow
 

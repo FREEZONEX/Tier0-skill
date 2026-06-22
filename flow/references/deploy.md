@@ -32,6 +32,8 @@ tier0 flow deploy --id 1 --flows-json '<json>' --yes
 - `--yes` is required after user confirmation.
 - Preserve backend-created config nodes from the exported canvas.
 - Node-RED may remap tab IDs and return a new internal `flowId`; that is normal.
+- `flow deploy -f` accepts the deployable `flows` array exported by `flow data --out`.
+- For compatibility, `flow deploy` also accepts older full API envelopes and `data` objects, and extracts `flows` before sending the deployment.
 
 ## Tier0 MQTT Broker Config
 
