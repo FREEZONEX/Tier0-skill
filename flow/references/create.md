@@ -51,6 +51,10 @@ tier0 flow create --name "my-flow" --source --json
 # → {"id": 5}
 ```
 
+## MQTT 初始化规则
+
+后端 API 创建 Flow 时会初始化 Tier0 内置 MQTT `mqtt-broker` config 节点，并生成对应的 `clientid`、`username`、`password`。后续修改/部署画布时必须保留这个 config 节点；不要自己新建 Tier0 侧 `mqtt-broker`，也不要手写或替换其凭据。需要改画布时先 `tier0 flow data --id <id> --out backup.json` 导出，基于导出的 JSON 修改。
+
 ## 典型场景
 
 **从已有 Flow 克隆（导出 → 创建 → 部署）：**
@@ -62,8 +66,8 @@ tier0 flow data --id 1 --out template.json
 tier0 flow create --name "modbus-line2" --source --json
 # → {"id": 6}
 
-# 3. 将模板画布部署到新 Flow
-tier0 flow deploy --id 6 -f template.json
+# 3. 将模板画布部署到新 Flow（需保留新 Flow 自带的 mqtt-broker config）
+tier0 flow deploy --id 6 -f template.json --yes
 ```
 
 ## Windows PowerShell

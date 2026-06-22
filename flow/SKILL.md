@@ -35,7 +35,7 @@ metadata:
 4. **deploy 和 delete 需要 `--yes`** — 这两个操作是高风险门禁，CLI 不带 `--yes` 时 exit 10，需先向用户确认
 5. **delete 告知影响** — 删除 Flow 会停止对应的 Node-RED 容器，必须在用户知情的情况下执行
 6. **不要读 deploy.md 就盲目执行** — deploy 参数复杂（整个 flowsJson），没读 `references/deploy.md` 前禁止构造请求
-7. **Tier0 内置 MQTT 必须使用系统颁发凭据** — Tier0 MQTT Broker 拒绝匿名连接；账号密码由后端在 `flow create` 时自动生成，AI 无法查询或自行填写。操作画布时必须从 `flow data` 导出中**原样保留**原有 `mqtt-broker` config 节点（含 `id`、`broker`、`clientid`），不可新建或替换；详见 `references/protocols/mqtt-bridge.md`
+7. **Tier0 内置 MQTT 必须使用后端初始化的 broker config** — 后端 API 创建 Flow 时会自动生成 MQTT `mqtt-broker` config 节点和凭据；Tier0 MQTT Broker 拒绝匿名连接。AI 不得新建或替换 Tier0 侧 `mqtt-broker`，部署画布时必须从 `flow data` 导出中**原样保留**该 config 节点（至少保留 `id`、`broker`、`clientid`），否则 mqtt out 会匿名连接或丢失加密凭据；详见 `references/protocols/mqtt-bridge.md`
 
 ## Flow 类型
 
@@ -94,7 +94,7 @@ tier0 flow create --name "alert-handler" --event --desc "温度告警处理"
 # 导出画布 → 修改 → 部署（典型工作流）
 tier0 flow data --id 1 --out flows.json
 # ... 编辑 flows.json ...
-tier0 flow deploy --id 1 -f flows.json
+tier0 flow deploy --id 1 -f flows.json --yes
 ```
 
 ## Node-RED 画布工作流
@@ -106,5 +106,5 @@ tier0 flow data --id <id> --out flows.json   # 导出当前画布
     ↓
 # 编辑 flows.json（用 Node-RED 编辑器或手动修改）
     ↓
-tier0 flow deploy --id <id> -f flows.json    # 部署新画布
+tier0 flow deploy --id <id> -f flows.json --yes  # 部署新画布
 ```

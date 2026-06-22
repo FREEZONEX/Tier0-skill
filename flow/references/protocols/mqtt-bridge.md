@@ -28,31 +28,31 @@ metadata:
 2. **value 是对象** — Tier0 UNS 的 `value` 必须是字段名→值的对象，不能是裸数字或裸字符串
 3. **先查 UNS topic 结构** — 写 function 前先 `tier0 uns browse --path <父路径> --include-metadata` 确认 topic 的字段定义
 4. **外部 broker 用独立 config 节点** — 不要和 Tier0 内置 MQTT 共用同一个 mqtt-broker config
-5. **必须复用系统颁发的 Tier0 mqtt-broker config 节点** — 见下方"⚠️ Tier0 内置 MQTT 账号密码"说明，禁止自行新建或修改该节点的凭据字段
+5. **必须复用后端初始化的 Tier0 mqtt-broker config 节点** — 见下方"Tier0 内置 MQTT broker config"说明，禁止自行新建或替换 Tier0 侧 broker 节点
 
-## ⚠️ Tier0 内置 MQTT 账号密码
+## Tier0 内置 MQTT broker config
 
-**Tier0 MQTT Broker（EMQX）启用了认证，拒绝匿名连接。** 账号密码仅在系统创建 Flow 时自动颁发，AI Agent 无法自行生成或查询。
+**Tier0 MQTT Broker（EMQX）启用了认证，拒绝匿名连接。** 后端 API 创建 Flow 时会自动初始化一个 Tier0 `mqtt-broker` config 节点，并生成对应的 `clientid`、`username`、`password`。AI Agent 不能自行生成、查询或替换这组凭据。
 
 ### 凭据的来源与生命周期
 
 | 阶段 | 发生了什么 |
 |------|-----------|
-| `tier0 flow create` | 后端自动生成 `clientid`、`username`（格式 `{workspaceId}&{connId}`）和随机 30 位 `password` |
-| 初始部署 | 凭据以明文写入 Node-RED `mqtt-broker` config 节点，Node-RED 加密后持久化存储 |
+| `tier0 flow create` / 后端 Flow 创建 API | 后端自动生成 Tier0 `mqtt-broker` config 节点、`clientid`、`username`（格式 `{workspaceId}&{connId}`）和随机 30 位 `password` |
+| 初始部署 | 凭据写入该 `mqtt-broker` config 节点，Node-RED 加密后持久化存储 |
 | `tier0 flow data` 导出 | **Node-RED 不导出密码原文**，`credentials` 字段为空或缺失 |
 | `tier0 flow deploy` | Node-RED 以 **节点 `id`** 为 key 匹配内部存储的凭据 |
 
 ### AI Agent 操作规则
 
 - **必须先 `tier0 flow data --id <id> --out backup.json`，从中找到 `"type": "mqtt-broker"` 且连接 Tier0 EMQX 的 config 节点，记录其 `id` 字段**
-- 生成新 flowsJson 时，**原样保留**该 mqtt-broker 节点（同 `id`、同 `broker`、同 `clientid`，`credentials` 可省略）
-- **禁止**删除、替换或新建 Tier0 侧的 mqtt-broker config 节点，否则 Node-RED 找不到已存储的凭据，连接必然失败
-- **禁止**向 Tier0 mqtt-broker 节点写入任何自定义的 `credentials.user` / `credentials.password`
+- 生成新 flowsJson 时，**原样保留**该 mqtt-broker config 节点（同 `id`、同 `broker`、同 `clientid`，`credentials` 可省略）
+- **禁止**删除、替换或新建 Tier0 侧的 mqtt-broker config 节点，否则 Node-RED 找不到已存储的凭据，mqtt out 会匿名连接或鉴权失败
+- **禁止**向 Tier0 mqtt-broker 节点写入任何自定义的 `credentials.user` / `credentials.password`；这不会可靠恢复 Node-RED 的加密凭据库
 
 ### 如果 Flow 不是通过系统创建的
 
-手动创建的 Node-RED 容器没有系统颁发的账号密码，无法连接 Tier0 MQTT Broker。必须通过 `tier0 flow create` 先创建 Flow，由系统生成凭据后再进行配置。
+手动创建的 Node-RED 容器没有后端初始化的 Tier0 broker config 和系统凭据，无法连接 Tier0 MQTT Broker。必须通过 `tier0 flow create` 或后端 Flow 创建 API 先创建 Flow，由系统生成 broker config 后再进行配置。
 
 ---
 
@@ -164,7 +164,7 @@ return messages;  // 返回数组，Node-RED 会分别发送每条消息
 | `retain` | 是否保留消息 | `false` |
 | `broker` | 引用 Tier0 内置 mqtt-broker config（**复用原有节点 id，不可新建**） | 系统颁发节点 |
 
-> Tier0 内置 mqtt-broker config 节点由系统在创建 Flow 时自动生成，含系统颁发的 clientid/username/password。请从 `tier0 flow data` 导出的 JSON 中找到该节点并原样保留，不要替换。
+> Tier0 内置 mqtt-broker config 节点由后端在创建 Flow 时自动生成，含系统颁发的 clientid/username/password。请从 `tier0 flow data` 导出的 JSON 中找到该节点并原样保留，不要替换。
 
 ## 快速部署流程
 
