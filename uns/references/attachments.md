@@ -45,7 +45,7 @@ Content-Type: multipart/form-data
 查询：
 
 ```http
-GET /openapi/v1/uns/:unsId/attachments?pageNo=1&pageSize=20&includeFileUrl=true
+POST /openapi/v1/uns/:unsId/attachments/list?pageNo=1&pageSize=20&includeFileUrl=true
 ```
 
 ## 示例
