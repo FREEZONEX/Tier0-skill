@@ -6,6 +6,7 @@ description: "Search Tier0 UNS topics by keyword, path prefix, type, and metadat
 # uns search
 
 Use `search` when the exact topic path is unknown and the user provides a name, keyword, prefix, or type.
+`keyword` currently matches node short names / leaf names. It does not search middle path segments; use `--path-prefix` for path-scoped lookup.
 
 ## Command
 
@@ -20,6 +21,7 @@ tier0 uns search --topic-type METRIC --json
 
 - Use `browse` for structural tree traversal.
 - Use `search` for keyword or prefix lookup.
+- Use `--path-prefix` when you need to search within a path subtree.
 - Use `--include-metadata` when field definitions or descriptions are needed.
 - Use `--include-values` only if the user wants current values alongside search results.
 

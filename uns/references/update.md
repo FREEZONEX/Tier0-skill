@@ -16,7 +16,8 @@ tier0 uns update \
   --path Plant/Line1/Metric/Temperature \
   --display-name "Temperature" \
   --description "Line 1 temperature" \
-  --alias "line1_temp"
+  --alias "line1_temp" \
+  --update-mask displayName,description,alias
 ```
 
 Update fields:
@@ -24,18 +25,20 @@ Update fields:
 ```bash
 tier0 uns update \
   --path Plant/Line1/Metric/Temperature \
-  --fields '[{"name":"temperature","type":"float"},{"name":"unit","type":"string"}]'
+  --fields '[{"name":"temperature","type":"float"},{"name":"unit","type":"string"}]' \
+  --update-mask fields
 ```
 
 Use a file for complex field definitions:
 
 ```bash
-tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"temperature","type":"float"}]'
+tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"temperature","type":"float"}]' --update-mask fields
 ```
 
 ## Rules
 
 - `--path` is required.
+- Use `--update-mask` to explicitly name the metadata fields being changed, such as `description`, `displayName`, `alias`, or `fields`.
 - This command updates node metadata, not VQT data.
 - Field updates may affect future writes and reads; verify schema before changing production topics.
 - For current values, use `uns write`.
@@ -44,6 +47,6 @@ tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"tempe
 
 ```bash
 tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
-tier0 uns update --path Plant/Line1/Metric/Temperature --description "Line 1 temperature"
+tier0 uns update --path Plant/Line1/Metric/Temperature --description "Line 1 temperature" --update-mask description
 tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
 ```
