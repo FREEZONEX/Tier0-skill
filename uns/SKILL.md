@@ -64,7 +64,7 @@ metadata:
 | 用户意图 | 正确路线 | 不要误走 |
 |---------|---------|---------|
 | 探索有哪些设备/路径 | `browse` 从根路径逐层展开 | 不要用 `search` 遍历（search 是关键词检索） |
-| 知道名字，找完整路径 | `search` 按关键词定位 | 不要逐层 browse（低效） |
+| 知道名字或任一级路径段，找完整路径 | `search` 按关键词定位 | 不要逐层 browse（低效） |
 | 查当前实时值 | `read`（需完整 topic 路径） | 不要用 `history`（history 是时序归档） |
 | 查历史趋势 | **先读 `references/history.md`**，再执行 | 不要循环 `read`（read 只返回最新值） |
 | 写入数据 | `write`，value 是 `{"field":val}` 对象 | 不要写标量（`"value": 27.5` 是错误的） |

@@ -185,7 +185,7 @@ Workspace
 | 用户意图 | 正确命令 | 不要误走 |
 |---------|---------|---------|
 | 探索有哪些设备/数据点 | `uns/references/browse.md` — `browse` 逐层展开 | 不要用 `search` 遍历（search 是关键词搜索，不是结构浏览） |
-| 知道名字，找具体 topic | `uns/references/search.md` — `search` 按关键词 | 不要用 `browse` 逐层遍历（低效且可能遗漏） |
+| 知道名字或任一级路径段，找具体 topic | `uns/references/search.md` — `search` 按关键词 | 不要用 `browse` 逐层遍历（低效且可能遗漏） |
 | 查某个数据点的当前值 | `uns/references/read.md` — `read` 需完整 topic 路径 | 不要用 `history`（history 是时序，不是当前值） |
 | 查某段时间的历史趋势 | **必读** `uns/references/history.md` — 参数复杂，读后执行 | 不要循环调用 `read`（高频调用无意义，read 只返回最新值） |
 | 写入/更新数据点 | `uns/references/write.md` — `value` 是对象，不是标量 | 不要用 `update`（update 是改节点元数据，不是写数据） |

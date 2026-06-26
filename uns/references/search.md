@@ -13,7 +13,7 @@ metadata:
 
 ## 说明
 
-在 UNS 命名空间中按关键字、路径前缀或节点类型搜索节点。
+在 UNS 命名空间中按关键字、路径前缀或节点类型搜索节点。关键字会匹配节点名，也会匹配完整路径中的任一级路径段。
 
 ## API
 
@@ -25,7 +25,7 @@ POST /openapi/v1/uns/search
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `keyword` | string | 否 | 搜索关键字 |
+| `keyword` | string | 否 | 搜索关键字，匹配节点名或完整路径中的任一级路径段 |
 | `path_prefix` | string | 否 | 路径前缀过滤 |
 | `topicType` | string | 否 | 节点类型过滤 |
 | `include_metadata` | boolean | 否 | 是否返回每个节点的字段定义（fields）、topicType、description。**搜索后需要了解 topic 结构时带上** |
@@ -35,11 +35,11 @@ POST /openapi/v1/uns/search
 ## 示例
 
 ```bash
-# 按关键字搜索
-tier0 uns search --keyword temp
+# 按关键字搜索，可命中完整路径中的任一级名称
+tier0 uns search --keyword Line1
 
 # 按路径前缀搜索
-tier0 uns search --prefix factory/line1
+tier0 uns search --path-prefix factory/line1
 
 # 分页搜索
 tier0 uns search --keyword sensor --page 1 --size 20
@@ -49,19 +49,19 @@ tier0 uns search --keyword sensor --page 1 --size 20
 
 **查找特定类型的所有节点：**
 ```bash
-tier0 uns search --prefix factory --type thing --size 100
+tier0 uns search --path-prefix factory --topic-type METRIC --size 100
 ```
 
 **搜索后查看 topic 字段定义（推荐两步工作流）：**
 
 第一步：先搜索定位 topic 路径
 ```bash
-tier0 uns search --keyword Temperature --type thing
+tier0 uns search --keyword Temperature --topic-type METRIC
 ```
 
 第二步：加 `--meta` 查看字段结构，了解有哪些字段、类型、单位
 ```bash
-tier0 uns search --keyword Temperature --type thing --meta
+tier0 uns search --keyword Temperature --topic-type METRIC --include-metadata
 ```
 
 返回中每个节点会带上字段信息：
@@ -84,5 +84,5 @@ tier0 uns search --keyword Temperature --type thing --meta
 
 ```powershell
 tier0 uns search --keyword temp
-tier0 uns search --prefix factory/line1
+tier0 uns search --path-prefix factory/line1
 ```
