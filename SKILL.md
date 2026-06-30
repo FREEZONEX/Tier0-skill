@@ -167,6 +167,7 @@ Workspace
 **CRITICAL — 执行 `deploy` 前 MUST 先读 `flow/references/deploy.md`，禁止直接盲目调用。**
 **CRITICAL — 执行 `delete` 前 MUST 先用 `tier0 flow get --id <id>` 确认 Flow 存在。**
 **CRITICAL — 用户按名称询问 Flow 相关数据时，MUST 同时查询 UNS（browse/read）和 Flow（list/get），因为两者通常同名关联。**
+**CRITICAL — 组织新建 Flow 的 flowsJson 时，MUST 使用 `flow create --json` 返回的 `data.brokerID` 作为 MQTT In/Out 节点的 `broker`，默认不要新增内部 `mqtt-broker` 配置。**
 
 | 意图 | 加载文件 | 说明 |
 |------|---------|------|
@@ -250,6 +251,7 @@ tier0 flow list --event
 
 # 创建 Flow
 tier0 flow create --name "modbus-collector" --source --desc "Modbus 采集"
+tier0 flow create --name "modbus-collector" --source --json  # data.id + data.brokerID
 
 # 导出画布到文件
 tier0 flow data --id 1 --out flows.json

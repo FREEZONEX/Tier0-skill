@@ -34,7 +34,8 @@ metadata:
 3. **deploy 前必须备份** — 执行 deploy 前必须先 `tier0 flow data --id <id> --out backup.json`，deploy 会覆盖全部节点配置且不可撤销
 4. **deploy 和 delete 需要 `--yes`** — 这两个操作是高风险门禁，CLI 不带 `--yes` 时 exit 10，需先向用户确认
 5. **delete 告知影响** — 删除 Flow 会停止对应的 Node-RED 容器，必须在用户知情的情况下执行
-6. **不要读 deploy.md 就盲目执行** — deploy 参数复杂（整个 flowsJson），没读 `references/deploy.md` 前禁止构造请求
+6. **复用创建时的 MQTT broker** — `tier0 flow create --json` 的 `data.brokerID` 是后端自动注入的内部 `mqtt-broker` 配置节点 ID；后续组织 `flowsJson` 时，让 MQTT In / MQTT Out 节点的 `broker` 字段引用它，默认不要再新增内部 broker 配置节点
+7. **不要读 deploy.md 就盲目执行** — deploy 参数复杂（整个 flowsJson），没读 `references/deploy.md` 前禁止构造请求
 
 ## Flow 类型
 
@@ -86,6 +87,9 @@ tier0 flow get --id 1
 
 # 创建 SourceFlow
 tier0 flow create --name "modbus-collector" --source --desc "Modbus TCP 采集"
+
+# 创建后需要组织 flowsJson 时使用 --json，保留 data.id 和 data.brokerID
+tier0 flow create --name "modbus-collector" --source --json
 
 # 创建 EventFlow
 tier0 flow create --name "alert-handler" --event --desc "温度告警处理"

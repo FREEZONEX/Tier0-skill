@@ -15,8 +15,10 @@ metadata:
 1. **已通过 `tier0 flow data --id <id> --out backup.json` 备份当前画布**
 2. **已确认目标 Flow ID 正确（用 `tier0 flow get --id <id>` 核实）**
 3. **flows JSON 文件格式有效**
+4. **新建 Flow 后组织 flowsJson 时，MQTT In / MQTT Out 节点的 `broker` 字段引用 `flow create --json` 返回的 `data.brokerID`**
 
 > **⚠️ 注意**：部署会替换 Flow 当前所有节点配置，Node-RED 实例会重新加载。请确保 JSON 格式正确。
+> 默认不要在 flowsJson 中重复新增内部 `mqtt-broker` 配置节点；只有用户明确要求连接外部 MQTT broker 时，才单独新增外部 broker 配置。
 
 ## 命令
 
