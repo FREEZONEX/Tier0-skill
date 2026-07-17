@@ -15,7 +15,7 @@ This is a read-only operation. The configured API key must have `uns:read` or `f
 POST /openapi/v1/launchpad/:projectName/getMembers
 ```
 
-`projectName` is a single URL path segment and must be URL-encoded. For example, use `Factory%20Analytics` for `Factory Analytics`. The API key determines the Workspace in which the project name is resolved. If multiple projects in that Workspace have the same name, use the project's UUID in this path to disambiguate it.
+`projectName` is a single URL path segment and must be URL-encoded. For example, use `Factory%20Analytics` for `Factory Analytics`. The API key determines the Workspace in which the project name is resolved. If multiple projects in that Workspace have the same name, use the project's ID in this path to disambiguate it.
 
 ## Request Body
 
@@ -59,21 +59,21 @@ The gateway returns the standard OpenAPI envelope:
   "data": {
     "list": [
       {
-        "memberId": 101,
+        "memberId": "101",
         "userId": "2001",
         "userName": "Alice",
         "email": "alice@example.com",
         "accessLevel": "edit",
         "roles": [
           {
-            "roleId": 301,
+            "roleId": "301",
             "roleKey": "builder",
             "roleName": "Builder",
             "description": "Can build and configure project resources",
             "memberCount": 4,
             "apps": [
               {
-                "appId": 401,
+                "appId": "401",
                 "appName": "Operations Console"
               }
             ]
@@ -97,20 +97,20 @@ The gateway returns the standard OpenAPI envelope:
 | `data.total` | integer | Total members matching the filters |
 | `data.page` | integer | Normalized page number |
 | `data.size` | integer | Normalized page size |
-| `memberId` | integer | Stable OpenAPI member identifier |
+| `memberId` | string | Project member identifier |
 | `userId` | string | User identifier |
 | `userName` | string, optional | User display name |
 | `email` | string, optional | User email address |
 | `accessLevel` | string | Project access level |
 | `roles` | role[] | All roles assigned to the member |
 | `updatedAt` | string, optional | Member update time in RFC3339 |
-| `roleId` | integer | Stable OpenAPI role identifier |
+| `roleId` | string | Project role identifier |
 | `roleKey` | string | Role key used for filtering and authorization |
 | `roleName` | string, optional | Localized role display name |
 | `description` | string, optional | Role description |
 | `memberCount` | integer | Number of project members assigned to the role |
 | `apps` | app[], optional | Applications bound to the role |
-| `appId` | integer | Stable OpenAPI application identifier |
+| `appId` | string | Application identifier |
 | `appName` | string | Application name |
 
 `data.list` and each member's `roles` are arrays even when empty. Optional profile, localization, timestamp, and application fields may be omitted.
@@ -120,4 +120,4 @@ The gateway returns the standard OpenAPI envelope:
 1. Always inspect the response `code`. The cloud gateway can return a business error envelope with HTTP 200.
 2. For authentication or permission errors, verify the configured API key and BaseURL, then run `tier0 auth whoami --json` and confirm `uns:read` or `full_access` is present.
 3. For a not-found error, verify the URL-encoded project name and that the API key belongs to the expected Workspace.
-4. For an ambiguous-name error, retry with the project's UUID instead of its name.
+4. For an ambiguous-name error, retry with the project's ID instead of its name.
