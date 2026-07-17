@@ -1,13 +1,13 @@
 ---
 name: tier0-launchpad-members
-description: "Query members of a Tier0 project, including access levels, roles, and role-bound applications."
+description: "Query members of a Tier0 project, including roles and role-bound applications."
 ---
 
 # launchpad members - Query Project Members
 
 Use this reference when the user wants to list or filter members of a project in the API key's Workspace.
 
-This is a read-only operation. The configured API key must have `uns:read` or `full_access` permission.
+This is a read-only operation. The configured API key must grant the `uns:read` resource key. The built-in `read_only`, `data_writer`, and `full_access` permission levels all grant this resource key.
 
 ## API
 
@@ -63,7 +63,6 @@ The gateway returns the standard OpenAPI envelope:
         "userId": "2001",
         "userName": "Alice",
         "email": "alice@example.com",
-        "accessLevel": "edit",
         "roles": [
           {
             "roleId": "301",
@@ -101,7 +100,6 @@ The gateway returns the standard OpenAPI envelope:
 | `userId` | string | User identifier |
 | `userName` | string, optional | User display name |
 | `email` | string, optional | User email address |
-| `accessLevel` | string | Project access level |
 | `roles` | role[] | All roles assigned to the member |
 | `updatedAt` | string, optional | Member update time in RFC3339 |
 | `roleId` | string | Project role identifier |
@@ -118,6 +116,6 @@ The gateway returns the standard OpenAPI envelope:
 ## Troubleshooting
 
 1. Always inspect the response `code`. The cloud gateway can return a business error envelope with HTTP 200.
-2. For authentication or permission errors, verify the configured API key and BaseURL, then run `tier0 auth whoami --json` and confirm `uns:read` or `full_access` is present.
+2. For authentication or permission errors, verify the configured API key and BaseURL, then run `tier0 auth whoami --json` and confirm `uns:read` is present in `resourceKeys`.
 3. For a not-found error, verify the URL-encoded project name and that the API key belongs to the expected Workspace.
 4. For an ambiguous-name error, retry with the project's ID instead of its name.

@@ -19,7 +19,7 @@ Use this skill when the user asks about:
 - authenticating with Tier0
 - choosing the right Tier0 skill or command family
 - UNS, Flow, Node-RED, service connectivity, or API key permissions
-- querying project members, access levels, roles, or role-bound applications
+- querying project members, roles, or role-bound applications
 
 ## Setup
 
@@ -83,7 +83,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | --- | --- |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows | `flow/SKILL.md` |
-| List or filter project members, roles, access levels, or role-bound applications | `launchpad/members.md` |
+| List or filter project members, roles, or role-bound applications | `launchpad/members.md` |
 | Check service connectivity and gateway info | `info/info.md` |
 | Check API key identity and permissions | `auth/whoami.md` |
 
