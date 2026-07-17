@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Documented the Launchpad project member query, including role and update-time filters, pagination, permissions, and the complete response contract.
 - Documented the `flow data --out` and `flow deploy -f` round trip: exported files are deployable Node-RED `flows` arrays, while deploy remains compatible with older envelope shapes.
 - Converted all agent-facing Tier0 Skill documentation to English.
 - Converted UNS references, Flow references, protocol guides, install script text, and Node-RED JSON template labels/comments to English.
