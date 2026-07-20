@@ -25,10 +25,11 @@ Use this skill for Tier0 Node-RED Flow management.
 1. List before acting when the Flow ID is unknown.
 2. CLI commands use integer `id`; Node-RED `flowId` is not a CLI identifier.
 3. Before deploy, export a backup: `tier0 flow data --id <id> --out backup.json`.
-4. `flow deploy` and `flow delete` require `--yes` after user confirmation.
-5. Deleting a Flow stops the related Node-RED container.
-6. Do not construct deploy payloads before reading `references/deploy.md`.
-7. Preserve the backend-created Tier0 `mqtt-broker` config node. Do not create or replace it.
+4. Preview agent-generated mutations with `--dry-run --json`; this is required before deploy and delete.
+5. `flow deploy` and `flow delete` require `--yes` after user confirmation.
+6. Deleting a Flow stops the related Node-RED container.
+7. Do not construct deploy payloads before reading `references/deploy.md`.
+8. Preserve the backend-created Tier0 `mqtt-broker` config node. Do not create or replace it.
 
 ## Flow Types
 
@@ -71,6 +72,8 @@ tier0 flow get --id 1 --json
 tier0 flow create --name "modbus-collector" --source --desc "Modbus TCP collector"
 tier0 flow create --name "alert-handler" --event --desc "Temperature alarm processor"
 tier0 flow data --id 1 --out flows.json
+tier0 flow deploy --id 1 -f flows.json --dry-run --json
+# after user confirmation
 tier0 flow deploy --id 1 -f flows.json --yes
 ```
 
@@ -80,10 +83,20 @@ tier0 flow deploy --id 1 -f flows.json --yes
 tier0 flow list
 tier0 flow data --id <id> --out backup.json
 # edit or generate flows.json
+tier0 flow deploy --id <id> -f flows.json --dry-run --json
+# show the preview and impact; wait for user confirmation
 tier0 flow deploy --id <id> -f flows.json --yes
 ```
 
 When generating `flows.json`, include the existing backend-created Tier0 `mqtt-broker` config node from the exported data. Node-RED credentials are stored against the node ID; replacing that node can cause anonymous MQTT connections and authentication failure.
 
 `tier0 flow data --out flows.json` writes a deployable Node-RED `flows` array.
-The file can be edited and passed directly to `tier0 flow deploy -f flows.json --yes`.
+The file can be edited, previewed with `tier0 flow deploy -f flows.json --dry-run --json`,
+and deployed with `--yes` after user confirmation.
+
+## Structured Errors
+
+With `--json`, read failures from stderr and branch on `error.type`,
+`error.subtype`, and `error.param`. Fix `invalid_argument` at the named parameter
+instead of retrying unchanged. Exit code 10 with `confirmation_required` means
+the user must approve the high-risk operation before `--yes` is added.

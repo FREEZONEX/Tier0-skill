@@ -75,6 +75,44 @@ tier0 login --setup-code <setup_code>
 
 The polling command blocks until browser authorization completes or times out.
 
+## Command Execution Contract
+
+For agent-generated mutation commands, validate the final request with
+`--dry-run --json` before executing it. This applies to:
+
+- `tier0 api`
+- `tier0 uns write/create/update/delete/restore`
+- `tier0 flow create/update/delete/deploy`
+
+A preview does not require or expose an API key, contact Tier0, or perform the operation. It
+returns one stable envelope:
+
+```json
+{
+  "ok": true,
+  "dry_run": true,
+  "data": {
+    "api": [
+      {"method": "POST", "url": "https://tier0.dev/openapi/v1/...", "body": {}}
+    ]
+  }
+}
+```
+
+Inspect `method`, `url`, and `body`. Never report a dry-run as a successful
+business operation. Execute the same command without `--dry-run` only after the
+preview matches the user's intent. For high-risk delete, restore, and deploy
+operations, preview first, show the impact to the user, wait for confirmation,
+then add `--yes`.
+
+With `--json`, failures are written to stderr. Branch on
+`error.type`, `error.subtype`, and `error.param`, not message text. Exit code 10
+with `confirmation_required` still means user confirmation is required.
+
+JSON is strict. The CLI does not repair malformed input. Prefer `--file`,
+`--body-file`, `--template-file`, or `--flows-file` for complex payloads, and do
+not pass both an inline JSON flag and its file alternative.
+
 ## Routing
 
 Read the target sub skill or reference before executing a task-specific command.

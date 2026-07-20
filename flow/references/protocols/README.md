@@ -16,4 +16,5 @@ Before deploy:
 
 1. Export current canvas with `tier0 flow data --id <id> --out backup.json`.
 2. Preserve backend-created config nodes, especially Tier0 `mqtt-broker`.
-3. Deploy with `tier0 flow deploy --id <id> -f flows.json --yes` only after confirmation.
+3. Preview with `tier0 flow deploy --id <id> -f flows.json --dry-run --json`.
+4. Show the replacement impact, wait for user confirmation, then deploy with `--yes`.
