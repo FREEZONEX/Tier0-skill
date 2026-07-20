@@ -88,5 +88,6 @@ npx @tier0/cli@latest uninstall --purge
 - [`uns/`](uns/) - UNS data-plane operations
 - [`flow/`](flow/) - Node-RED Flow management
 - [`launchpad/`](launchpad/) - Project member, role, and application queries
+- [`platform/`](platform/) - Platform member, Workspace role, and user status queries
 - [`info/`](info/) - Service information and connectivity checks
 - [`auth/`](auth/) - API key identity diagnostics
