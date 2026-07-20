@@ -123,6 +123,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows | `flow/SKILL.md` |
 | List or filter project members, roles, or role-bound applications | `launchpad/members.md` |
 | List or filter platform members, Workspace roles, or user statuses | `platform/members.md` |
+| Upload, download, get URL, or delete files in object storage | `files/SKILL.md` |
 | Check service connectivity and gateway info | `info/info.md` |
 | Check API key identity and permissions | `auth/whoami.md` |
 
