@@ -30,6 +30,9 @@ Use this skill for Tier0 Unified Namespace data-plane and namespace-management t
 5. Write payload `value` must be an object matching the topic fields.
 6. For batch responses, check `data.success` and every `data.results[i].success`.
 7. Use `--path` for delete. `--topic` is a deprecated alias only for compatibility.
+8. `Metric` topics require `--fields` at creation. Declare `--fields` on `Action`/`State` topics too — without them the topic has no visible schema in UNS.
+9. Preview agent-generated `write`, `create`, `update`, `delete`, and `restore` requests with `--dry-run --json`.
+10. JSON is strict. Use file flags for complex payloads and never combine an inline JSON flag with its file alternative.
 
 ## Routing
 
@@ -72,8 +75,27 @@ tier0 uns read Plant/Line1/Metric/Temperature --json
 tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5}'
 tier0 uns history -t Plant/Line1/Metric/Temperature --start -1h --json
 tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic --fields '[{"name":"temperature","type":"float"}]'
+tier0 uns delete --path Plant/Line1/Metric/Temperature --hard --dry-run --json
+# after user confirmation
 tier0 uns delete --path Plant/Line1/Metric/Temperature --hard --yes
 ```
+
+## Mutation Preflight
+
+Append `--dry-run --json` to the final mutation command and inspect
+`data.api[0].method`, `url`, and `body`. A preview does not authenticate, send a
+request, or prove business success. Remove `--dry-run` only after the preview
+matches the user's intent.
+
+For delete and restore, show the preview and destructive impact to the user,
+wait for confirmation, then execute with `--yes`.
+
+## Structured Errors
+
+With `--json`, read failures from stderr and branch on `error.type`,
+`error.subtype`, and `error.param`. Fix `invalid_argument` at the named parameter
+instead of retrying unchanged. Exit code 10 with `confirmation_required` means
+the user must approve delete or restore before `--yes` is added.
 
 ## Batch Response Handling
 

@@ -15,9 +15,21 @@ tier0 flow create --name "alert-handler" --event --desc "Temperature alarm proce
 tier0 flow create --name "opcua-line1" --type SourceFlow --json
 ```
 
+## Preflight
+
+For an agent-generated create request, preview the exact command first:
+
+```bash
+tier0 flow create --name "modbus-collector" --source --desc "Modbus TCP collector" --dry-run --json
+```
+
+Verify the method, URL, and body, then execute the same command without
+`--dry-run`.
+
 ## Rules
 
 - Choose exactly one Flow type: `--source`, `--event`, or `--type`.
+- Use either `--template` or `--template-file`, not both, and provide valid JSON.
 - Use clear names that match the device, line, or business function.
 - After creating a SourceFlow that will publish to Tier0 MQTT, export its canvas before deploy:
 

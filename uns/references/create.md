@@ -33,13 +33,30 @@ Plant/Line1/Temperature
 
 The CLI and backend do not automatically insert the type folder.
 
+## Preflight
+
+Preview the complete namespace request before creating nodes:
+
+```bash
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic --fields '[{"name":"temperature","type":"float"}]' --dry-run --json
+tier0 uns create --file namespace.json --dry-run --json
+```
+
+Verify the generated namespace tree in the request body, then execute the same
+command without `--dry-run`.
+
 ## Single Folder
 
 ```bash
 tier0 uns create --topic Plant/Line1 --type path
 ```
 
-## Single Topic
+## Fields (Schema) Rule
+
+- `Metric` topics: `--fields` is **required**. Missing fields fails with `schema required for metric`.
+- `Action`/`State` topics: `--fields` is optional but **strongly recommended**. Without it the topic has no visible schema in UNS and consumers cannot discover the payload contract. Declare the flat payload keys as fields; cover nested structures with an example payload in `--description`.
+
+## Single Topic (Metric)
 
 ```bash
 tier0 uns create \
@@ -48,6 +65,26 @@ tier0 uns create \
   --display-name "Temperature" \
   --description "Line 1 temperature" \
   --fields '[{"name":"temperature","type":"float"},{"name":"unit","type":"string"}]'
+```
+
+## Action / State Topic
+
+Declare fields for the payload keys, plus an example payload in the description:
+
+```bash
+tier0 uns create \
+  --topic Plant/Line1/Action/StartBatch \
+  --type topic \
+  --description 'Start batch command. Example: {"batch_id":"B-001","recipe":"dark_choco","qty":500}' \
+  --fields '[{"name":"batch_id","type":"string"},{"name":"recipe","type":"string"},{"name":"qty","type":"int"}]'
+```
+
+```bash
+tier0 uns create \
+  --topic Plant/Line1/State/BatchStatus \
+  --type topic \
+  --description 'Batch status report. Example: {"batch_id":"B-001","status":"running","progress":42}' \
+  --fields '[{"name":"batch_id","type":"string"},{"name":"status","type":"string"},{"name":"progress","type":"int"}]'
 ```
 
 ## Parent Prefix
@@ -63,6 +100,8 @@ tier0 uns create \
 ## Batch File
 
 For trees or multiple nodes, use `--file`.
+Do not combine `--file` with inline node flags such as `--topic`, `--type`,
+`--parent`, `--fields`, or metadata flags.
 
 ```bash
 tier0 uns create --file namespace.json --json
@@ -90,6 +129,36 @@ Preferred file shape:
                   "type": "TOPIC",
                   "fields": [
                     { "name": "temperature", "type": "float" }
+                  ]
+                }
+              ]
+            },
+            {
+              "path": "Action",
+              "type": "PATH",
+              "children": [
+                {
+                  "path": "StartBatch",
+                  "type": "TOPIC",
+                  "description": "Start batch command. Example: {\"batch_id\":\"B-001\",\"qty\":500}",
+                  "fields": [
+                    { "name": "batch_id", "type": "string" },
+                    { "name": "qty", "type": "int" }
+                  ]
+                }
+              ]
+            },
+            {
+              "path": "State",
+              "type": "PATH",
+              "children": [
+                {
+                  "path": "BatchStatus",
+                  "type": "TOPIC",
+                  "description": "Batch status report. Example: {\"batch_id\":\"B-001\",\"status\":\"running\"}",
+                  "fields": [
+                    { "name": "batch_id", "type": "string" },
+                    { "name": "status", "type": "string" }
                   ]
                 }
               ]

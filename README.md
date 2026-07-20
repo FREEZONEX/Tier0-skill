@@ -4,7 +4,7 @@ Tier0 AI Agent skill documentation.
 
 These files are written for agents. Some authentication steps require the user to complete a browser-based authorization flow.
 
-> Required CLI version: `v0.4.6+`
+> Required CLI version: `v0.6.4+`
 
 ## Install
 
@@ -74,6 +74,15 @@ tier0 doctor
 tier0 auth whoami
 tier0 api /openapi/v1/info --body '{}'
 ```
+
+## Safe Write Previews
+
+Tier0 Skills use `--dry-run --json` to validate generated UNS and Flow mutation
+requests before execution. Dry-run output contains the HTTP method, URL, and
+body, but never credentials and never sends the request.
+
+High-risk delete, restore, and deploy workflows preview first, ask for user
+confirmation, and only then execute with `--yes`.
 
 ## Uninstall
 

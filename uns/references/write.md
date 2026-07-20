@@ -15,10 +15,21 @@ tier0 uns write --topic Plant/Line1/Metric/Temperature --file payload.json
 tier0 uns write --topic Plant/Line1/Metric/Temperature --value '{"temperature":27.5}' --qos 1 --retain
 ```
 
+## Preflight
+
+Preview the exact topic, payload, QoS, and retain settings before publishing:
+
+```bash
+tier0 uns write --topic Plant/Line1/Metric/Temperature --file payload.json --dry-run --json
+```
+
+Inspect the request body, then execute the same command without `--dry-run`.
+
 ## Rules
 
 - `--topic` is required.
 - Use either `--value` or `--file`, not both.
+- `--qos` must be `0`, `1`, or `2`.
 - The value must be a JSON object. Do not send a bare number or string.
 - Field names should match the topic schema.
 - Check batch business success inside `data.success` and `data.results`.

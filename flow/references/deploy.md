@@ -15,12 +15,17 @@ This is high risk because it replaces all nodes in that Node-RED instance.
 tier0 flow list --json
 tier0 flow data --id <id> --out backup.json
 # create or edit flows.json
+tier0 flow deploy --id <id> -f flows.json --dry-run --json
+# show the preview and replacement impact; wait for user confirmation
 tier0 flow deploy --id <id> -f flows.json --yes
 ```
 
 ## Commands
 
 ```bash
+tier0 flow deploy --id 1 -f flows.json --dry-run --json
+tier0 flow deploy --id 1 --flows-json '<json>' --dry-run --json
+# after user confirmation
 tier0 flow deploy --id 1 -f flows.json --yes
 tier0 flow deploy --id 1 --flows-json '<json>' --yes
 ```
@@ -28,7 +33,9 @@ tier0 flow deploy --id 1 --flows-json '<json>' --yes
 ## Rules
 
 - Always back up with `flow data` before deploy.
+- Always preview the final deploy file with `--dry-run --json` before asking for confirmation.
 - Use integer Flow `id`, not Node-RED `flowId`.
+- Use either `--flows-json` or `--flows-file`, not both.
 - `--yes` is required after user confirmation.
 - Preserve backend-created config nodes from the exported canvas.
 - Node-RED may remap tab IDs and return a new internal `flowId`; that is normal.
@@ -52,3 +59,6 @@ If this rule is violated, MQTT output can connect anonymously and be rejected by
 ## Exit Code 10
 
 Without `--yes`, the CLI exits with code 10 and returns `confirmation_required`. Show the risk summary to the user; retry with `--yes` only after agreement.
+
+`--dry-run` is the pre-confirmation path: it returns the request preview without
+requiring `--yes` or replacing any Node-RED nodes.

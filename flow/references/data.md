@@ -30,6 +30,8 @@ tier0 flow list --json
 tier0 flow data --id <id> --out backup.json
 cp backup.json flows.json
 # edit flows.json
+tier0 flow deploy --id <id> -f flows.json --dry-run --json
+# show the replacement impact and wait for user confirmation
 tier0 flow deploy --id <id> -f flows.json --yes
 ```
 

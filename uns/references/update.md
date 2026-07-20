@@ -38,6 +38,7 @@ tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"tempe
 ## Rules
 
 - `--path` is required.
+- Provide at least one field to update; a path-only update is rejected.
 - Use `--update-mask` to explicitly name the metadata fields being changed, such as `description`, `displayName`, `alias`, or `fields`.
 - This command updates node metadata, not VQT data.
 - Field updates may affect future writes and reads; verify schema before changing production topics.
@@ -47,6 +48,11 @@ tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"tempe
 
 ```bash
 tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
+tier0 uns update --path Plant/Line1/Metric/Temperature --description "Line 1 temperature" --update-mask description --dry-run --json
 tier0 uns update --path Plant/Line1/Metric/Temperature --description "Line 1 temperature" --update-mask description
 tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
 ```
+
+Inspect the dry-run body before execution. Explicit empty strings are
+meaningful; for example, `--description ""` clears the description and must
+remain present in the preview body.

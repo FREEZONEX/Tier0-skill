@@ -64,6 +64,8 @@ return msg;
 tier0 flow nodes --event --json
 tier0 flow data --id <id> --out backup.json
 # generate flows.json
+tier0 flow deploy --id <id> -f flows.json --dry-run --json
+# wait for user confirmation
 tier0 flow deploy --id <id> -f flows.json --yes
 ```
 

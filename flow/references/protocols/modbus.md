@@ -55,6 +55,8 @@ tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
 tier0 flow nodes --source --json
 tier0 flow data --id <id> --out backup.json
 # generate flows.json
+tier0 flow deploy --id <id> -f flows.json --dry-run --json
+# wait for user confirmation
 tier0 flow deploy --id <id> -f flows.json --yes
 ```
 
