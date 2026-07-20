@@ -1,6 +1,6 @@
 ---
 name: tier0
-description: "Tier0 platform operations entry point: CLI setup, authentication, routing to UNS, Flow, service info, and API key diagnostics skills."
+description: "Tier0 platform operations entry point: CLI setup, authentication, routing to UNS, Flow, project member queries, service info, and API key diagnostics skills."
 metadata:
   requires:
     bins: ["tier0"]
@@ -19,6 +19,7 @@ Use this skill when the user asks about:
 - authenticating with Tier0
 - choosing the right Tier0 skill or command family
 - UNS, Flow, Node-RED, service connectivity, or API key permissions
+- querying project members, roles, or role-bound applications
 
 ## Setup
 
@@ -82,6 +83,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | --- | --- |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows | `flow/SKILL.md` |
+| List or filter project members, roles, or role-bound applications | `launchpad/members.md` |
 | Check service connectivity and gateway info | `info/info.md` |
 | Check API key identity and permissions | `auth/whoami.md` |
 
@@ -90,6 +92,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | Concept | Meaning |
 | --- | --- |
 | Workspace | Tenant boundary for all resources |
+| Project | Workspace-scoped application context identified by name in Launchpad APIs |
 | UNS | Unified Namespace, a tree of paths and data topics |
 | Path | Folder-like namespace segment |
 | Topic | Full leaf path, such as `Plant/Line1/Metric/Temperature` |

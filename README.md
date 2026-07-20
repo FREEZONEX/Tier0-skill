@@ -87,5 +87,6 @@ npx @tier0/cli@latest uninstall --purge
 - [`SKILL.md`](SKILL.md) - Main routing and safety rules
 - [`uns/`](uns/) - UNS data-plane operations
 - [`flow/`](flow/) - Node-RED Flow management
+- [`launchpad/`](launchpad/) - Project member, role, and application queries
 - [`info/`](info/) - Service information and connectivity checks
 - [`auth/`](auth/) - API key identity diagnostics
