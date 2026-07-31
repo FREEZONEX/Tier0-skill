@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Corrected UNS batch-create examples to use the API `name` field instead of
+  `path`, documented that CLI batch files are forwarded without key renaming,
+  and fixed nested batch-error handling.
+- Updated Flow protocol templates to reuse the backend-created Tier0 MQTT
+  broker config and corrected the Modbus MQTT payload shape.
+
 - Documented the Launchpad project member query, including role and update-time filters, pagination, permissions, and the complete response contract.
 - Documented the fields (schema) rule in `uns/references/create.md`: `Metric` topics require `--fields`; `Action`/`State` topics should declare `--fields` so the schema is visible in UNS, with example payloads in `--description` for nested structures. Added Action/State creation examples (single and batch tree) and a matching non-negotiable rule in `uns/SKILL.md`.
 

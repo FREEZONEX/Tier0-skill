@@ -109,7 +109,12 @@ if (resp.data?.success === false) {
 }
 for (const result of resp.data?.results ?? []) {
   if (result.success === false) {
-    throw new Error(result.message || result.topic || result.path || "UNS item failed");
+    throw new Error(
+      result.error?.message ||
+      result.topic ||
+      result.path ||
+      "UNS item failed"
+    );
   }
 }
 ```

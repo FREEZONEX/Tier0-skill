@@ -102,6 +102,8 @@ tier0 uns create \
 For trees or multiple nodes, use `--file`.
 Do not combine `--file` with inline node flags such as `--topic`, `--type`,
 `--parent`, `--fields`, or metadata flags.
+The CLI forwards batch-file nodes without renaming their keys. Use `name` for
+each tree node; `path` is not a create-node key.
 
 ```bash
 tier0 uns create --file namespace.json --json
@@ -113,19 +115,19 @@ Preferred file shape:
 {
   "namespace": [
     {
-      "path": "Plant",
+      "name": "Plant",
       "type": "PATH",
       "children": [
         {
-          "path": "Line1",
+          "name": "Line1",
           "type": "PATH",
           "children": [
             {
-              "path": "Metric",
+              "name": "Metric",
               "type": "PATH",
               "children": [
                 {
-                  "path": "Temperature",
+                  "name": "Temperature",
                   "type": "TOPIC",
                   "fields": [
                     { "name": "temperature", "type": "float" }
@@ -134,11 +136,11 @@ Preferred file shape:
               ]
             },
             {
-              "path": "Action",
+              "name": "Action",
               "type": "PATH",
               "children": [
                 {
-                  "path": "StartBatch",
+                  "name": "StartBatch",
                   "type": "TOPIC",
                   "description": "Start batch command. Example: {\"batch_id\":\"B-001\",\"qty\":500}",
                   "fields": [
@@ -149,11 +151,11 @@ Preferred file shape:
               ]
             },
             {
-              "path": "State",
+              "name": "State",
               "type": "PATH",
               "children": [
                 {
-                  "path": "BatchStatus",
+                  "name": "BatchStatus",
                   "type": "TOPIC",
                   "description": "Batch status report. Example: {\"batch_id\":\"B-001\",\"status\":\"running\"}",
                   "fields": [
@@ -183,7 +185,12 @@ if (resp.data?.success === false) {
 }
 for (const result of resp.data?.results ?? []) {
   if (result.success === false) {
-    throw new Error(result.message || result.path || "UNS create item failed");
+    throw new Error(
+      result.error?.message ||
+      result.topic ||
+      result.path ||
+      "UNS create item failed"
+    );
   }
 }
 ```

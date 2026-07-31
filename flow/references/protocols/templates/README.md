@@ -11,6 +11,8 @@ Required adaptation:
 - Query `tier0 flow nodes --source --json` to confirm required node types exist.
 - Export current canvas with `tier0 flow data --id <id> --out backup.json`.
 - Preserve existing backend-created config nodes, especially Tier0 `mqtt-broker`.
+- Replace `{{TIER0_MQTT_BROKER_ID}}` with the ID of that exported broker config
+  node. Do not add a replacement Tier0 broker node to the generated Flow.
 - Preview with `tier0 flow deploy --id <id> -f flows.json --dry-run --json`.
 - Show the replacement impact, wait for user confirmation, then deploy with `--yes`.
 
