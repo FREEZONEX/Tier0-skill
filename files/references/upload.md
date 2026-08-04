@@ -62,6 +62,21 @@ tier0 assets upload ./report.csv --use-by workspace --visibility private
 4. 上传成功返回 204；低报 `size` 上传更大文件会被对象存储按 policy 直接拒绝（Cloud AWS S3 返回 403，RustFS 返回 400 EntityTooLarge）。
 5. Save `filePath` for download/url/delete operations.
 
+## 大文件（>100MB）分片上传（TASK-025 分片补做）
+
+单文件 ≤100MB 走上述单发 POST；**>100MB 使用分片上传**（解决大文件单请求上传超时），4 个端点（cloud 与 enterprise-new 契约一致）：
+
+| 端点 | 方法 | 说明 |
+|---|---|---|
+| `/openapi/v1/assets/files/multipart/init` | POST | 请求 `{fileName, contentType, size, partSize?, business?, useBy?, visibility?, ...}` → `{fileKey, filePath, uploadId, partSize, partCount, expiresAt}`；cloud 预占配额 |
+| `/openapi/v1/assets/files/multipart/part-urls` | POST | 请求 `{fileKey, uploadId, partNumbers: number[]}` → `{partUrls: [{partNumber, url, expiresAt}]}` |
+| `/openapi/v1/assets/files/multipart/complete` | POST | 请求 `{fileKey, uploadId, parts: [{partNumber, etag}]}` → `{filePath, fileUrl, sizeBytes, expiresAt}` |
+| `/openapi/v1/assets/files/multipart/abort` | POST | 请求 `{fileKey, uploadId}` → `{aborted}` |
+
+客户端流程：init → 按 `partSize` 切片、并发 `PUT` 直传各片（`file.slice`/`io.NewSectionReader`，单片 60s 超时、失败重试）→ complete（传全部 partNumber+etag）。断点续传：客户端本地记录 `uploadId` 与已完成分片，中断后重新拉取缺失分片 URL 续传。SDK `uploadFile` / CLI `tier0 assets upload` 在 size > 100MB 时自动切换分片。
+
+服务端权威大小限制：init 校验 `size` ≤ 单文件上限（默认 1GB，超限 `3004002`）；`part-urls` 只签发 `1..partCount`；`complete` 按对象存储 ListParts 真实总大小校验（超过申报 size 拒绝）。
+
 ## Notes
 
 - `postUrl`/`postFields` 默认有效期 3600 秒（`expiresAt` 为准）。
