@@ -4,20 +4,30 @@ Tier0 AI Agent skill documentation.
 
 These files are written for agents. Some authentication steps require the user to complete a browser-based authorization flow.
 
-> Required CLI version: `v0.6.4+`
+> Required CLI version: `v0.6.5+`
 
 ## Install
 
 Recommended one-command install, requires Node.js >= 16:
 
 ```bash
-npx @tier0/cli@latest
+npx -y @tier0/cli@latest install
 ```
 
 This installs:
 
 - The `tier0` CLI binary into `~/.tier0/bin/`
 - Cursor / Claude Agent Skills from `FREEZONEX/Tier0-skill`
+
+The explicit installer treats Tier0 Skill installation as required. After it
+finishes, verify authentication:
+
+```bash
+tier0 auth whoami --json
+```
+
+If authentication is missing, run `tier0 login --no-wait --json`, show the
+returned `verification_url`, and complete the browser flow.
 
 Alternative install without Node.js:
 

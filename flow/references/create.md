@@ -29,13 +29,19 @@ Verify the method, URL, and body, then execute the same command without
 ## Rules
 
 - Choose exactly one Flow type: `--source`, `--event`, or `--type`.
-- Use either `--template` or `--template-file`, not both, and provide valid JSON.
+- Create the Flow without `--template`/`--template-file`, then export the
+  backend-initialized canvas and deploy a Node-RED `flows` array. The public
+  SaaS create-template contract is not documented and template creates may
+  return a business/database error even when the JSON is syntactically valid.
 - Use clear names that match the device, line, or business function.
 - After creating a SourceFlow that will publish to Tier0 MQTT, export its canvas before deploy:
 
 ```bash
 tier0 flow data --id <id> --out flows.json
 ```
+
+Edit the exported array, preview it with `flow deploy --dry-run --json`, obtain
+confirmation, and deploy with `--yes`.
 
 ## Tier0 MQTT Broker Config
 

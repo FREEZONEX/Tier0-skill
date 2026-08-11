@@ -28,25 +28,33 @@ tier0 uns read --topic 'Plant/+/Metric/Temperature' --json
 
 ```json
 {
-  "success": true,
-  "results": [
-    {
-      "topic": "Plant/Line1/Metric/Temperature",
-      "success": true,
-      "value": { "temperature": 27.5 },
-      "quality": "Good",
-      "timeStamp": 1733382000000
-    }
-  ]
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "success": true,
+    "results": [
+      {
+        "topic": "Plant/Line1/Metric/Temperature",
+        "success": true,
+        "result": {
+          "value": { "temperature": 27.5 },
+          "quality": "Good",
+          "timeStamp": 1733382000000
+        }
+      }
+    ]
+  }
 }
 ```
 
 ## Required Batch Checks
 
 Check both `data.success` and each `data.results[i].success`. HTTP 200 does not guarantee every topic succeeded.
+Read VQT fields from `data.results[i].result`, not directly from the result item.
 
 ## When to Use Something Else
 
 - Use `browse.md` to inspect folders.
 - Use `history.md` for time ranges.
 - Use `search.md` when the exact topic path is unknown.
+- Use `realtime.md` for continuous/event-driven values; do not poll this command.

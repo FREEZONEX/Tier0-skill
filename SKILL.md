@@ -26,8 +26,11 @@ Use this skill when the user asks about:
 Recommended install:
 
 ```bash
-npx @tier0/cli@latest
+npx -y @tier0/cli@latest install
 ```
+
+The explicit `install` command requires the bundled Tier0 Skill to install
+successfully. A CLI-only install is incomplete for agent use.
 
 Alternative install:
 
@@ -55,6 +58,16 @@ If `base-url` changes, run login again or set an API key for that instance. Exis
 
 ## Authentication
 
+After installation, always check authentication before the first platform
+operation:
+
+```bash
+tier0 auth whoami --json
+```
+
+If it succeeds, reuse the existing login and do not prompt again. If it returns
+an authentication/config error, start the browser device flow below.
+
 Preferred when an API key is already available:
 
 ```bash
@@ -74,6 +87,8 @@ tier0 login --setup-code <setup_code>
 ```
 
 The polling command blocks until browser authorization completes or times out.
+Never hide the `verification_url` or ask the user to copy an API key from the
+browser page.
 
 ## Command Execution Contract
 
@@ -121,8 +136,8 @@ Read the target sub skill or reference before executing a task-specific command.
 | --- | --- |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows | `flow/SKILL.md` |
-| List or filter project members, roles, or role-bound applications | `launchpad/members.md` |
-| List or filter platform members, Workspace roles, or user statuses | `platform/members.md` |
+| List/filter project members on a deployment where the endpoint is enabled | `launchpad/members.md` |
+| List/filter platform members on a deployment where the endpoint is enabled | `platform/members.md` |
 | Upload, download, get URL, or delete files in object storage | `files/SKILL.md` |
 | Check service connectivity and gateway info | `info/info.md` |
 | Check API key identity and permissions | `auth/whoami.md` |
@@ -139,6 +154,10 @@ Read the target sub skill or reference before executing a task-specific command.
 | Flow | Node-RED instance managed by Tier0 |
 
 Flow names and UNS paths are often manually kept similar, but current APIs do not expose a guaranteed relation field. When the user asks about a named device or data point, check both UNS and Flow unless they explicitly ask for only one side.
+
+For continuous or event-driven UNS data, do not repeatedly poll `uns read` or
+the OpenAPI. Read `uns/references/realtime.md`; Tier0 CLI read commands are for
+snapshots and bounded queries.
 
 ## Shell Notes
 

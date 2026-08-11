@@ -14,7 +14,6 @@ tier0 flow update --id 1 --name "line1-collector"
 tier0 flow update --id 1 --desc "Line 1 Modbus collector"
 tier0 flow update --id 1 --favorite
 tier0 flow update --id 1 --unfavorite
-tier0 flow update --id 1 --template-file template.json
 ```
 
 ## Preflight
@@ -25,14 +24,19 @@ Preview the final metadata change before executing it:
 tier0 flow update --id 1 --desc "Line 1 Modbus collector" --dry-run --json
 ```
 
-An explicitly empty value is meaningful. For example, `--desc ""` clears the
-description; confirm that the dry-run body preserves the empty string.
+On PowerShell, use `--desc=` when an empty string must remain in the preview;
+`--desc ""` may be removed by the shell. The public SaaS update service
+currently ignores an empty Flow description, so do not claim that this clears
+the description. Verify the returned Flow after every update.
 
 ## Rules
 
 - Use integer Flow `id`, not Node-RED `flowId`.
-- Use either `--template` or `--template-file`, not both, and provide valid JSON.
+- Do not use the template flags as a substitute for canvas deployment. The
+  public SaaS template schema is not documented; use `flow data` and
+  `flow deploy` for Node-RED canvas JSON.
 - `--favorite` and `--unfavorite` are mutually exclusive.
 - Provide at least one field to update.
 - Use `flow deploy` for canvas JSON.
 - Use `flow data` before changing deployable content.
+- Re-run `flow get --id <id> --json` and verify the changed fields.

@@ -23,7 +23,7 @@ tier0 uns search --topic-type METRIC --json
 - Use `search` for keyword or prefix lookup.
 - Use `--path-prefix` when you need to search within a path subtree.
 - Use `--include-metadata` when field definitions or descriptions are needed.
-- Use `--include-values` only if the user wants current values alongside search results.
+- Use `--include-leaf-value` only if the user wants current values alongside search results.
 
 ## Typical Flow
 

@@ -39,6 +39,7 @@ Preview the complete namespace request before creating nodes:
 
 ```bash
 tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic --fields '[{"name":"temperature","type":"float"}]' --dry-run --json
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic --fields-file fields.json --dry-run --json
 tier0 uns create --file namespace.json --dry-run --json
 ```
 
@@ -54,6 +55,7 @@ tier0 uns create --topic Plant/Line1 --type path
 ## Fields (Schema) Rule
 
 - `Metric` topics: `--fields` is **required**. Missing fields fails with `schema required for metric`.
+- Use `--fields-file` instead of inline JSON when shell quoting is fragile.
 - `Action`/`State` topics: `--fields` is optional but **strongly recommended**. Without it the topic has no visible schema in UNS and consumers cannot discover the payload contract. Declare the flat payload keys as fields; cover nested structures with an example payload in `--description`.
 
 ## Single Topic (Metric)
@@ -109,23 +111,26 @@ tier0 uns create --file namespace.json --json
 
 Preferred file shape:
 
+Every namespace node uses `name` for its local segment. Do not use `path`;
+`path` is a command flag for addressing existing nodes, not a batch-node field.
+
 ```json
 {
   "namespace": [
     {
-      "path": "Plant",
+      "name": "Plant",
       "type": "PATH",
       "children": [
         {
-          "path": "Line1",
+          "name": "Line1",
           "type": "PATH",
           "children": [
             {
-              "path": "Metric",
+              "name": "Metric",
               "type": "PATH",
               "children": [
                 {
-                  "path": "Temperature",
+                  "name": "Temperature",
                   "type": "TOPIC",
                   "fields": [
                     { "name": "temperature", "type": "float" }
@@ -134,11 +139,11 @@ Preferred file shape:
               ]
             },
             {
-              "path": "Action",
+              "name": "Action",
               "type": "PATH",
               "children": [
                 {
-                  "path": "StartBatch",
+                  "name": "StartBatch",
                   "type": "TOPIC",
                   "description": "Start batch command. Example: {\"batch_id\":\"B-001\",\"qty\":500}",
                   "fields": [
@@ -149,11 +154,11 @@ Preferred file shape:
               ]
             },
             {
-              "path": "State",
+              "name": "State",
               "type": "PATH",
               "children": [
                 {
-                  "path": "BatchStatus",
+                  "name": "BatchStatus",
                   "type": "TOPIC",
                   "description": "Batch status report. Example: {\"batch_id\":\"B-001\",\"status\":\"running\"}",
                   "fields": [
@@ -205,8 +210,10 @@ If the product requires current readable values for every state or alarm, create
 
 ## PowerShell
 
-Prefer `--file` for field arrays:
+Prefer `--fields-file` for a single topic or `--file` for a namespace tree.
+Do not rely on inline JSON quoting for arrays:
 
 ```powershell
+tier0 uns create --topic Plant/Line1/Metric/Temperature --type topic --fields-file fields.json --dry-run --json
 tier0 uns create --file namespace.json --json
 ```

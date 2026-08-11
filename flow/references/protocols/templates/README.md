@@ -25,3 +25,7 @@ Required adaptation:
 ## Credential Rule
 
 Node-RED credentials are not reliably represented as plaintext in exported Flow JSON. For Tier0 MQTT output, reuse the existing backend-created `mqtt-broker` config node from the export instead of generating a new one or embedding credentials.
+
+The templates intentionally contain `{{TIER0_MQTT_BROKER_ID}}` references and
+do not define a Tier0 `mqtt-broker` node. Replace the placeholder with the ID
+from `backup.json` and preserve that exported config node in the final array.

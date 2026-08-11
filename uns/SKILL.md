@@ -11,6 +11,7 @@ Use this skill for Tier0 Unified Namespace data-plane and namespace-management t
 
 - The user asks to browse namespace paths or discover topics.
 - The user asks to read current topic values.
+- The user asks to consume UNS values continuously or in real time.
 - The user asks to write values into UNS topics.
 - The user asks for historical values or aggregates.
 - The user asks to create, update, delete, or restore namespace nodes.
@@ -27,12 +28,13 @@ Use this skill for Tier0 Unified Namespace data-plane and namespace-management t
 2. Middle folders cannot be read or written; use `browse`.
 3. Topic paths must include `Metric`, `Action`, or `State` immediately before the leaf.
 4. `topicType` is derived from that folder; do not rely on `--topic-type` to create the folder.
-5. Write payload `value` must be an object matching the topic fields.
+5. Write payload `value` must be an object matching the topic fields. The CLI rejects scalar and array values.
 6. For batch responses, check `data.success` and every `data.results[i].success`.
 7. Use `--path` for delete. `--topic` is a deprecated alias only for compatibility.
 8. `Metric` topics require `--fields` at creation. Declare `--fields` on `Action`/`State` topics too — without them the topic has no visible schema in UNS.
 9. Preview agent-generated `write`, `create`, `update`, `delete`, and `restore` requests with `--dry-run --json`.
 10. JSON is strict. Use file flags for complex payloads and never combine an inline JSON flag with its file alternative.
+11. `uns read` is a snapshot API. For continuous/event-driven data, do not build an OpenAPI polling loop; read `references/realtime.md` and use MQTT/EventFlow when the required runtime and credentials are available.
 
 ## Routing
 
@@ -40,6 +42,7 @@ Use this skill for Tier0 Unified Namespace data-plane and namespace-management t
 | --- | --- |
 | Browse namespace folders | `references/browse.md` |
 | Read current values | `references/read.md` |
+| Consume values continuously or in real time | `references/realtime.md` |
 | Write current values | `references/write.md` |
 | Query history or aggregates | `references/history.md` |
 | Search topics by keyword or path prefix | `references/search.md` |

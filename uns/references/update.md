@@ -32,12 +32,13 @@ tier0 uns update \
 Use a file for complex field definitions:
 
 ```bash
-tier0 uns update --path Plant/Line1/Metric/Temperature --fields '[{"name":"temperature","type":"float"}]' --update-mask fields
+tier0 uns update --path Plant/Line1/Metric/Temperature --fields-file fields.json --update-mask fields
 ```
 
 ## Rules
 
 - `--path` is required.
+- Use either `--fields` or `--fields-file`, not both.
 - Provide at least one field to update; a path-only update is rejected.
 - Use `--update-mask` to explicitly name the metadata fields being changed, such as `description`, `displayName`, `alias`, or `fields`.
 - This command updates node metadata, not VQT data.
@@ -53,6 +54,11 @@ tier0 uns update --path Plant/Line1/Metric/Temperature --description "Line 1 tem
 tier0 uns browse --path Plant/Line1/Metric --include-metadata --json
 ```
 
-Inspect the dry-run body before execution. Explicit empty strings are
-meaningful; for example, `--description ""` clears the description and must
-remain present in the preview body.
+Inspect the dry-run body before execution. To clear a description, use the
+shell-safe flag below; it keeps the empty string in the request without relying
+on PowerShell empty-argument behavior:
+
+```bash
+tier0 uns update --path Plant/Line1/Metric/Temperature --clear-description --update-mask description --dry-run --json
+tier0 uns update --path Plant/Line1/Metric/Temperature --clear-description --update-mask description
+```

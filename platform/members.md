@@ -7,6 +7,13 @@ description: "Query Tier0 platform members, Workspace roles, and user statuses."
 
 Use this reference to list or filter users in the API key's Workspace. This is a read-only operation and has no project path parameter.
 
+## Availability
+
+The public SaaS gateway currently returns HTTP 404 for this path. Do not call
+it on `https://tier0.dev` or present it as generally available until the
+service deploys the endpoint. On a private deployment, call it only after the
+deployment owner confirms support.
+
 Cloud API keys need the `uns:read` resource key. Enterprise API keys need the `launchpad.view` resource; all standard read-only, writer, and full-access keys include the required read resource.
 
 ## API

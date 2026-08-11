@@ -11,8 +11,8 @@ Use `flow nodes` before generating Flow JSON that depends on optional Node-RED n
 
 ```bash
 tier0 flow nodes --source --json
-tier0 flow nodes --source --json
-tier0 flow nodes --source --json
+tier0 flow nodes --event --json
+tier0 flow nodes --type SourceFlow --json
 ```
 
 ## Rules
