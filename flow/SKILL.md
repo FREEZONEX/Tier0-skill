@@ -123,27 +123,25 @@ curl -H "Authorization: Bearer $TIER0_API_KEY" -H "Content-Type: application/jso
   -d '{"flowType":"event"}' "http://$TIER0_API_HOST/openapi/v1/flow/list"
 ```
 
-### B. Node-RED 原生接口（`/flow/{source|event}/**`，高级/运行时直读）
+### B. Node-RED http in 接口（`/flow/{source|event}/**`，调用用户定制的 HTTP 端点）
 
-| Method | Path | 说明 |
+> **只放开 http in**：Node-RED Admin API（/flows、/flow/:id、/nodes、/settings、/comms 等）已被网关
+> 黑名单拦截（**403**）。本前缀仅用于调用用户定制的 http in 节点接口；画布读取/部署/节点列表走平台
+> 管理接口 `/openapi/v1/flow/*`（或 `tier0 flow ...` CLI）。
+
+| Method | Path | 行为 |
 |---|---|---|
-| GET | `/flow/{source\|event}/flows` | 原生 flows（含运行时 rev，非平台合成） |
-| GET | `/flow/{source\|event}/flow/:id` | 单个 flow 节点与 configs |
-| GET | `/flow/{source\|event}/nodes` | 已安装节点类型列表 |
-| GET | `/flow/{source\|event}/settings`、`/status` | 运行时设置 / 状态 |
-| POST | `/flow/{source\|event}/flows` | 全量部署 |
-| POST | `/flow/{source\|event}/flow` | 创建 flow |
-| PUT | `/flow/{source\|event}/flow/:id` | 更新 flow |
-| DELETE | `/flow/{source\|event}/flow/:id` | 删除 flow |
+| GET/POST/PUT/DELETE | `/flow/{source\|event}/<http-in-url>` | **200 透传**——http in 节点接口 |
+| 任意 | `/flow/{source\|event}/flows`、`/nodes`、`/settings` 等 | **403**（Admin API 黑名单） |
 
 ```bash
+# 调用 http in 接口（url 为用户在 Node-RED 配置的，如 /api/custom）
 curl -H "Authorization: Bearer $TIER0_API_KEY" \
-  "http://$TIER0_API_HOST/flow/source/flows"      # 读 sourceflow 原生 flows
-curl -H "Authorization: Bearer $TIER0_API_KEY" \
-  "http://$TIER0_API_HOST/flow/event/nodes"       # 读 eventflow 节点类型
+  "http://$TIER0_API_HOST/flow/source/api/custom"        # GET 调用
+curl -X POST -H "Authorization: Bearer $TIER0_API_KEY" -H "Content-Type: application/json" \
+  -d '{"key":"value"}' "http://$TIER0_API_HOST/flow/event/api/custom"   # POST 调用
 ```
 
-- 鉴权：`Authorization: Bearer <TIER0_API_KEY>`（或 `X-API-Key`）；full_access 读写全开，read_only 只读；
-- 与 `tier0 flow data` 的关系：备份/导出仍用 CLI（平台侧数据），原生接口是运行时直读；
-- 风险：写操作（部署/更新/删除）绕过平台校验与版本快照，改动前先 `tier0 flow data --out backup.json`；
+- 鉴权：`Authorization: Bearer <TIER0_API_KEY>`（或 `X-API-Key`）；
+- Node-RED Admin API 路径一律 403，不要通过本前缀访问；
 - 这些路径非 CLI 内置命令，仅限高级/自动化场景，默认仍用 `tier0 flow ...`。
