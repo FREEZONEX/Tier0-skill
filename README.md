@@ -105,6 +105,7 @@ npx @tier0/cli@latest uninstall --purge
 
 - [`SKILL.md`](SKILL.md) - Main routing and safety rules
 - [`uns/`](uns/) - UNS data-plane operations
+- [`mqtt/`](mqtt/) - MQTT credentials, publish, and continuous subscriptions
 - [`flow/`](flow/) - Node-RED Flow management
 - [`launchpad/`](launchpad/) - Project member, role, and application queries
 - [`platform/`](platform/) - Platform member, Workspace role, and user status queries
