@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Documented compatible UNS history count modes, automatic sampling, multi-field aggregation, cumulative-meter boundary queries, and wildcard read deduplication.
 - Routed continuous/event-driven UNS consumption to MQTT/EventFlow and prohibited silent OpenAPI polling fallbacks.
 - Corrected batch namespace examples to use `name`, current-read VQT fields to use `results[i].result`, and search value inclusion to use `--include-leaf-value`.
 - Added PowerShell-safe `--fields-file` and `--clear-description` guidance for UNS mutations.
