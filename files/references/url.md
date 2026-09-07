@@ -42,3 +42,13 @@ tier0 assets url --file-path workspace/.../report.csv --expired-sec 300
 
 - Public files return a long-lived URL without `expiresAt`.
 - Private files return a presigned URL with `expiresAt`.
+- Use this endpoint for previews, media references, temporary sharing, or other
+  cases that specifically require a URL. Do not use it to implement a browser
+  application's attachment download button.
+- For browser application downloads, use the `tier0-sdk` skill:
+  `downloadFile` runs on the server, a same-origin authenticated route streams
+  the response, and the browser saves a Blob with `<a download>`.
+- Do not navigate to or `window.open()` a private presigned URL. PDF files may
+  enter the built-in viewer or be blocked by browser policy/extensions.
+- `responseContentDisposition` does not replace the browser-side `download`
+  attribute and must not be treated as a portable force-download mechanism.
