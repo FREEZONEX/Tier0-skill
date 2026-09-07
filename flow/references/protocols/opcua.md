@@ -1,11 +1,16 @@
 ---
 name: tier0-flow-protocol-opcua
-description: "OPC-UA Flow guide: subscribe to OPC-UA nodes, parse DataValue payloads, and publish values into Tier0 UNS."
+description: "Community node-red-contrib-opcua Flow guide for OpcUa-Client; not the Tier0 tier0-opcua-* nodes."
 ---
 
-# OPC-UA - Subscription to Tier0 UNS
+# Community OPC-UA - Subscription to Tier0 UNS
 
-Use this guide when the user wants to collect data from an OPC-UA server.
+Use this guide for `node-red-contrib-opcua` (`OpcUa-Client` and
+`OpcUa-Endpoint`). For Tier0's own `@tier0/opcua-client` nodes, read
+`tier0-opcua.md` and use `templates/tier0-opcua-subscribe.json` instead.
+The community DataValue parser and endpoint fields below must not be applied
+to Tier0 compact batches, whose values are already decoded and whose
+`statusCode` is a string.
 
 ## Required Rules
 

@@ -19,7 +19,8 @@ Required adaptation:
 | File | Use |
 | --- | --- |
 | `modbus-tcp-read.json` | Modbus polling to MQTT / UNS |
-| `opcua-subscribe.json` | OPC-UA subscription to MQTT / UNS |
+| `tier0-opcua-subscribe.json` | Tier0 OPC-UA auto-start subscription, compact batches to MQTT / UNS |
+| `opcua-subscribe.json` | Community `OpcUa-Client` subscription to MQTT / UNS |
 | `postgresql-uns-archive.json` | UNS messages archived to PostgreSQL |
 
 ## Credential Rule

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added source-verified `@tier0/opcua-client` guidance for shared connections, browse/read/write/subscribe, WinCC compatibility, quality and queue diagnostics, plus an auto-start compact-batch UNS template; separated Tier0 and community OPC-UA routing.
 - Added a focused Flow HTTP endpoint reference for user-defined Node-RED `http in` routes, and explicitly prohibited routing Node-RED Admin APIs through `/flow/source/**` or `/flow/event/**`.
 - Added scenario-based performance parameter guidance for large UNS history requests.
 - Documented compatible UNS history count modes, automatic sampling, multi-field aggregation, cumulative-meter boundary queries, and wildcard read deduplication.

@@ -13,6 +13,7 @@ Use this skill for Tier0 Node-RED Flow management.
 - The user wants to export Node-RED canvas JSON.
 - The user wants to deploy or replace a Node-RED canvas.
 - The user asks about SourceFlow or EventFlow state.
+- The user wants industrial protocol collection, including Tier0's own `tier0-opcua-*` nodes.
 - The user wants to expose or call a webhook or application endpoint implemented with Node-RED `http in` and `http response` nodes.
 
 ## Do Not Use When
@@ -62,11 +63,17 @@ Read the matching file before generating or editing Flow JSON:
 | Intent | Read |
 | --- | --- |
 | Modbus TCP/RTU to UNS | `references/protocols/modbus.md` |
-| OPC-UA subscription to UNS | `references/protocols/opcua.md` |
+| Tier0 OPC-UA browse/read/write/subscribe (`tier0-opcua-*`) | `references/protocols/tier0-opcua.md` |
+| Community OPC-UA subscription (`OpcUa-Client`) | `references/protocols/opcua.md` |
 | OPC-DA polling to UNS | `references/protocols/opcda.md` |
 | External MQTT broker to UNS | `references/protocols/mqtt-bridge.md` |
 | UNS to PostgreSQL archive | `references/protocols/postgresql.md` |
 | Template index | `references/protocols/README.md` |
+
+For new OPC-UA Flows, prefer `@tier0/opcua-client` when its required node types
+are enabled in the runtime. Check `flow nodes` first. Preserve existing
+community-node Flows unless migration is requested; the two packages have
+different config fields and message formats and are not interchangeable.
 
 ## Common Commands
 

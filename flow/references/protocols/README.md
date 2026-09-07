@@ -5,7 +5,8 @@ Read the matching protocol file before generating or editing Node-RED Flow JSON.
 | Intent | Reference | Template |
 | --- | --- | --- |
 | Modbus TCP/RTU collection to UNS | `modbus.md` | `templates/modbus-tcp-read.json` |
-| OPC-UA subscription to UNS | `opcua.md` | `templates/opcua-subscribe.json` |
+| Tier0 OPC-UA browse/read/write/subscribe | `tier0-opcua.md` | `templates/tier0-opcua-subscribe.json` |
+| Community OPC-UA subscription (`OpcUa-Client`) | `opcua.md` | `templates/opcua-subscribe.json` |
 | OPC-DA polling to UNS | `opcda.md` | No generic template |
 | External MQTT broker to UNS | `mqtt-bridge.md` | No generic template |
 | UNS to PostgreSQL archive | `postgresql.md` | `templates/postgresql-uns-archive.json` |
