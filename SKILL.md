@@ -1,6 +1,6 @@
 ---
 name: tier0
-description: "Tier0 platform operations entry point: CLI setup, authentication, and routing to UNS, MQTT, Flow management and user-defined Node-RED HTTP endpoints, managed files, member queries, service info, and API key diagnostics."
+description: "Tier0 operations entry point: CLI setup, authentication, Enterprise installation and upgrades, and routing to UNS, MQTT, Flow, managed files, member queries, service info, and API key diagnostics."
 metadata:
   requires:
     bins: ["tier0"]
@@ -9,19 +9,25 @@ metadata:
 
 # Tier0
 
-This is the shared entry point for Tier0 CLI work. Keep this file focused on setup, authentication, and routing. Task-specific behavior belongs in the matching sub skill or reference file.
+This is the shared entry point for Tier0 operations. Keep this file focused on setup, authentication, and routing. Task-specific behavior belongs in the matching sub skill or reference file.
 
 ## Use When
 
 Use this skill when the user asks about:
 
 - installing or configuring Tier0 CLI
+- installing or upgrading a self-hosted Tier0 Enterprise deployment
 - authenticating with Tier0
 - choosing the right Tier0 skill or command family
 - UNS, MQTT, Flow, Node-RED, service connectivity, or API key permissions
 - querying project or platform members, roles, user statuses, or role-bound applications
 
 ## Setup
+
+For Enterprise server installation, offline upgrades, or Backend image maintenance,
+read [installation/enterprise.md](installation/enterprise.md) first. Host installation
+uses the shipped deployment scripts and does not require CLI authentication.
+The commands below install the CLI and skills only.
 
 Recommended install:
 
@@ -138,6 +144,7 @@ Read the target sub skill or reference before executing a task-specific command.
 
 | User goal | Read |
 | --- | --- |
+| Install Enterprise, apply an offline upgrade, or maintain a Backend image | [installation/enterprise.md](installation/enterprise.md) |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
 | Create/delete MQTT credentials, publish messages, or subscribe continuously | `mqtt/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows; expose or call a user-defined `http in` endpoint | `flow/SKILL.md` |
@@ -174,7 +181,7 @@ tier0 mqtt subscribe --credential agent --topic 'Plant/+/Metric/Temperature' --c
 
 For complex JSON, prefer files or stdin over fragile shell quoting.
 
-## Updates
+## CLI and Skill Updates
 
 The CLI checks for updates in the background at most once every 24 hours. Upgrade manually with:
 
@@ -182,3 +189,6 @@ The CLI checks for updates in the background at most once every 24 hours. Upgrad
 tier0 upgrade
 tier0 skills update
 ```
+
+These commands do not upgrade an Enterprise server. Use
+[installation/enterprise.md](installation/enterprise.md) for product upgrades.

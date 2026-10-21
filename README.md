@@ -6,7 +6,7 @@ These files are written for agents. Some authentication steps require the user t
 
 > Required CLI version: `v0.6.5+`
 
-## Install
+## Install CLI and Skills
 
 Recommended one-command install, requires Node.js >= 16:
 
@@ -44,6 +44,17 @@ If using the alternative installer, install skills separately:
 ```bash
 npx skills add FREEZONEX/Tier0-skill
 ```
+
+## Install or Upgrade Enterprise
+
+For a self-hosted Tier0 Enterprise server, read
+[Enterprise installation and upgrades](installation/enterprise.md). It covers
+full offline installation, upgrades of existing deployments, same-version Backend
+image maintenance, and connecting the CLI after installation.
+
+The CLI installer above and `tier0 upgrade` update the client, not the Enterprise
+server. Product upgrades use the scripts and verified manifest shipped with the
+Enterprise release package.
 
 ## Configure
 
@@ -104,6 +115,7 @@ npx @tier0/cli@latest uninstall --purge
 ## Directory
 
 - [`SKILL.md`](SKILL.md) - Main routing and safety rules
+- [`installation/enterprise.md`](installation/enterprise.md) - Enterprise installation, upgrades, and Backend image maintenance
 - [`uns/`](uns/) - UNS data-plane operations
 - [`mqtt/`](mqtt/) - MQTT credentials, publish, and continuous subscriptions
 - [`flow/`](flow/) - Node-RED Flow management and user-defined HTTP endpoints
