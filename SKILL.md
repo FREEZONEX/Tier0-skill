@@ -146,6 +146,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | --- | --- |
 | Install Enterprise, apply an offline upgrade, or maintain a Backend image | [installation/enterprise.md](installation/enterprise.md) |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
+| Manage Cloud or Enterprise v2 Directory, Topic or Collection metadata through OpenAPI or MCP | [uns/references/cloud-metadata-v2.md](uns/references/cloud-metadata-v2.md) |
 | Create/delete MQTT credentials, publish messages, or subscribe continuously | `mqtt/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows; expose or call a user-defined `http in` endpoint | `flow/SKILL.md` |
 | List/filter project members on a deployment where the endpoint is enabled | `launchpad/members.md` |
