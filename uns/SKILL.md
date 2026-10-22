@@ -7,6 +7,10 @@ description: "Tier0 UNS operations: browse, read, write, history, search, create
 
 Use this skill for Tier0 Unified Namespace data-plane and namespace-management tasks.
 
+For Cloud or Enterprise OpenAPI v2 Directory, Topic and Collection management, first read
+[Metadata v2](references/cloud-metadata-v2.md). The legacy `tier0 uns`
+commands and topic-path rules below are not the v2 metadata contract.
+
 ## Use When
 
 - The user asks to browse namespace paths or discover topics.
@@ -42,6 +46,7 @@ Use this skill for Tier0 Unified Namespace data-plane and namespace-management t
 
 | Intent | Read |
 | --- | --- |
+| Manage Cloud or Enterprise v2 metadata with OpenAPI or MCP | [references/cloud-metadata-v2.md](references/cloud-metadata-v2.md) |
 | Browse namespace folders | `references/browse.md` |
 | Read current values | `references/read.md` |
 | Consume values continuously or in real time | `references/realtime.md` |
