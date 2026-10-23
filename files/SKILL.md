@@ -18,6 +18,10 @@ Use this skill for Tier0 object storage file operations.
 
 - The user wants UNS data operations. Use `uns/SKILL.md`.
 - The user wants Flow operations. Use `flow/SKILL.md`.
+- The user is implementing file upload/download UI in a TypeScript/JavaScript
+  application. Use the `tier0-sdk` skill and its
+  `references/openapi/files/*.md` application patterns; this skill is for CLI
+  and raw API operations.
 
 ## Non-Negotiable Rules
 
@@ -35,6 +39,11 @@ Use this skill for Tier0 object storage file operations.
 | Download a file | `references/download.md` |
 | Get file access URL | `references/url.md` |
 | Delete a file | `references/delete.md` |
+
+For browser application attachment downloads, route to the `tier0-sdk` skill:
+keep SDK credentials on the server, stream `downloadFile` through a same-origin
+application endpoint, and save a Blob with `<a download>`. Do not generate
+`getFileUrl` + `window.open(presignedUrl)` application code.
 
 ## Common Commands
 
