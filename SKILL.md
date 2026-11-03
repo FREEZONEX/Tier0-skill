@@ -24,6 +24,10 @@ Use this skill when the user asks about:
 
 ## Setup
 
+For Cloud agents calling a registered Edge through native UNS v2 APIs, read
+[Edge targeting](uns/references/edge-target.md). This covers discovery, the MCP
+`execute` target option and cloud Stream ingestion; do not invent an Edge URL prefix.
+
 For Enterprise server installation, offline upgrades, or Backend image maintenance,
 read [installation/enterprise.md](installation/enterprise.md) first. Host installation
 uses the shipped deployment scripts and does not require CLI authentication.
@@ -146,6 +150,7 @@ Read the target sub skill or reference before executing a task-specific command.
 | --- | --- |
 | Install Enterprise, apply an offline upgrade, or maintain a Backend image | [installation/enterprise.md](installation/enterprise.md) |
 | Browse, search, read, write, history, create, update, delete, or restore UNS nodes/topics | `uns/SKILL.md` |
+| Manage Cloud or Enterprise v2 Directory, Topic or Collection metadata through OpenAPI or MCP | [uns/references/cloud-metadata-v2.md](uns/references/cloud-metadata-v2.md) |
 | Create/delete MQTT credentials, publish messages, or subscribe continuously | `mqtt/SKILL.md` |
 | List, inspect, create, update, delete, export, or deploy Node-RED Flows; expose or call a user-defined `http in` endpoint | `flow/SKILL.md` |
 | List/filter project members on a deployment where the endpoint is enabled | `launchpad/members.md` |
