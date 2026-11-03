@@ -8,7 +8,7 @@ description: "Download a file from Tier0 object storage."
 ## API
 
 ```
-GET /openapi/v1/assets/files/download?filePath={filePath}&responseContentDisposition={...}
+GET /openapi/v2/assets/files/download?filePath={filePath}&responseContentDisposition={...}
 ```
 
 ## Request
@@ -32,4 +32,5 @@ tier0 assets download --file-path workspace/.../report.csv -o ./report.csv
 
 - `filePath` must be URL-encoded.
 - Private files use short-lived presigned URLs (default 3600 seconds).
-- `tier0 assets download` only follows same-origin redirects. A redirect to a different object-storage origin is blocked, even when it is a valid public or presigned URL; the CLI does not send its API key to that origin. Use a trusted direct storage download workflow when available. Treat presigned URLs and diagnostic output as secrets.
+- The CLI tries v2 first and falls back to v1 only on a direct gateway HTTP 404, before any redirect.
+- The CLI follows cross-origin public or presigned storage URLs only over HTTPS. It strips request headers, including the API key, and rejects HTTPS-to-HTTP downgrades and more than five redirects. Treat presigned URLs as secrets.
