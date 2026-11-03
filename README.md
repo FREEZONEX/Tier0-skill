@@ -93,7 +93,7 @@ tier0 login --setup-code <setup_code>
 ```bash
 tier0 doctor
 tier0 auth whoami
-tier0 api /openapi/v1/info --body '{}'
+tier0 api /openapi/v2/info --body '{}'
 ```
 
 ## Safe Write Previews
