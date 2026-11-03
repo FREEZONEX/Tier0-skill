@@ -34,13 +34,8 @@ The `calls` ledger includes `fleetNodeId`; inspect both HTTP status and outcome.
 Operation-mode MCP tools also accept the optional `fleetNodeId` argument.
 Non-UNS paths cannot be targeted; use ordinary untargeted `whoami` for identity.
 
-SDK: discover with an untargeted `client.edge.nodes.list({page: 1, size: 100})`.
-Create a separate `createClient({ apiHost, apiKey, fleetNodeId })` instance
-per target. Supported examples are `client.uns.metadataFind`,
-`client.source.documents.list`, `client.stream.programs.list`, and
-`client.uns.recordFind`; they return the normal UNS envelope. Do not mix target
-resource IDs or caches. Check the installed SDK/MCP version exposes this option.
-Do not invent a CLI flag: this guide specifies HTTP, SDK and MCP behavior only.
+Use OpenAPI or MCP for this Agent workflow. The App SDK is not its delivery
+surface. Do not mix target resource IDs or caches, and do not invent a CLI flag.
 
 The header does not grant access. Cloud validates workspace ownership, operation
 permissions and Edge consent; App-bound and builder-target identities are not
@@ -83,10 +78,9 @@ The fixed read path requires business read and Source view/manage permissions,
 workspace ownership, the pinned configuration and an enabled Edge Source.
 Manual Request grants and confirmations still apply. This does not authorize
 device writes or host administration. Use current OpenAPI/MCP contracts for
-creating the reference: the SDK's separately pinned generated Source types may
-not yet include protocol `edge`.
+creating the reference.
 
-Validated on development Cloud → Windows Edge on 2026-11-03: HTTP/SDK resource
+Validated on development Cloud → Windows Edge on 2026-11-03: HTTP resource
 reads; MCP discovery followed by target Source/Stream/Collection lists; and a
 cloud timer Stream reading an Edge Modbus simulator into a cloud Collection,
 with its business result read back through MCP. This does not prove other

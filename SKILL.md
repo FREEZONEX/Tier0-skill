@@ -25,8 +25,8 @@ Use this skill when the user asks about:
 ## Setup
 
 For Cloud agents calling a registered Edge through native UNS v2 APIs, read
-[Edge targeting](uns/references/edge-target.md). This also covers the MCP
-`execute` option and SDK configuration; do not invent an Edge URL prefix.
+[Edge targeting](uns/references/edge-target.md). This covers discovery, the MCP
+`execute` target option and cloud Stream ingestion; do not invent an Edge URL prefix.
 
 For Enterprise server installation, offline upgrades, or Backend image maintenance,
 read [installation/enterprise.md](installation/enterprise.md) first. Host installation
