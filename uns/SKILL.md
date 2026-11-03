@@ -7,6 +7,8 @@ description: "Tier0 UNS operations: browse, read, write, history, search, create
 
 Use this skill for Tier0 Unified Namespace data-plane and namespace-management tasks.
 
+For a registered Edge target, first read [Edge targeting](references/edge-target.md).
+
 For Cloud or Enterprise OpenAPI v2 Directory, Topic and Collection management, first read
 [Metadata v2](references/cloud-metadata-v2.md). The legacy `tier0 uns`
 commands and topic-path rules below are not the v2 metadata contract.
