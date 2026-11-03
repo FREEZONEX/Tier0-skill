@@ -1,4 +1,12 @@
-# Native UNS calls to an Edge
+# Discover Edges and use their Sources
+
+Start on the center with `POST /openapi/v2/uns/edges/list`, without a target.
+Use `page` and `size` (maximum 100); optional filters are `keyword` and `status`.
+Read `data.list` and `data.total`, paginate as needed, and select the returned
+`fleetNodeId`. Discovery requires `uns.read`, not Fleet administrator access.
+The list is workspace-scoped; infrastructure `online` is not a guarantee that
+every business operation is available. App-bound and builder identities cannot
+use this discovery/forwarding flow.
 
 Use the center's existing API host and an authorized identity bound to the Edge's
 workspace. Keep the native `/openapi/v2/uns/...` path and set
@@ -26,7 +34,8 @@ The `calls` ledger includes `fleetNodeId`; inspect both HTTP status and outcome.
 Operation-mode MCP tools also accept the optional `fleetNodeId` argument.
 Non-UNS paths cannot be targeted; use ordinary untargeted `whoami` for identity.
 
-SDK: create a separate `createClient({ apiHost, apiKey, fleetNodeId })` instance
+SDK: discover with an untargeted `client.edge.nodes.list({page: 1, size: 100})`.
+Create a separate `createClient({ apiHost, apiKey, fleetNodeId })` instance
 per target. Supported examples are `client.uns.metadataFind`,
 `client.source.documents.list`, `client.stream.programs.list`, and
 `client.uns.recordFind`; they return the normal UNS envelope. Do not mix target
@@ -43,7 +52,42 @@ Unknown or invalid targets are rejected before dispatch. A timeout after dispatc
 can leave a write outcome unknown: query the same target first and preserve the
 original idempotency key. Never interpret transport failure as safe to resend.
 
-Validated on development Cloud → Windows Edge on 2026-11-03: target catalog,
-Collection metadata, Source documents, Stream programs and workorder reads via
-HTTP and SDK; MCP execute metadata read with target recorded in its call ledger.
-This read-only acceptance does not prove write or device-control execution.
+## Connect a cloud Stream to an Edge Source
+
+Read the target Source document first. The current cloud input adapter supports
+enabled native `modbus-tcp` Sources; other protocols and event subscriptions are
+not supported by this adapter. Keep device address, Unit ID and credentials on
+the Edge. Pin the Source's `configRevision` and read the current center catalog
+for the create/deploy contracts.
+
+On the **center**, create a Source document with `protocol: "edge"` and:
+
+```json
+{
+  "endpoint": "edge://<fleetNodeId>/<nativeSourceId>",
+  "options": {"protocol": "modbus", "configRevision": 1}
+}
+```
+
+This is the Source document's `config`, not an HTTP URL prefix. Use the actual
+Edge revision instead of the example's `1`. Center create/deploy calls omit
+`fleetNodeId`. In the cloud Stream document, bind the new center Source ID and
+its revision under `sources`, choose an alias, specify `acquisition.ranges`
+(`id`, `table`, `address`, `quantity`), and allow matching
+`resources: ["modbus:<rangeId>"]`. The Stream reads through
+`api.sources.use(alias).read("modbus:<rangeId>")` and can write a cloud Collection.
+Deploy through the current Stream API and verify the resulting business data.
+Creating a reference or draft alone does not prove device connectivity.
+
+The fixed read path requires business read and Source view/manage permissions,
+workspace ownership, the pinned configuration and an enabled Edge Source.
+Manual Request grants and confirmations still apply. This does not authorize
+device writes or host administration. Use current OpenAPI/MCP contracts for
+creating the reference: the SDK's separately pinned generated Source types may
+not yet include protocol `edge`.
+
+Validated on development Cloud → Windows Edge on 2026-11-03: HTTP/SDK resource
+reads; MCP discovery followed by target Source/Stream/Collection lists; and a
+cloud timer Stream reading an Edge Modbus simulator into a cloud Collection,
+with its business result read back through MCP. This does not prove other
+protocols or device-control execution.
