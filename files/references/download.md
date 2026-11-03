@@ -32,3 +32,4 @@ tier0 assets download --file-path workspace/.../report.csv -o ./report.csv
 
 - `filePath` must be URL-encoded.
 - Private files use short-lived presigned URLs (default 3600 seconds).
+- `tier0 assets download` only follows same-origin redirects. A redirect to a different object-storage origin is blocked, even when it is a valid public or presigned URL; the CLI does not send its API key to that origin. Use a trusted direct storage download workflow when available. Treat presigned URLs and diagnostic output as secrets.
